@@ -1,0 +1,49 @@
+<?php
+include "../config.php";
+
+    class EventC{
+        public function ListEvents(){
+            $sql = "SELECT * FROM events";
+            $db = config::getConnexion();
+            echo "connection successful !! ";
+            try{
+                $list = $db->query($sql);
+                return $list;
+            }catch(Exception $e){
+                die('error de lister les events !!'. $e->getMessage());
+            }
+        }
+
+        public function deleteEvent($idEvent){
+            $sql = "DELETE FROM events WHERE idEvent = :idEvent ";
+            $db = config::getConnexion();
+            $req = $db->prepare($sql);
+            $req->bindValue(":idEvent", $idEvent);
+            try{
+                $req->execute();
+            }
+            catch(Exception $e){
+                die('error de suppression !! '. $e->getMessage());
+            }
+        }
+
+        public function addEvent($ev){
+            //var_dump($ev); // testing
+            $sql = "INSERT INTO events VALUES(NULL,:nomEv,:orgEv,:themeEv,:dateEv,:lieuEv)";
+            $db = config::getConnexion();
+            try{
+                $req = $db->prepare($sql);
+                $req->execute([
+                    "nomEv"=> $ev->getNomEvent(),
+                    "orgEv"=> $ev->getOrganisteur(),
+                    "themeEv"=> $ev->getTheme(),
+                    "dateEv"=> $ev->getDate()->format('Y/m/d'),
+                    "lieuEv"=> $ev->getLieu()
+                ]);
+            }
+            catch(Exception $e){
+                die('error d ajout !! '. $e->getMessage());
+            }
+        }
+    }
+?>
