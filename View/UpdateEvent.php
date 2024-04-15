@@ -26,11 +26,12 @@
                 $formattedDate,
                 $_POST["lieuEvent"]);
                 $evC = new EventC();
-                var_dump($ev);
+                //var_dump($ev); 
                 $evC->updateEvent($ev);
                 header('Location:ListEvents.php');
             } else {
                 $error = "Missing info";
+                header('Location:ListEvents.php');
             }
         }
     }
@@ -38,7 +39,6 @@
 <html>
 <head>
     <title>Update Event</title>
-    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <form action="" method="post" id="UpdateForm">
@@ -82,7 +82,6 @@
     <input type="submit" value="Update">
     <?php echo $error; ?>
 </form>
-
     <script src="UpdateFormValidator.js"></script>
 </body>
 </html>

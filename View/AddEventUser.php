@@ -23,7 +23,7 @@
             $evC = new EventC();
             $evC->addEvent($ev);
             echo "added succesfully !!";
-            header('Location:ListEvents.php');
+            header('Location:ListEventsUser.php');
         }else{
             $error = "Missing info";
         }
