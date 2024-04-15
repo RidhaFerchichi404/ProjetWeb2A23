@@ -1,34 +1,3 @@
-<?php
-    include "../Controller/EventC.php";
-    include "../Model/Event.php";
-    $error = null;
-    $ev = null;
-    if(isset($_POST["NameEv"])
-    && isset($_POST["OrgEv"])
-    && isset($_POST["ThemeEv"])
-    && isset($_POST["DateEv"])
-    && isset($_POST["LieuEv"])){
-        if(!empty($_POST["NameEv"])
-        && !empty($_POST["OrgEv"])
-        && !empty($_POST["ThemeEv"])
-        && !empty($_POST["DateEv"])
-        && !empty($_POST["LieuEv"])){
-            $ev = new Event(null,
-            $_POST["NameEv"],
-            $_POST["OrgEv"],
-            $_POST["ThemeEv"],
-            new DateTime($_POST["DateEv"]),
-            $_POST["LieuEv"]);
-            //var_dump($_POST["DateEv"]); // testing
-            $evC = new EventC();
-            $evC->addEvent($ev);
-            echo "added succesfully !!";
-            header('Location:List.php');
-        }else{
-            $error = "Missing info";
-        }
-    }
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -86,8 +55,8 @@
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Events management</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="Index.php" class="dropdown-item active">Add an Event</a>
-                            <a href="List.php" class="dropdown-item">List of Events</a>
+                            <a href="Index.php" class="dropdown-item">Add an Event</a>
+                            <a href="List.php" class="dropdown-item active">List of Events</a>
                         </div>
                     </div>
                 </div>
@@ -99,51 +68,69 @@
         <!-- Content Start -->
         <div class="content">
             <!-- Blank Start -->
-
-                    <div class="col-md-6 text-center">
-                        <div class="col-sm-12 col-xl-6">
-                            <div class="bg-secondary rounded h-100 p-4">
-                                <h6 class="mb-4">Add an Event</h6>
-                                <form action="" method="POST" id="AddForm">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="NameEv" id="NameEv"
-                                        placeholder="name@example.com">
-                                    <label for="floatingInput">Event name</label>
-                                    <span class="mb-4" id="nameError" class="error"></span>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="OrgEv" id="OrgEv"
-                                        placeholder="Password">
-                                    <label for="floatingPassword">Organiser</label>
-                                    <span class="mb-4" id="orgError" class="error"></span>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="ThemeEv" id="ThemeEv"
-                                        placeholder="Type here">
-                                    <label for="floatingInput">Theme of the event</label>
-                                    <span class="mb-4" id="themeError" class="error"></span>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <input type="date" class="form-control" name="DateEv" id="DateEv">
-                                    <label for="floatingInput">Date of the Event</label>
-                                    <span class="mb-4" id="dateError" class="error"></span>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="LieuEv" id="LieuEv">
-                                    <label for="floatingInput">Location of the event</label>
-                                    <span class="mb-4" id="lieuError" class="error"></span>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Submit</button>
+            <?php
+                include "../Controller/EventC.php";
+                $evC = new EventC();
+                $list = $evC->ListEvents();
+                //print_r($list);
+            ?>
+            <div class="col-sm-12 col-xl-6">
+                        <div class="bg-secondary rounded h-100 p-4">
+                            <h6 class="mb-4">List of Events</h6>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">idEvent</th>
+                                        <th scope="col">Name of Event</th>
+                                        <th scope="col">Organizer of Event</th>
+                                        <th scope="col">Theme of Event</th>
+                                        <th scope="col">Date of Event</th>
+                                        <th scope="col">Place of Event</th>
+                                        <th scope="col">Update</th>
+                                        <th scope="col">Delete</th>
+                                    </tr>
+                                </thead>
+                                <?php
+                                    foreach ($list as $Event) {
+                                ?>
+                                <tbody>
+                                    <tr>
+                                        <td><?= $Event['idEvent']; ?></td>
+                                        <td><?= $Event['nomEvent']; ?></td>
+                                        <td><?= $Event['orgEvent']; ?></td>
+                                        <td><?= $Event['themeEvent']; ?></td>
+                                        <td><?= $Event['dateEvent']; ?></td>
+                                        <td><?= $Event['lieuEvent']; ?></td>
+                                        <td>
+                                            <form action="Update.php" method="post">
+                                                <input type="hidden" name="idEvent" value="<?= $Event['idEvent']; ?>">
+                                                <button type="submit" class="btn btn-primary">Update</button>
+                                                </form>
+                                        </td>
+                                        <td>
+                                            <form action="DeleteEvent.php" method="post">
+                                                <input type="hidden" name="idEvent" value="<?= $Event['idEvent']; ?>">
+                                                <button type="submit" class="btn btn-primary">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                        }
+                                    ?>
+                                </tbody>
+                            </table>
+                            <div style="text-align: center;">
+                                <form action="Index.php" method="get">
+                                    <button type="submit" class="btn btn-primary">Add an Event</button>
                                 </form>
-                                <script src="AddFormValidator.js"></script>
                             </div>
                         </div>
                     </div>
-                
-        
             <!-- Blank End -->
         </div>
         <!-- Content End -->
+
+
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
     </div>

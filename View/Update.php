@@ -3,29 +3,35 @@
     include "../Model/Event.php";
     $error = null;
     $ev = null;
-    if(isset($_POST["NameEv"])
-    && isset($_POST["OrgEv"])
-    && isset($_POST["ThemeEv"])
-    && isset($_POST["DateEv"])
-    && isset($_POST["LieuEv"])){
-        if(!empty($_POST["NameEv"])
-        && !empty($_POST["OrgEv"])
-        && !empty($_POST["ThemeEv"])
-        && !empty($_POST["DateEv"])
-        && !empty($_POST["LieuEv"])){
-            $ev = new Event(null,
-            $_POST["NameEv"],
-            $_POST["OrgEv"],
-            $_POST["ThemeEv"],
-            new DateTime($_POST["DateEv"]),
-            $_POST["LieuEv"]);
-            //var_dump($_POST["DateEv"]); // testing
-            $evC = new EventC();
-            $evC->addEvent($ev);
-            echo "added succesfully !!";
-            header('Location:List.php');
-        }else{
-            $error = "Missing info";
+    if (isset($_POST['idEvent'])) {
+        $idEvent = $_POST['idEvent'];
+        $evC = new EventC();
+        $event = $evC->getEventById($idEvent);
+
+        if(isset($_POST["nomEvent"])
+        && isset($_POST["orgEvent"])
+        && isset($_POST["themeEvent"])
+        && isset($_POST["dateEvent"])
+        && isset($_POST["lieuEvent"])){
+            if(!empty($_POST["nomEvent"])
+            && !empty($_POST["orgEvent"])
+            && !empty($_POST["themeEvent"])
+            && !empty($_POST["dateEvent"])
+            && !empty($_POST["lieuEvent"])){
+                
+                $ev = new Event(null,
+                $_POST["nomEvent"],
+                $_POST["orgEvent"],
+                $_POST["themeEvent"],
+                $_POST["dateEvent"],
+                $_POST["lieuEvent"]);
+                $evC = new EventC();
+                //var_dump($ev); 
+                $evC->updateEvent($ev);
+                header('Location:List.php');
+            } else {
+                $error = "Missing info";
+            }
         }
     }
 ?>
@@ -86,7 +92,7 @@
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Events management</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="Index.php" class="dropdown-item active">Add an Event</a>
+                            <a href="Index.php" class="dropdown-item">Add an Event</a>
                             <a href="List.php" class="dropdown-item">List of Events</a>
                         </div>
                     </div>
@@ -99,51 +105,47 @@
         <!-- Content Start -->
         <div class="content">
             <!-- Blank Start -->
-
                     <div class="col-md-6 text-center">
                         <div class="col-sm-12 col-xl-6">
                             <div class="bg-secondary rounded h-100 p-4">
-                                <h6 class="mb-4">Add an Event</h6>
-                                <form action="" method="POST" id="AddForm">
+                                <h6 class="mb-4">Update the Event</h6>
+                                <form action="" method="POST" id="UpdateForm">
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="NameEv" id="NameEv"
-                                        placeholder="name@example.com">
+                                    <input type="text" class="form-control" name="nomEvent" id="nomEvent" value="<?= $event['nomEvent'] ?? ''; ?>">
                                     <label for="floatingInput">Event name</label>
                                     <span class="mb-4" id="nameError" class="error"></span>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="OrgEv" id="OrgEv"
-                                        placeholder="Password">
+                                    <input type="text" class="form-control" name="orgEvent" id="orgEvent" value="<?= $event['orgEvent'] ?? ''; ?>">
                                     <label for="floatingPassword">Organiser</label>
                                     <span class="mb-4" id="orgError" class="error"></span>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="ThemeEv" id="ThemeEv"
-                                        placeholder="Type here">
+                                    <input type="text" class="form-control" name="themeEvent" id="themeEvent" value="<?= $event['themeEvent'] ?? ''; ?>">
                                     <label for="floatingInput">Theme of the event</label>
                                     <span class="mb-4" id="themeError" class="error"></span>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <input type="date" class="form-control" name="DateEv" id="DateEv">
+                                    <input type="date" class="form-control" name="dateEvent" id="dateEvent" value="<?= $event['dateEvent'] ?? ''; ?>">
                                     <label for="floatingInput">Date of the Event</label>
                                     <span class="mb-4" id="dateError" class="error"></span>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="LieuEv" id="LieuEv">
+                                    <input type="text" class="form-control" name="lieuEvent" id="lieuEvent" value="<?= $event['lieuEvent'] ?? ''; ?>">
                                     <label for="floatingInput">Location of the event</label>
                                     <span class="mb-4" id="lieuError" class="error"></span>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button type="submit" class="btn btn-primary">Update</button>
                                 </form>
-                                <script src="AddFormValidator.js"></script>
+                                <script src="UpdateFormValidator.js"></script>
                             </div>
                         </div>
                     </div>
-                
-        
             <!-- Blank End -->
         </div>
         <!-- Content End -->
+
+
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
     </div>
