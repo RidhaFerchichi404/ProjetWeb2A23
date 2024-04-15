@@ -12,7 +12,7 @@
             $this->nomEvent = $b;
             $this->orgEvent = $c;
             $this->themeEvent = $d;
-            $this->dateEvent = $e;
+            $this->dateEvent = new DateTime($e);
             $this->lieuEvent = $f;
         }
 
@@ -52,7 +52,7 @@
             $this->themeEvent = $c;
         }
 
-        public function setDate($d){
+        public function setDate(DateTime $d){
             $this->dateEvent = $d;
         }
 
