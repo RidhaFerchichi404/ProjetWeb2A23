@@ -28,7 +28,7 @@
                 $evC = new EventC();
                 var_dump($ev);
                 $evC->updateEvent($ev);
-                header('Location: ListEvents.php');
+                header('Location:ListEvents.php');
             } else {
                 $error = "Missing info";
             }
@@ -38,35 +38,51 @@
 <html>
 <head>
     <title>Update Event</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <form action="" method="post">
+<form action="" method="post" id="UpdateForm">
     <table>
-    <tr>
-        <td><label for="nomEvent">Event Name</label></td>
-        <td><input type="text" name="nomEvent" id="nomEvent" value="<?= $event['nomEvent'] ?? ''; ?>"></td>
-    </tr>
-    <tr>
-        <td><label for="orgEvent">organisateur</label></td>
-        <td><input type="text" name="orgEvent" id="orgEvent" value="<?= $event['orgEvent'] ?? ''; ?>"></td>
-    </tr>
-    <tr>
-        <td><label for="themeEvent">Theme</label></td>
-        <td><input type="text" name="themeEvent" id="themeEvent" value="<?= $event['themeEvent'] ?? ''; ?>"></td>
-    </tr>
-    <tr>
-        <td><label for="dateEvent">Date of event</label></td>
-        <td><input type="date" name="dateEvent" id="dateEvent" value="<?= $event['dateEvent'] ?? ''; ?>"></td>
-    </tr>
-    <tr>
-        <td><label for="lieuEvent">lieu event</label></td>
-        <td><input type="text" name="lieuEvent" id="lieuEvent" value="<?= $event['lieuEvent'] ?? ''; ?>"></td>
-    </tr>
+        <tr>
+            <td><label for="nomEvent">Event Name</label></td>
+            <td>
+                <input type="text" name="nomEvent" id="nomEvent" value="<?= $event['nomEvent'] ?? ''; ?>">
+                <span id="nameError" class="error"></span> 
+            </td>
+        </tr>
+        <tr>
+            <td><label for="orgEvent">organisateur</label></td>
+            <td>
+                <input type="text" name="orgEvent" id="orgEvent" value="<?= $event['orgEvent'] ?? ''; ?>">
+                <span id="orgError" class="error"></span> 
+            </td>
+        </tr>
+        <tr>
+            <td><label for="themeEvent">Theme</label></td>
+            <td>
+                <input type="text" name="themeEvent" id="themeEvent" value="<?= $event['themeEvent'] ?? ''; ?>">
+                <span id="themeError" class="error"></span> 
+            </td>
+        </tr>
+        <tr>
+            <td><label for="dateEvent">Date of event</label></td>
+            <td>
+                <input type="date" name="dateEvent" id="dateEvent" value="<?= $event['dateEvent'] ?? ''; ?>">
+                <span id="dateError" class="error"></span> 
+            </td>
+        </tr>
+        <tr>
+            <td><label for="lieuEvent">lieu event</label></td>
+            <td>
+                <input type="text" name="lieuEvent" id="lieuEvent" value="<?= $event['lieuEvent'] ?? ''; ?>">
+                <span id="lieuError" class="error"></span> 
+            </td>
+        </tr>
     </table>
-        <input type="submit" value="Update">
-        <?php
-                    echo $error;
-        ?>
-    </form>
+    <input type="submit" value="Update">
+    <?php echo $error; ?>
+</form>
+
+    <script src="UpdateFormValidator.js"></script>
 </body>
 </html>
