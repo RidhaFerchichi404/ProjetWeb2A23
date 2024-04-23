@@ -1,16 +1,41 @@
 <?php
-    include "../Controller/EventC.php";
-    include "../Model/Event.php";
-    $error = "";
-    $evC = new EventC();
-    $list = $evC->ListEvents();
-?>
+            include "../Controller/ParticipantC.php";
+            include "../Model/Participant.php";
+            include "../Controller/EventC.php";
+            include "../Model/Event.php";
+            $error = null;
+            $pr = null;
+            $pr = new Participant(null,$_POST['nomPart'],$_POST['agePart'],$_POST['emailPart']);
+            var_dump($pr);
+            if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            if(isset($_POST['idEvent'])&&
+                isset($_POST['nomPart'])&&
+                isset($_POST['agePart'])&&
+                isset($_POST['emailPart'])){
+                    if(!empty($_POST['idEvent'])&&
+                        !empty($_POST['nomPart'])&&
+                        !empty($_POST['agePart'])&&
+                        !empty($_POST['emailPart'])){
+                            $pr = new Participant(null,$_POST['nomPart'],$_POST['agePart'],$_POST['emailPart']);
+                            var_dump($pr);
+                            $prC = new ParticipantC();
+                            $prC->addParticipant($pr,$_POST['idEvent']);
+                            header('Location:job-list.php');
+                    }
+                }
+                } else {
+                    echo"missing info";
+                    $pr = new Participant(null,$_POST["nomPart"],$_POST["agePart"],$_POST["emailPart"]);
+                    var_dump($pr);
+                }
+        ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
-    <title>The Best Events</title>
+    <title>JobEntry - Job Portal Website Template</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -52,7 +77,7 @@
         <!-- Navbar Start -->
         <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
             <a href="index.html" class="navbar-brand d-flex align-items-center text-center py-0 px-4 px-lg-5">
-                <h1 class="m-0 text-primary">Events</h1>
+                <h1 class="m-0 text-primary">Participation form</h1>
             </a>
             <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="navbar-toggler-icon"></span>
@@ -68,7 +93,7 @@
                         </div>
                     </div>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                        <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
                         <div class="dropdown-menu rounded-0 m-0">
                             <a href="category.html" class="dropdown-item">Job Category</a>
                             <a href="testimonial.html" class="dropdown-item">Testimonial</a>
@@ -85,146 +110,56 @@
         <!-- Header End -->
         <div class="container-xxl py-5 bg-dark page-header mb-5">
             <div class="container my-5 pt-5 pb-4">
-                <h1 class="display-3 text-white mb-3 animated slideInDown">Job List</h1>
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb text-uppercase">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                        <li class="breadcrumb-item text-white active" aria-current="page">Job List</li>
-                    </ol>
-                </nav>
+                <h1 class="display-3 text-white mb-3 animated slideInDown">Participation</h1>
             </div>
         </div>
         <!-- Header End -->
 
-        <!-- Search Start -->
-        <form method="POST" action="">
-                <div class="container-fluid bg-primary mb-5 wow fadeIn" data-wow-delay="0.1s" style="padding: 35px;">
-                    <div class="container">
-                        <div class="row g-2">
-                            <div class="col-md-10">
-                                <div class="row g-2">
-                                    <div class="col-md-4">
-                                        <input type="text" id="search" name="search" class="form-control border-0" placeholder="Keyword" />
-                                    </div>
-                                    <div class="col-md-4">
-                                        <select class="form-select border-0" name="search_option">
-                                            <option selected disabled>Choose search</option>
-                                            <option value="1">Event</option>
-                                            <option value="2">Participant</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <button type="submit" name="submit" class="btn btn-dark border-0 w-100">Search</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        <?php
-            $listS = null;
-            $sEv = null;
-            if(isset($_POST["submit"]) && isset($_POST["search_option"])){
-                if(!empty($_POST["search"]) && !empty($_POST["search_option"])){
-                    if($_POST["search_option"] == 1){
-                        $listS = $evC->searchEventByName($_POST["search"]);
-                        if ($listS) {foreach($listS as $sEv){
-                            ?>
-                            <div class="job-item p-4 mb-4">
-                                <div class="row g-4">
-                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                        <div class="text-start ps-4">
-                                            <h5 class="mb-3"><?= $sEv['nomEvent'];?></h5>
-                                            <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $sEv['lieuEvent']; ?></span>
-                                            <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $sEv['dateEvent']; ?></span>
-                                            <span class="text-truncate me-0"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $sEv['orgEvent']; ?></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php
-                        }    
-                    } else {
-                        echo "No event found.";
-                    }
-                    }else if($_POST["search_option"] == 2){
-                        $listS = $evC->searchEventByParticipant($_POST["search"]);
-                        if ($listS) {foreach($listS as $sEv){
-                            ?>
-                            <div class="job-item p-4 mb-4">
-                                <div class="row g-4">
-                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                        <div class="text-start ps-4">
-                                            <h5 class="mb-3"><?= $sEv['nomEvent'];?></h5>
-                                            <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $sEv['lieuEvent']; ?></span>
-                                            <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $sEv['dateEvent']; ?></span>
-                                            <span class="text-truncate me-0"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $sEv['orgEvent']; ?></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php
-                        }    
-                    } else {
-                        echo "No event found.";
-                    }
-                    }
-                }
-            }
-        ?>
-        <!-- Search End -->
 
-        <!-- Jobs Start -->
-
-        <div class="container-xxl py-5">
-            <div class="container">
-                <h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">The Best Events</h1>
-                <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.3s">
-                    <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
-                        <li class="nav-item">
-                            <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3 active" data-bs-toggle="pill" href="#tab-1">
-                                <h6 class="mt-n1 mb-0">Featured</h6>
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                        <div id="tab-1" class="tab-pane fade show p-0 active">
-                            <?php
-                            foreach($list as $Event){
-                            ?>
-                            <div class="job-item p-4 mb-4">
-                                <div class="row g-4">
-                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                        
-                                        <div class="text-start ps-4">
-                                            <h5 class="mb-3"><?= $Event['nomEvent'];?></h5>
-                                            <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $Event['lieuEvent']; ?>></span>
-                                            <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $Event['dateEvent']; ?></span>
-                                            <span class="text-truncate me-0"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $Event['orgEvent']; ?></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                        <div class="d-flex mb-3">
-                                            <form action="Participation.php" method="POST">
-                                                <input type="hidden" name="idEvent" value="<?= $Event['idEvent']; ?>">
-                                                <button class="btn btn-primary" type="submit">Participate Now </button>
-                                            </form>
-                                        </div>
+        <!-- 404 Start -->
+        <div class="text-center">
+            <h1 class="m-0 text-primary">Participation form</h1>
+        </div>
+        <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
+            <div class="container text-center">
+                <div class="row justify-content-center">
+                    <div class="col-lg-6">
+                        <form action="" method="post" id="participationForm">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" name="nomPart" id="nomPart" placeholder="Your Name">
+                                        <label for="nomPart">Your Name</label>
+                                        <span class="mb-4" id="nameError" class="error"></span>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="text" class="form-control" name="agePart" id="agePart" placeholder="Your Age">
+                                        <label for="agePart">Your Age</label>
+                                        <span class="mb-4" id="ageError" class="error"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input type="email" class="form-control" name="emailPart" id="emailPart" placeholder="Your Email">
+                                        <label for="emailPart">Your Email</label>
+                                        <span class="mb-4" id="emailError" class="error"></span>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button class="btn btn-primary w-100 py-3" type="submit">Participate</button>
+                                </div>
                             </div>
-                            <?php
-                                }
-                            ?>
+                        </form>
+                        <script src="ParticipationValidation.js"></script>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Jobs End -->
+        <!-- 404 End -->
 
-
+        
         <!-- Footer Start -->
         <div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
             <div class="container py-5">

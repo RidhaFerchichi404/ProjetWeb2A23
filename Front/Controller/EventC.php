@@ -86,6 +86,34 @@ include "../config.php";
             }
         }
         
-        
+        public function searchEventByName($eventName){
+            $sql = "SELECT * FROM events WHERE nomEvent = :nomEvent";
+            $db = config::getConnexion();
+            $req = $db->prepare($sql);
+            $req->bindValue(":nomEvent", $eventName);
+            try{
+                $req->execute();
+                return $req->fetchAll();
+            }
+            catch(Exception $e){
+                die('error de retrait des données !! '. $e->getMessage());
+            }
+        }
+
+        public function searchEventByParticipant($participantNme){
+            $sql = "SELECT * FROM events S,participant P WHERE S.idEvent = P.idEvent AND nomPart = :nomPart";
+            $db = config::getConnexion();
+            $req = $db->prepare($sql);
+            $req->bindValue(":nomPart", $participantNme);
+            try{
+                $req->execute();
+                return $req->fetchAll();
+            }
+            catch(Exception $e){
+                die('error de retrait des données !! '. $e->getMessage());
+            }
+        }
     }
+
+
 ?>
