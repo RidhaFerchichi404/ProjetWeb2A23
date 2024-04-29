@@ -97,4 +97,28 @@ class sujetC
             echo($e);
         }
     }
+    public function countJobs() {
+        try {
+            $db = config::getConnexion();
+            $query = $db->query("SELECT COUNT(*) AS total_jobs FROM sujet");
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+            return $result['total_jobs'];
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+    
+    // Method to fetch jobs for the current page
+    public function paginateJobs($offset, $limit) {
+        try {
+            $db = config::getConnexion();
+            $query = $db->prepare("SELECT * FROM sujet LIMIT :limit OFFSET :offset");
+            $query->bindParam(':limit', $limit, PDO::PARAM_INT);
+            $query->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $query->execute();
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
 }

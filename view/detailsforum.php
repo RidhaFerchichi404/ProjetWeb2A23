@@ -1,8 +1,39 @@
+<?php
+include '../Controller/CommentaireC.php'; // Inclure le fichier contenant la classe CommentaireC
+include '../Model/commentaire.php';
+
+
+$error = null;
+$sub = null;
+$id_sujet=isset($_GET['id_sujet']) ? $_GET['id_sujet'] :null;
+
+$subC = new CommentaireC(); // Instanciation de la classe CommentaireC
+
+if ( isset($_POST['id_utilisateur']) && isset($_POST['text'])) {
+    if ( !empty($_POST['id_utilisateur']) && !empty($_POST['text'])) {
+
+        $sub = new commentaire(
+            null, $_GET['id_sujet']
+            ,
+            $_POST['id_utilisateur'],
+            $_POST['text']
+        );
+        
+        $subC->addCommentaire($sub); // Appel de la méthode addCommentaire
+
+        header('Location:detailsforum.php');
+        exit(); // Assurez-vous de terminer l'exécution du script après la redirection
+    } else {
+        $error = "Missing information";
+    }
+}
+?>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
-    <title>CARREERHUB</title>
+    <title>CareerHub - Job Portal Website Template</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -28,22 +59,10 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+        <!-- Include CKEditor source file -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/35.0.0/classic/ckeditor.js"></script>
+
 </head>
-
-<?php
-
-include '../Controller/sujetC.php';
-include '../Model/sujet.php';
-
-// Création d'une instance du contrôleur des événements
-$sujetC = new SujetC();
-
-if (isset($_GET['id'])) {
-    $current_id = $_GET['id'];
-    $sujet = $sujetC->getSujet($current_id);
-}
-
-?>
 
 <body>
     <div class="container-xxl bg-white p-0">
@@ -59,9 +78,8 @@ if (isset($_GET['id'])) {
         <!-- Navbar Start -->
         <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
             <a href="index.html" class="navbar-brand d-flex align-items-center text-center py-0 px-4 px-lg-5">
-           
+                <h1 class="m-0 text-primary">CareerHub</h1>
             </a>
-            <h1 class="m-0 text-primary">CARREERHUB</h1>
             <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -70,21 +88,21 @@ if (isset($_GET['id'])) {
                     <a href="index.html" class="nav-item nav-link">Home</a>
                     <a href="about.html" class="nav-item nav-link">About</a>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Jobs</a>
+                        <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Jobs</a>
                         <div class="dropdown-menu rounded-0 m-0">
                             <a href="job-list.html" class="dropdown-item">Job List</a>
-                            <a href="job-detail.html" class="dropdown-item">Job Detail</a>
+                            <a href="job-detail.html" class="dropdown-item active">Job Detail</a>
                         </div>
                     </div>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Détails du sujet</a>
                         <div class="dropdown-menu rounded-0 m-0">
                             <a href="category.html" class="dropdown-item">Job Category</a>
                             <a href="testimonial.html" class="dropdown-item">Testimonial</a>
                             <a href="404.html" class="dropdown-item">404</a>
                         </div>
                     </div>
-                    <a href="forum.html" class="nav-item nav-link active">forum</a>
+                    <a href="contact.html" class="nav-item nav-link">Contact</a>
                 </div>
                 <a href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Post A Job<i class="fa fa-arrow-right ms-3"></i></a>
             </div>
@@ -95,41 +113,80 @@ if (isset($_GET['id'])) {
         <!-- Header End -->
         <div class="container-xxl py-5 bg-dark page-header mb-5">
             <div class="container my-5 pt-5 pb-4">
-                <h1 class="display-3 text-white mb-3 animated slideInDown">FORUM</h1>
+                <h1 class="display-3 text-white mb-3 animated slideInDown"> laissez votre commentaire</h1>
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb text-uppercase">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                        <li class="breadcrumb-item text-white active" aria-current="page">forum</li>
-                    </ol>
+                    
                 </nav>
             </div>
         </div>
         <!-- Header End -->
 
-        <!-- Contact Start -->
 
-        <div class="container-xxl py-5">
+        <!-- Job Detail Start -->
+        <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
             <div class="container">
-                        <form action="update.php?id=<?= $sujet['id_sujet']; ?>" method="post">
-                                <div class="row g-3" >
-                                    
-                                    
-                                        <label for="titre"><h2>Id utilisateur:</h2></label><br>
-                                        <input type="text" id="id_user" name="id_utilisateur" value="<?= $sujet['id_utilisateur']; ?>"><br>
-                                        <label for="titre"><h2>Titre du Poste:</h2></label><br>
-                                        <input type="text" id="titre" name="titre" value="<?= $sujet['titre']; ?>"><br>
-                                        <label for="contenu"><h2>Contenu du Poste:</h2></label><br>
-                                        <textarea id="contenue" name="contenue"><?= $sujet['contenue']; ?></textarea><br>
-                                        <input type="submit" name="publier" value="Modifier" class="btn_primary">
-                                    
-                                    
+                <div class="row gy-5 gx-4">
+                   
+                    
+                
+                            
+
+        
+                    <div class="">
+                        <h4 class="mb-4">Laisser votre commentaire ici</h4>
+                        <form action="" method="post">
+                            <div class="row g-3">
+                                <input type="hidden" name="id_poste" value="' . $post['id_sujet'] . '">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control"  id="id_utilisateur" name="id_utilisateur"
+                                        placeholder="Titre de forum">
+                                    <label for="id_utilisateur">ID</label>
                                 </div>
-                                
-                        </form>
+
+                            <div class="col-12">
+                                    
+       
+<!-- Replace the textarea with CKEditor -->
+<textarea class="form-control" id="text" name="text" rows="5" placeholder="Commenter"></textarea>
+
+<!-- Initialize CKEditor on the textarea -->
+<script>
+    ClassicEditor
+        .create(document.querySelector('#text'))
+        .catch(error => {
+            console.error(error);
+        });
+</script>            </div>
+            <div class="col-12">
+                <button class="btn btn-primary w-100" type="submit">Commenter</button>
             </div>
         </div>
-        <!-- Contact End -->
+    </form>
+</div><br>
+                            <div class="row g-3">
+                                   
+                            <div class="bg-light rounded p-5 mb-4 wow slideInUp" data-wow-delay="0.1s">
+                           
+                            <p><i class="fa fa-angle-right text-primary me-2"></i>Comment1</p>
+                            <p><i class="fa fa-angle-right text-primary me-2"></i>Comment2</p>
+                        </div>
+                                   
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="col-lg-4">
+                        <div class="bg-light rounded p-5 mb-4 wow slideInUp" data-wow-delay="0.1s">
+                            <h4 class="mb-4">Détails du sujet</h4>
+                            <p><i class="fa fa-angle-right text-primary me-2"></i>Titre</p>
+
+                            <p><i class="fa fa-angle-right text-primary me-2"></i>Contenu</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Job Detail End -->
 
 
         <!-- Footer Start -->
@@ -154,9 +211,9 @@ if (isset($_GET['id'])) {
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <h5 class="text-white mb-4">Contact</h5>
-                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i></p>
-                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i></p>
-                        <p class="mb-2"><i class="fa fa-envelope me-3"></i></p>
+                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</p>
+                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
+                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
                         <div class="d-flex pt-2">
                             <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
                             <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
@@ -166,7 +223,7 @@ if (isset($_GET['id'])) {
                     </div>
                     <div class="col-lg-3 col-md-6">
                         <h5 class="text-white mb-4">Newsletter</h5>
-                        <p >votre demande ici </p>
+                        <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
                         <div class="position-relative mx-auto" style="max-width: 400px;">
                             <input class="form-control bg-transparent w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
                             <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
@@ -181,7 +238,7 @@ if (isset($_GET['id'])) {
                             &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved. 
 							
 							<!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-							Designed By <a class="border-bottom" href=""></a>
+							Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
                         </div>
                         <div class="col-md-6 text-center text-md-end">
                             <div class="footer-menu">
