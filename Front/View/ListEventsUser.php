@@ -18,6 +18,7 @@
             <th>Theme of Event</th>
             <th>Date of Event</th>
             <th>Place of Event</th>
+            <th>Max Participants</th>
         </tr>
         <?php
         foreach ($list as $Event) {
@@ -29,6 +30,7 @@
                 <td><?= $Event['themeEvent']; ?></td>
                 <td><?= $Event['dateEvent']; ?></td>
                 <td><?= $Event['lieuEvent']; ?></td>
+                <td><?= $Event['NbP']; ?></td>
             </tr>
         <?php
         }

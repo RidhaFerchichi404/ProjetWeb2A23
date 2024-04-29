@@ -1,6 +1,8 @@
 <?php
     include "../Controller/EventC.php";
     include "../Model/Event.php";
+    include "../Controller/ParticipantC.php";
+    include "../Model/Participant.php";
     $error = "";
     $evC = new EventC();
     $list = $evC->ListEvents();
@@ -111,7 +113,7 @@
                                         <select class="form-select border-0" name="search_option">
                                             <option selected disabled>Choose search</option>
                                             <option value="1">Event</option>
-                                            <option value="2">Participant</option>
+                                            <option value="2">Organizateur</option>
                                         </select>
                                     </div>
                                 </div>
@@ -123,57 +125,71 @@
                     </div>
                 </div>
             </form>
-        <?php
-            $listS = null;
-            $sEv = null;
-            if(isset($_POST["submit"]) && isset($_POST["search_option"])){
-                if(!empty($_POST["search"]) && !empty($_POST["search_option"])){
-                    if($_POST["search_option"] == 1){
-                        $listS = $evC->searchEventByName($_POST["search"]);
-                        if ($listS) {foreach($listS as $sEv){
-                            ?>
-                            <div class="job-item p-4 mb-4">
-                                <div class="row g-4">
-                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                        <div class="text-start ps-4">
-                                            <h5 class="mb-3"><?= $sEv['nomEvent'];?></h5>
-                                            <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $sEv['lieuEvent']; ?></span>
-                                            <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $sEv['dateEvent']; ?></span>
-                                            <span class="text-truncate me-0"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $sEv['orgEvent']; ?></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php
-                        }    
-                    } else {
-                        echo "No event found.";
-                    }
-                    }else if($_POST["search_option"] == 2){
-                        $listS = $evC->searchEventByParticipant($_POST["search"]);
-                        if ($listS) {foreach($listS as $sEv){
-                            ?>
-                            <div class="job-item p-4 mb-4">
-                                <div class="row g-4">
-                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                        <div class="text-start ps-4">
-                                            <h5 class="mb-3"><?= $sEv['nomEvent'];?></h5>
-                                            <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $sEv['lieuEvent']; ?></span>
-                                            <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $sEv['dateEvent']; ?></span>
-                                            <span class="text-truncate me-0"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $sEv['orgEvent']; ?></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php
-                        }    
-                    } else {
-                        echo "No event found.";
-                    }
-                    }
-                }
-            }
+            <?php
+
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["search_option"])) {
+    if (!empty($_POST["search"]) && !empty($_POST["search_option"])) {
+        $listS = null;
+        $sEv = null;       
+        $searchOption = $_POST["search_option"];       
+        if ($searchOption == 1) {
+            $listS = $evC->searchEventByName($_POST["search"]);
+            if ($listS) {
+                foreach ($listS as $sEv) {
+                    $participantsLeft = $evC->CountPlacesLeft($sEv['idEvent']);
         ?>
+                    <!-- Render each search result -->
+                    <div class="job-item p-4 mb-4">
+                        <div class="row g-4">
+                            <div class="col-sm-12 col-md-8 d-flex align-items-center">
+                                <div class="text-start ps-4">
+                                    <h5 class="mb-3"><?= $sEv['nomEvent']; ?></h5>
+                                    <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $sEv['lieuEvent']; ?></span>
+                                    <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $sEv['dateEvent']; ?></span>
+                                    <span class="text-truncate me-0"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $sEv['orgEvent']; ?></span>
+                                    <span class="text-truncate me-0"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $sEv['NbPart']; ?></span>
+                                    <span class="text-truncate me-0"><i class="fa fa-user text-primary me-2"></i><?= $participantsLeft; ?> Participants Left</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php
+                }
+                } else {
+                    echo "No event found.";
+                }
+            }else if($searchOption == 2){
+                $listS = $evC->searchEventByOrganizer($_POST["search"]);
+                if ($listS) {
+                    foreach ($listS as $sEv) {
+                        $participantsLeft = $evC->CountPlacesLeft($sEv['idEvent']);
+            ?>
+                        <!-- Render each search result -->
+                        <div class="job-item p-4 mb-4">
+                            <div class="row g-4">
+                                <div class="col-sm-12 col-md-8 d-flex align-items-center">
+                                    <div class="text-start ps-4">
+                                        <h5 class="mb-3"><?= $sEv['nomEvent']; ?></h5>
+                                        <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $sEv['lieuEvent']; ?></span>
+                                        <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $sEv['dateEvent']; ?></span>
+                                        <span class="text-truncate me-0"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $sEv['orgEvent']; ?></span>
+                                        <span class="text-truncate me-0"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $sEv['NbPart']; ?></span>
+                                        <span class="text-truncate me-0"><i class="fa fa-user text-primary me-2"></i><?= $participantsLeft; ?> Participants Left</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php
+            } 
+        } else {
+            echo "No event found.";
+        }
+    }
+}
+    }
+    ?>
+
+
         <!-- Search End -->
 
         <!-- Jobs Start -->
@@ -190,34 +206,35 @@
                         </li>
                     </ul>
                     <div class="tab-content">
-                        <div id="tab-1" class="tab-pane fade show p-0 active">
-                            <?php
-                            foreach($list as $Event){
-                            ?>
-                            <div class="job-item p-4 mb-4">
-                                <div class="row g-4">
-                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                        
-                                        <div class="text-start ps-4">
-                                            <h5 class="mb-3"><?= $Event['nomEvent'];?></h5>
-                                            <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $Event['lieuEvent']; ?>></span>
-                                            <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $Event['dateEvent']; ?></span>
-                                            <span class="text-truncate me-0"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $Event['orgEvent']; ?></span>
-                                        </div>
+                    <div id="tab-1" class="tab-pane fade show p-0 active">
+                    <?php
+                        $events = $evC->ListEventsWithPlacesLeft();
+                        foreach($events as $Event){
+                        ?>
+                        <div class="job-item p-4 mb-4">
+                            <div class="row g-4">
+                                <div class="col-sm-12 col-md-8 d-flex align-items-center">
+                                    <div class="text-start ps-4">
+                                        <h5 class="mb-3"><?= $Event['nomEvent'];?></h5>
+                                        <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $Event['lieuEvent']; ?>></span>
+                                        <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $Event['dateEvent']; ?></span>
+                                        <span class="text-truncate me-0"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $Event['orgEvent']; ?></span>
+                                        <span class="text-truncate me-0"><i class="fa fa-user text-primary me-2"></i><?= $Event['placesLeft']; ?> Participants Left</span>
                                     </div>
-                                    <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                        <div class="d-flex mb-3">
-                                            <form action="Participation.php" method="POST">
-                                                <input type="hidden" name="idEvent" value="<?= $Event['idEvent']; ?>">
-                                                <button class="btn btn-primary" type="submit">Participate Now </button>
-                                            </form>
-                                        </div>
+                                </div>
+                                <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
+                                    <div class="d-flex mb-3">
+                                        <form action="Participation.php" method="post">
+                                            <input type="hidden" name="idEvent" value="<?= $Event['idEvent']; ?>">
+                                            <button class="btn btn-primary" type="submit">Participate Now </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
-                            <?php
-                                }
-                            ?>
+                        </div>
+                        <?php
+                        }
+                        ?>
                     </div>
                 </div>
             </div>

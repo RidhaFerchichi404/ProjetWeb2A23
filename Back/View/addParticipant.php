@@ -1,3 +1,26 @@
+<?php
+    include "../Controller/ParticipantC.php";
+    include "../Model/Participant.php";
+    $error = null;
+    $pr = null;
+    if(isset($_POST["NameP"])
+    && isset($_POST["AgeP"])
+    && isset($_POST["EmailP"])
+    && isset($_POST["idEP"])){
+        if(!empty($_POST["NameP"])
+        && !empty($_POST["AgeP"])
+        && !empty($_POST["EmailP"])
+        && !empty($_POST["idEP"])){
+            $Pr = new Participant(null,$_POST["NameP"],$_POST["AgeP"],$_POST["EmailP"]);
+            $PrC = new ParticipantC();
+            $PrC->addParticipant($Pr,$_POST["idEP"]);
+            echo "added succesfully !!";
+            header('Location:ListP.php');
+        }else{
+            $error = "Missing info";
+        }
+    }
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -56,8 +79,8 @@
                         <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Events management</a>
                         <div class="dropdown-menu bg-transparent border-0">
                             <a href="Index.php" class="dropdown-item">Add an Event</a>
-                            <a href="AddParticipant.php" class="dropdown-item">Add a participant</a>
-                            <a href="List.php" class="dropdown-item active">List of Events</a>
+                            <a href="addParticipant.php" class="dropdown-item active">Add a participant</a>
+                            <a href="List.php" class="dropdown-item">List of Events</a>
                             <a href="ListP.php" class="dropdown-item">List of participants</a>
                         </div>
                     </div>
@@ -70,62 +93,39 @@
         <!-- Content Start -->
         <div class="content">
             <!-- Blank Start -->
-            <?php
-                include "../Controller/EventC.php";
-                $evC = new EventC();
-                $list = $evC->ListEvents();
-                //print_r($list);
-            ?>
-            <div class="container-fluid pt-4 px-4">
-                    <div class="col-sm-12 col-xl-6">
-                        <div class="bg-secondary rounded h-100 p-4">
-                            <h6 class="mb-4">List of Events</h6>
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">idEvent</th>
-                                        <th scope="col">Name of Event</th>
-                                        <th scope="col">Organizer of Event</th>
-                                        <th scope="col">Theme of Event</th>
-                                        <th scope="col">Date of Event</th>
-                                        <th scope="col">Place of Event</th>
-                                        <th scope="col">Update</th>
-                                        <th scope="col">Delete</th>
-                                    </tr>
-                                </thead>
-                                <?php
-                                    foreach ($list as $Event) {
-                                ?>
-                                <tbody>
-                                    <tr>
-                                        <td><?= $Event['idEvent']; ?></td>
-                                        <td><?= $Event['nomEvent']; ?></td>
-                                        <td><?= $Event['orgEvent']; ?></td>
-                                        <td><?= $Event['themeEvent']; ?></td>
-                                        <td><?= $Event['dateEvent']; ?></td>
-                                        <td><?= $Event['lieuEvent']; ?></td>
-                                        <td>
-                                            <form method="post" action="Update.php" >
-                                                <input type="hidden" name="idEvent" value="<?= $Event['idEvent']; ?>">
-                                                <button type="submit" class="btn btn-primary">Update</button>
-                                            </form>
-                                        </td>
-                                        <td>
-                                            <form action="DeleteEvent.php" method="post">
-                                                <input type="hidden" name="idEvent" value="<?= $Event['idEvent']; ?>">
-                                                <button type="submit" class="btn btn-primary">Delete</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                    <?php
-                                        }
-                                    ?>
-                                </tbody>
-                            </table>
-                            <div style="text-align: center;">
-                                <form action="Index.php" method="post">
-                                    <button type="submit" class="btn btn-primary">Add an Event</button>
+            
+            <div class="container-fluid pt-4 px-4" >
+                    <div class="col-md-6 text-center">
+                        <div class="col-sm-12 col-xl-6">
+                            <div class="bg-secondary rounded h-100 p-4">
+                                <h6 class="mb-4">Add a participant</h6>
+                                <form action="" method="post" id="AddPForm">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="NameP" id="NameP"
+                                        placeholder="name@example.com">
+                                    <label for="floatingInput">Participant name</label>
+                                    <span class="mb-4" id="nameError" class="error"></span>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="AgeP" id="AgeP"
+                                        placeholder="Password">
+                                    <label for="floatingPassword">Participant age</label>
+                                    <span class="mb-4" id="ageError" class="error"></span>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="EmailP" id="EmailP"
+                                        placeholder="Type here">
+                                    <label for="floatingInput">Participant email</label>
+                                    <span class="mb-4" id="emailError" class="error"></span>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="idEP" id="idEP">
+                                    <label for="floatingInput">Event Id for participant</label>
+                                    <span class="mb-4" id="idEError" class="error"></span>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Submit</button>
                                 </form>
+                                <script src="AddPFormValidator.js"></script>
                             </div>
                         </div>
                     </div>
@@ -133,8 +133,6 @@
             <!-- Blank End -->
         </div>
         <!-- Content End -->
-
-
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
     </div>

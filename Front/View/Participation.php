@@ -1,34 +1,31 @@
 <?php
-            include "../Controller/ParticipantC.php";
-            include "../Model/Participant.php";
-            include "../Controller/EventC.php";
-            include "../Model/Event.php";
-            $error = null;
-            $pr = null;
-            $pr = new Participant(null,$_POST['nomPart'],$_POST['agePart'],$_POST['emailPart']);
-            var_dump($pr);
-            if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            if(isset($_POST['idEvent'])&&
-                isset($_POST['nomPart'])&&
-                isset($_POST['agePart'])&&
-                isset($_POST['emailPart'])){
-                    if(!empty($_POST['idEvent'])&&
-                        !empty($_POST['nomPart'])&&
-                        !empty($_POST['agePart'])&&
-                        !empty($_POST['emailPart'])){
-                            $pr = new Participant(null,$_POST['nomPart'],$_POST['agePart'],$_POST['emailPart']);
-                            var_dump($pr);
-                            $prC = new ParticipantC();
-                            $prC->addParticipant($pr,$_POST['idEvent']);
-                            header('Location:job-list.php');
-                    }
-                }
-                } else {
-                    echo"missing info";
-                    $pr = new Participant(null,$_POST["nomPart"],$_POST["agePart"],$_POST["emailPart"]);
-                    var_dump($pr);
-                }
-        ?>
+include "../Controller/ParticipantC.php";
+include "../Model/Participant.php";
+include "../Controller/EventC.php";
+include "../Model/Event.php";
+
+$error = null;
+$pr = null;
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (
+        isset($_POST['idEvent']) &&
+        isset($_POST['nomPart']) &&
+        isset($_POST['agePart']) &&
+        isset($_POST['emailPart']) &&
+        !empty($_POST['idEvent']) &&
+        !empty($_POST['nomPart']) &&
+        !empty($_POST['agePart']) &&
+        !empty($_POST['emailPart'])){
+        $pr = new Participant(null, $_POST['nomPart'], $_POST['agePart'], $_POST['emailPart']);
+        $prC = new ParticipantC();
+        $prC->addParticipant($pr, $_POST['idEvent']);
+        header('Location:job-list.php'); 
+    } else {
+        $error = "Missing information";
+    }
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -117,6 +114,7 @@
 
 
         <!-- 404 Start -->
+        
         <div class="text-center">
             <h1 class="m-0 text-primary">Participation form</h1>
         </div>
@@ -124,7 +122,7 @@
             <div class="container text-center">
                 <div class="row justify-content-center">
                     <div class="col-lg-6">
-                        <form action="" method="post" id="participationForm">
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" id="participationForm">
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="form-floating">
@@ -153,6 +151,11 @@
                             </div>
                         </form>
                         <script src="ParticipationValidation.js"></script>
+                        <?php if (!empty($error)) : ?>
+                            <div class="alert alert-danger" role="alert">
+                                <?php echo $error; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

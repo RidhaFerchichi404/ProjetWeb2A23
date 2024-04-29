@@ -29,7 +29,7 @@ include "../config.php";
 
         public function addEvent($ev){
             //var_dump($ev); // testing
-            $sql = "INSERT INTO events VALUES(NULL,:nomEv,:orgEv,:themeEv,:dateEv,:lieuEv)";
+            $sql = "INSERT INTO events VALUES(NULL,:nomEv,:orgEv,:themeEv,:dateEv,:lieuEv,:NbP)";
             $db = config::getConnexion();
             try{
                 $req = $db->prepare($sql);
@@ -38,7 +38,8 @@ include "../config.php";
                     "orgEv"=> $ev->getOrganisteur(),
                     "themeEv"=> $ev->getTheme(),
                     "dateEv"=> $ev->getDate()->format('Y/m/d'),
-                    "lieuEv"=> $ev->getLieu()
+                    "lieuEv"=> $ev->getLieu(),
+                    "NbP"=> $ev->getNbP()
                 ]);
             }
             catch(Exception $e){
@@ -68,7 +69,8 @@ include "../config.php";
                     , orgEvent = :orgEvent
                     , themeEvent = :themeEvent
                     , dateEvent = :dateEvent
-                    , lieuEvent = :lieuEvent WHERE idEvent = :idEvent";
+                    , lieuEvent = :lieuEvent 
+                    , NbP = :NbP WHERE idEvent = :idEvent";
                 $req = $db->prepare($sql);
                 $req->bindValue(":idEvent", $id);
                 $req->execute([
@@ -77,7 +79,8 @@ include "../config.php";
                     "orgEvent"=> $ev->getOrganisteur(),
                     "themeEvent"=> $ev->getTheme(),
                     "dateEvent"=> $ev->getDate()->format('Y-m-d'),
-                    "lieuEvent"=> $ev->getLieu()
+                    "lieuEvent"=> $ev->getLieu(),
+                    "NbP"=> $ev->getNbP()
                 ]);
                 echo $req->rowCount() . " records UPDATED successfully <br>";
             }
@@ -91,12 +94,24 @@ include "../config.php";
             $db = config::getConnexion();
             $req = $db->prepare($sql);
             $req->bindValue(":nomEvent", $eventName);
-            try{
+            try {
                 $req->execute();
-                return $req->fetchAll();
+                return $req->fetchAll(PDO::FETCH_ASSOC);
+            } catch(Exception $e) {
+                die('Error retrieving events by name: ' . $e->getMessage());
             }
-            catch(Exception $e){
-                die('error de retrait des données !! '. $e->getMessage());
+        }
+
+        public function searchEventByOrganizer($organizerName){
+            $sql = "SELECT * FROM events WHERE orgEvent = :orgEvent";
+            $db = config::getConnexion();
+            $req = $db->prepare($sql);
+            $req->bindValue(":orgEvent", $organizerName);
+            try {
+                $req->execute();
+                return $req->fetchAll(PDO::FETCH_ASSOC);
+            } catch(Exception $e) {
+                die('Error retrieving events by organizer: ' . $e->getMessage());
             }
         }
 
@@ -113,6 +128,74 @@ include "../config.php";
                 die('error de retrait des données !! '. $e->getMessage());
             }
         }
+
+
+        public function CountPlacesLeft($idEvent){
+            $db = config::getConnexion();
+            $sql = "SELECT NbPart - COUNT(idPart) AS placesLeft 
+                    FROM events E 
+                    LEFT JOIN participant P ON E.idEvent = P.idEvent 
+                    WHERE E.idEvent = :idEvent 
+                    GROUP BY E.idEvent";
+            try {
+                $stmt = $db->prepare($sql);
+                $stmt->bindValue(":idEvent", $idEvent);
+                $stmt->execute();
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                return $result ? $result['placesLeft'] : 0; 
+            } catch(Exception $e) {
+                die('Error counting places left: ' . $e->getMessage());
+            }
+        }
+
+        public function ListEventsWithPlacesLeft(){
+            $db = config::getConnexion();
+            
+            try {
+                $sql = "SELECT E.*, 
+                               E.NbPart - COUNT(P.idPart) AS placesLeft
+                          FROM events E
+                     LEFT JOIN participant P ON E.idEvent = P.idEvent
+                      GROUP BY E.idEvent";
+                
+                $stmt = $db->prepare($sql);
+                $stmt->execute();
+                
+                // Fetch all events along with the count of places left for each event
+                $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                
+                return $events;
+            } catch(Exception $e) {
+                die('Error retrieving events with places left: ' . $e->getMessage());
+            }
+        }
+
+        public function EventWithPlacesLeft($nomEvent){
+            $db = config::getConnexion();
+            
+            try {
+                $sql = "SELECT E.*, 
+                               E.NbPart - COUNT(P.idPart) AS placesLeft
+                          FROM events E
+                     LEFT JOIN participant P ON E.idEvent = P.idEvent
+                         WHERE E.nomEvent = :nomEvent
+                      GROUP BY E.idEvent";
+                
+                $stmt = $db->prepare($sql);
+                $stmt->bindValue(':nomEvent', $nomEvent);
+                $stmt->execute();
+                
+                // Fetch the event along with the count of places left
+                $event = $stmt->fetch(PDO::FETCH_ASSOC);
+                
+                return $event;
+            } catch(Exception $e) {
+                die('Error retrieving event by name: ' . $e->getMessage());
+            }
+        }
+        
+        
+        
     }
 
 

@@ -1,4 +1,9 @@
-
+<?php
+    include "../Controller/ParticipantC.php";
+    $participants = null;
+    $PrC = new ParticipantC();
+    $participants = $PrC->ListParticipants();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -57,8 +62,8 @@
                         <div class="dropdown-menu bg-transparent border-0">
                             <a href="Index.php" class="dropdown-item">Add an Event</a>
                             <a href="AddParticipant.php" class="dropdown-item">Add a participant</a>
-                            <a href="List.php" class="dropdown-item active">List of Events</a>
-                            <a href="ListP.php" class="dropdown-item">List of participants</a>
+                            <a href="List.php" class="dropdown-item">List of Events</a>
+                            <a href="ListP.php" class="dropdown-item active">List of participants</a>
                         </div>
                     </div>
                 </div>
@@ -70,61 +75,48 @@
         <!-- Content Start -->
         <div class="content">
             <!-- Blank Start -->
-            <?php
-                include "../Controller/EventC.php";
-                $evC = new EventC();
-                $list = $evC->ListEvents();
-                //print_r($list);
-            ?>
+
             <div class="container-fluid pt-4 px-4">
                     <div class="col-sm-12 col-xl-6">
                         <div class="bg-secondary rounded h-100 p-4">
-                            <h6 class="mb-4">List of Events</h6>
+                            <h6 class="mb-4">List of participants</h6>
+                            <?php foreach ($participants as $participant): ?>
+                            <h2>Event ID: <?php echo $participant['idEvent']; ?></h2>
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th scope="col">idEvent</th>
-                                        <th scope="col">Name of Event</th>
-                                        <th scope="col">Organizer of Event</th>
-                                        <th scope="col">Theme of Event</th>
-                                        <th scope="col">Date of Event</th>
-                                        <th scope="col">Place of Event</th>
-                                        <th scope="col">Update</th>
+                                        <th scope="col">idPart</th>
+                                        <th scope="col">Name of participant</th>
+                                        <th scope="col">Age of participant</th>
+                                        <th scope="col">Emailt of particiapnt</th>
                                         <th scope="col">Delete</th>
                                     </tr>
                                 </thead>
-                                <?php
-                                    foreach ($list as $Event) {
-                                ?>
                                 <tbody>
+                                    <?php
+                                        $eventId = $participant['idEvent'];
+                                        $participantsForEvent = $PrC->getParticipantsByEventId($eventId);
+                                        foreach ($participantsForEvent as $p): 
+                                    ?>
                                     <tr>
-                                        <td><?= $Event['idEvent']; ?></td>
-                                        <td><?= $Event['nomEvent']; ?></td>
-                                        <td><?= $Event['orgEvent']; ?></td>
-                                        <td><?= $Event['themeEvent']; ?></td>
-                                        <td><?= $Event['dateEvent']; ?></td>
-                                        <td><?= $Event['lieuEvent']; ?></td>
+                                        <td><?= $p['idPart']; ?></td>
+                                        <td><?= $p['nomPart']; ?></td>
+                                        <td><?= $p['agePart']; ?></td>
+                                        <td><?= $p['emailPart']; ?></td>
                                         <td>
-                                            <form method="post" action="Update.php" >
-                                                <input type="hidden" name="idEvent" value="<?= $Event['idEvent']; ?>">
-                                                <button type="submit" class="btn btn-primary">Update</button>
-                                            </form>
-                                        </td>
-                                        <td>
-                                            <form action="DeleteEvent.php" method="post">
-                                                <input type="hidden" name="idEvent" value="<?= $Event['idEvent']; ?>">
+                                            <form action="DeleteParticipant.php" method="post">
+                                                <input type="hidden" name="idPart" value="<?= $p['idPart']; ?>">
                                                 <button type="submit" class="btn btn-primary">Delete</button>
                                             </form>
                                         </td>
                                     </tr>
-                                    <?php
-                                        }
-                                    ?>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
+                            <?php endforeach; ?>
                             <div style="text-align: center;">
-                                <form action="Index.php" method="post">
-                                    <button type="submit" class="btn btn-primary">Add an Event</button>
+                                <form action="addParticipant.php" method="post">
+                                    <button type="submit" class="btn btn-primary">Add a Particiapnt</button>
                                 </form>
                             </div>
                         </div>

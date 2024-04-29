@@ -87,7 +87,9 @@
                         <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Events management</a>
                         <div class="dropdown-menu bg-transparent border-0">
                             <a href="Index.php" class="dropdown-item active">Add an Event</a>
+                            <a href="AddParticipant.php" class="dropdown-item">Add a participant</a>
                             <a href="List.php" class="dropdown-item">List of Events</a>
+                            <a href="ListP.php" class="dropdown-item">List of participants</a>
                         </div>
                     </div>
                 </div>
@@ -99,6 +101,7 @@
         <!-- Content Start -->
         <div class="content">
             <!-- Blank Start -->
+            
             <div class="container-fluid pt-4 px-4" >
                     <div class="col-md-6 text-center">
                         <div class="col-sm-12 col-xl-6">
