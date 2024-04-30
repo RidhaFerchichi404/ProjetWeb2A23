@@ -1,38 +1,12 @@
 <?php
-/*include "../../controller/SecteurC.php";
-$secC=new SecteurC();
-$list=$secC->listsecteur();
-var_dump($list);*/
-include "../../config.php";
-
-$pdo = config::getConnexion();
-$query = "SELECT * FROM secteur_activite";
-$list = $pdo->query($query);
-// Récupérer le nombre total d'enregistrements
-$count = $pdo->prepare("SELECT COUNT(id) AS cpt FROM secteur_activite");
-$count->setFetchMode(PDO::FETCH_ASSOC);
-$count->execute();
-$tcount = $count->fetchAll();
- 
-// Pagination
-@$page = $_GET["page"];
-if (empty($page)) $page = 1;
-$nbr_element_par_page = 4; // Changer la valeur à 4 pour afficher 4 éléments par page
-$nbr_de_pages = ceil($tcount[0]["cpt"] / $nbr_element_par_page);
-$debut = ($page - 1) * $nbr_element_par_page;
-
-// Récupération des éléments
-$sel = $pdo->prepare("SELECT * FROM secteur_activite ORDER BY nom ASC LIMIT $debut, $nbr_element_par_page");
-$sel->setFetchMode(PDO::FETCH_ASSOC);
-$sel->execute();
-$tab = $sel->fetchAll();
-
-if (count($tab) == 0) {
-    header("Location: ./");
-    exit();
-}
-
-echo $tcount[0]["cpt"];
+include '../../Controller/SecteurC.php';
+$secteurC= new SecteurC();
+if($_SERVER["REQUEST_METHOD"]=="POST")
+    if(isset($_POST['secteur']) && isset($_POST['search'])){
+    $idsecteur=$_POST['secteur'];
+    $list=$secteurC->afficheentreprise($idsecteur);
+    }
+    $secteurs=$secteurC->listsecteur();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -91,12 +65,13 @@ echo $tcount[0]["cpt"];
                     <a href="index.html" class="nav-item nav-link">Home</a>
                     <a href="about.html" class="nav-item nav-link">About</a>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Jobs</a>
+                        <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Entreprises</a>
                         <div class="dropdown-menu rounded-0 m-0">
                             <a href="secteuradd.html" class="dropdown-item active">Secteur add</a>
                             <a href="secteurlist.php" class="dropdown-item">Secteur list</a>
                             <a href="entrepriselist.php" class="dropdown-item">Entreprise list</a>
                             <a href="entrepriseadd.php" class="dropdown-item">Entreprise add</a>
+
                         </div>
                     </div>
                     <div class="nav-item dropdown">
@@ -114,51 +89,149 @@ echo $tcount[0]["cpt"];
         </nav>
         <!-- Navbar End -->
 
+
         <!-- Header End -->
+        <div class="container-xxl py-5 bg-dark page-header mb-5">
+            <div class="container my-5 pt-5 pb-4">
+                <h1 class="display-3 text-white mb-3 animated slideInDown">Job List</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb text-uppercase">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Pages</a></li>
+                        <li class="breadcrumb-item text-white active" aria-current="page">Secteur List</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <!-- Header End -->
+
+
+        <!-- Jobs Start -->
         <div class="container-fluid pt-4 px-4">
-        <div class="row vh-100 bg-white rounded align-items-center justify-content-center mx-0">
-            <div class="col-md-6 text-center">
-                <h3>List Secteur</h3>
-                        <?php
-                         foreach ($tab as $secteur) {
-                        ?> 
-                        <div class="job-item p-4 mb-4">
-                              <div class="row g-4">
-                                 <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                  <img class="flex-shrink-0 img-fluid border rounded" src="img/com-logo-4.jpg" alt="" style="width: 80px; height: 80px;">
-                                  <div class="text-start ps-4">
-                                        <h5 class="mb-3"><?= $secteur['nom']; ?></h5>
-                                        <span class="text-truncate me-3"><i class="fas fa-globe text-primary me-2"></i><?= $secteur['email']; ?></span>
-                                        <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $secteur['type']; ?></span>
-                                        <span class="text-truncate me-3"><i class="far fa-building text-primary me-2"></i><?= $secteur['nb_entreprises']; ?></span>
-                                        <span class="text-truncate me-0"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $secteur['region']; ?></span>
-                                        <span class="text-truncate me-0"><i class="fas fa-graduation-cap text-primary me-2"></i><?= $secteur['exigence_formation']; ?></span>
-                                        </div>
-                                    </div>
-                                        <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                    </div>
-                                </div>
+                <div class="row vh-100 bg-light rounded align-items-center justify-content-center mx-0">
+                    <div class="col-md-6 text-center">
+                        <h3>Ajout entreprise</h3>
+                        <form action="addentreprise.php" method="post" id="formadd">
+                            <div class="mb-3">
+                                <label for="nom" class="form-label">Name :</label>
+                                <input type="text" class="form-control" id="nom" name="nom" placeholder="Enter name here">
+                                <div id="nameError"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email :</label>
+                                <input type="text" class="form-control" id="email" name="email" placeholder="Enter email here">
+                                <div id="emailError"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="doc" class="form-label">date of creation :</label>
+                                <input type="date" class="form-control" id="doc" name="doc" placeholder="Enter date of creation here">
+                                <div id="docError"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="location" class="form-label">location :</label>
+                                <input type="text" class="form-control" id="location" name="location" placeholder="Enter location here">
+                                <div id="locError"></div>
+                            </div>
+                                <div class="mb-3">
+                                <label value="secteur">Sélectionnez un secteur</label>
+                                <select name="secteur" id="secteur">
                             </div>
                             <?php
-                            } 
-                            ?>
-                        </table>
-                        <div id="pagination">
-                            <?php
-                            // Affichage des liens de pagination
-                            for ($i = 1; $i <= $nbr_de_pages; $i++) {
-                            if ($page != $i) {
-                                echo "<a href='?page=" . htmlspecialchars($i) . "'>" . $i . "</a> ";
-                            } else {
-                                echo "<span>" . $i . "</span> ";
-                            }
+                            foreach ($secteurs as $secteur) {
+                                echo "<option value=\"" . $secteur['id'] . "\">" . $secteur['nom'] . "</option>";
                             }
                             ?>
-                        </div>
+                         </select>
+                         <div>
+                         <button type="submit" class="btn btn-primary">Ajouter</button>
+                         </div>
+                        </form>
+                        <script>
+                            var formElement = document.getElementById("formadd");
+                            var nameElement = document.getElementById("nom");
+                            var docElement = document.getElementById("doc");
+                            var locationElement = document.getElementById("location");
+                            var emailElement = document.getElementById("email");
+                    
+                            formElement.addEventListener("submit", function(event){
+                                var isValid = validateForm();
+                                if(isValid) {
+                                    return true;
+                                } else {
+                                    event.preventDefault();
+                                    return false;
+                                }
+                            });
+                            function validateForm() {
+                                var nameValue = nameElement.value;
+                                var docValue = docElement.value;
+                                var emailValue = emailElement.value;
+                                var locationValue = locationElement.value;
+
+                                var nameError = document.getElementById("nameError");
+                                var docError = document.getElementById("docError");
+                                var emailError = document.getElementById("emailError");
+                                var locationError = document.getElementById("locError");
+
+                                var patternName = /^[a-zA-Z]+$/;
+                                var patterndoc = /^\d{4}-\d{2}-\d{2}$/;
+                                var patternLocation = /^[a-zA-Z0-9\s!"#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~]*$/;
+                                var patternemail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                                var isValid = true;
+
+                                if (!nameValue.match(patternName)) {
+                                    nameError.innerHTML = "Name incorrect";
+                                    nameElement.style.borderColor = "red";
+                                    isValid = false;
+                                } else {
+                                    nameError.innerHTML = "";
+                                    nameElement.style.borderColor = "green";
+                                }
+
+                                if (!emailValue.match(patternemail)) {
+                                    emailError.innerHTML = "Email incorrect";
+                                    emailElement.style.borderColor = "red";
+                                    isValid = false;
+                                } else {
+                                    emailError.innerHTML = "";
+                                    emailElement.style.borderColor = "green";
+                                }
+
+                                if (!docValue.match(patterndoc)) {
+                                    docError.innerHTML = "Date incorrect";
+                                    docElement.style.borderColor = "red";
+                                    isValid = false;
+                                } else {
+                                    var currentDate = new Date();
+                                    var enteredDate = new Date(docValue);
+                                    
+                                    if (enteredDate >= currentDate) {
+                                        docError.innerHTML = "Date must be before the current date";
+                                        docElement.style.borderColor = "red";
+                                        isValid = false;
+                                    } else {
+                                        docError.innerHTML = "";
+                                        docElement.style.borderColor = "green";
+                                    }
+                                }
+                                if (!locationValue.match(patternLocation)) {
+                                    locationError.innerHTML = "Location incorrect";
+                                    locationElement.style.borderColor = "red";
+                                    isValid = false;
+                                } else {
+                                    locationError.innerHTML = "";
+                                    locationElement.style.borderColor = "green";
+                                }
+
+                                return isValid;
+                            }
+
+                        </script>
                     </div>
                 </div>
             </div>
-        <!-- Job Detail End -->
+        <!-- Jobs End -->
 
 
         <!-- Footer Start -->

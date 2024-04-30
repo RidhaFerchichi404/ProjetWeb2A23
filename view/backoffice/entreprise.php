@@ -1,3 +1,14 @@
+
+<?php
+include '../../Controller/SecteurC.php';
+$secteurC= new SecteurC();
+if($_SERVER["REQUEST_METHOD"]=="POST")
+    if(isset($_POST['secteur']) && isset($_POST['search'])){
+    $idsecteur=$_POST['secteur'];
+    $list=$secteurC->afficheentreprise($idsecteur);
+    }
+    $secteurs=$secteurC->listsecteur();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -187,8 +198,8 @@
             <div class="container-fluid pt-4 px-4">
                 <div class="row vh-100 bg-secondary rounded align-items-center justify-content-center mx-0">
                     <div class="col-md-6 text-center">
-                        <h3>Ajout Secteur</h3>
-                        <form action="addsecteur.php" method="post" id="formadd">
+                        <h3>Ajout entreprise</h3>
+                        <form action="addentreprise.php" method="post" id="formadd">
                             <div class="mb-3">
                                 <label for="nom" class="form-label">Name :</label>
                                 <input type="text" class="form-control" id="nom" name="nom" placeholder="Enter name here">
@@ -200,35 +211,35 @@
                                 <div id="emailError"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="type" class="form-label">Type :</label>
-                                <input type="text" class="form-control" id="type" name="type" placeholder="Enter type here">
-                                <div id="typeError"></div>
+                                <label for="doc" class="form-label">date of creation :</label>
+                                <input type="date" class="form-control" id="doc" name="doc" placeholder="Enter date of creation here">
+                                <div id="docError"></div>
                             </div>
                             <div class="mb-3">
-                                <label for="nb_entreprises" class="form-label">Number of companys :</label>
-                                <input type="text" class="form-control" id="nb_entreprises" name="nb_entreprises" placeholder="Enter number of companys here">
-                                <div id="nbError"></div>
+                                <label for="location" class="form-label">location :</label>
+                                <input type="text" class="form-control" id="location" name="location" placeholder="Enter location here">
+                                <div id="locError"></div>
                             </div>
-                            <div class="mb-3">
-                                <label for="region" class="form-label">Region :</label>
-                                <input type="text" class="form-control" id="region" name="region" placeholder="Enter number of companys here">
-                                <div id="lieuError"></div>
+                                <div class="mb-3">
+                                <label value="secteur">Sélectionnez un secteur</label>
+                                <select name="secteur" id="secteur">
                             </div>
-                            <div class="mb-3">
-                                <label for="exigence_formation" class="form-label">Training requirement :</label>
-                                <textarea class="form-control" id="exigence_formation" name="exigence_formation" rows="3" placeholder="Enter desccription here"></textarea>
-                                <div id="exigenceError"></div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Ajouter</button>
+                            <?php
+                            foreach ($secteurs as $secteur) {
+                                echo "<option value=\"" . $secteur['id'] . "\">" . $secteur['nom'] . "</option>";
+                            }
+                            ?>
+                         </select>
+                         <div>
+                         <button type="submit" class="btn btn-primary">Ajouter</button>
+                         </div>
                         </form>
                         <script>
-                            var formElement = document.getElementById("formadd");
+                        var formElement = document.getElementById("formadd");
                             var nameElement = document.getElementById("nom");
-                            var typeElement = document.getElementById("type");
-                            var nbElement = document.getElementById("nb_entreprises");
+                            var docElement = document.getElementById("doc");
+                            var locationElement = document.getElementById("location");
                             var emailElement = document.getElementById("email");
-                            var lieuElement = document.getElementById("region");
-                            var exigenceElement = document.getElementById("exigence_formation");
                     
                             formElement.addEventListener("submit", function(event){
                                 var isValid = validateForm();
@@ -239,84 +250,71 @@
                                     return false;
                                 }
                             });
-                    
-                            function validateForm(){
+                            function validateForm() {
                                 var nameValue = nameElement.value;
-                                var typeValue = typeElement.value;
-                                var nbValue = nbElement.value;
-                                var emailValue = emailElement.value; 
-                                var lieuValue = lieuElement.value;
-                                var exigenceValue = exigenceElement.value;
-                                
+                                var docValue = docElement.value;
+                                var emailValue = emailElement.value;
+                                var locationValue = locationElement.value;
+
                                 var nameError = document.getElementById("nameError");
-                                var typeError = document.getElementById("typeError");
-                                var nbError = document.getElementById("nbError");
+                                var docError = document.getElementById("docError");
                                 var emailError = document.getElementById("emailError");
-                                var lieuError = document.getElementById("lieuError");
-                                var exigenceError = document.getElementById("exigenceError");
-                    
+                                var locationError = document.getElementById("locError");
+
                                 var patternName = /^[a-zA-Z]+$/;
-                                var patternType = /^[a-zA-Z]+$/;
-                                var patternnb = /^\d+$/;
-                                var patternLieu = /^[a-zA-Z]+$/;
+                                var patterndoc = /^\d{4}-\d{2}-\d{2}$/;
+                                var patternLocation = /^[a-zA-Z0-9\s!"#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~]*$/;
                                 var patternemail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                                var patternexigence = /^[a-zA-Z ]+$/;
-                    
-                                var isValid = true; 
-                    
-                                if(!nameValue.match(patternName)){
+
+                                var isValid = true;
+
+                                if (!nameValue.match(patternName)) {
                                     nameError.innerHTML = "Name incorrect";
                                     nameElement.style.borderColor = "red";
-                                    isValid = false; 
+                                    isValid = false;
                                 } else {
                                     nameError.innerHTML = "";
-                                    nameElement.style.borderColor = "green"; 
+                                    nameElement.style.borderColor = "green";
                                 }
-                    
-                                if(!typeValue.match(patternType)){
-                                    typeError.innerHTML = "type incorrect";
-                                    typeElement.style.borderColor = "red";
-                                    isValid = false;
-                                } else {
-                                    typeError.innerHTML = "";
-                                    typeElement.style.borderColor = "green"; 
-                                }
-                                if(!nbValue.match(patternnb)){
-                                    nbError.innerHTML = "nombre d'entreprise incorrect merci de saisir que des chiffres";
-                                    nbElement.style.borderColor = "red";
-                                    isValid = false;
-                                } else {
-                                    nbError.innerHTML = "";
-                                    nbElement.style.borderColor = "green"; 
-                                }
-                    
-                                if(!emailValue.match(patternemail)){
-                                    emailError.innerHTML = "email incorrect ";
+
+                                if (!emailValue.match(patternemail)) {
+                                    emailError.innerHTML = "Email incorrect";
                                     emailElement.style.borderColor = "red";
                                     isValid = false;
                                 } else {
                                     emailError.innerHTML = "";
-                                    emailElement.style.borderColor = "green"; 
+                                    emailElement.style.borderColor = "green";
                                 }
-                    
-                                if(!lieuValue.match(patternLieu)){
-                                    lieuError.innerHTML = "Lieu incorrect";
-                                    lieuElement.style.borderColor = "red";
+
+                                if (!docValue.match(patterndoc)) {
+                                    docError.innerHTML = "Date incorrect";
+                                    docElement.style.borderColor = "red";
                                     isValid = false;
                                 } else {
-                                    lieuError.innerHTML = "";
-                                    lieuElement.style.borderColor = "green"; 
+                                    var currentDate = new Date();
+                                    var enteredDate = new Date(docValue);
+                                    
+                                    if (enteredDate >= currentDate) {
+                                        docError.innerHTML = "Date must be before the current date";
+                                        docElement.style.borderColor = "red";
+                                        isValid = false;
+                                    } else {
+                                        docError.innerHTML = "";
+                                        docElement.style.borderColor = "green";
+                                    }
                                 }
-                                if(!exigenceValue.match(patternexigence)){
-                                    exigenceError.innerHTML = "exigence formation incorrect";
-                                    exigenceElement.style.borderColor = "red";
+                                if (!locationValue.match(patternLocation)) {
+                                    locationError.innerHTML = "Location incorrect";
+                                    locationElement.style.borderColor = "red";
                                     isValid = false;
                                 } else {
-                                    exigenceError.innerHTML = "";
-                                    exigenceElement.style.borderColor = "green"; 
+                                    locationError.innerHTML = "";
+                                    locationElement.style.borderColor = "green";
                                 }
+
                                 return isValid;
                             }
+
                         </script>
                     </div>
                 </div>

@@ -1,8 +1,7 @@
 <?php
 include "../../config.php";
     class SecteurC{
-        public
-        function listsecteur(){
+        public function listsecteur(){
             $sql="SELECT * FROM secteur_activite";
             $db=config::getConnexion();
             try{
@@ -68,7 +67,7 @@ include "../../config.php";
                     'region' => $sec->getregion(),
                     'exigence_formation' => $sec->getexigence()
                 ]);
-                echo $query->rowCount() . " records UPDATED successfully <br>";
+                echo $query->rowCount() . " records UPDATED successfully ";
                 } 
                 catch (PDOException $e) {
                     echo "Erreur: " . $e->getMessage();
@@ -95,7 +94,7 @@ include "../../config.php";
                 try {
                     $query = $db->prepare($sql);
                     $query->execute(['id'=>$idsecteur]);
-                    $sec = $query->fetch();
+                    $sec = $query->fetchAll();
                     return $sec;
                 } catch (Exception $e) {
                     die('Error: ' . $e->getMessage());

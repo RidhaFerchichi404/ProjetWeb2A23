@@ -1,3 +1,38 @@
+<?php
+
+include "../../config.php";
+
+$pdo = config::getConnexion();
+$query = "SELECT * FROM entreprise";
+$list = $pdo->query($query);
+// Récupérer le nombre total d'enregistrements
+$count = $pdo->prepare("SELECT COUNT(id) AS cpt FROM entreprise");
+$count->setFetchMode(PDO::FETCH_ASSOC);
+$count->execute();
+$tcount = $count->fetchAll();
+ 
+// Pagination
+@$page = $_GET["page"];
+if (empty($page)) $page = 1;
+$nbr_element_par_page = 4; // Changer la valeur à 4 pour afficher 4 éléments par page
+$nbr_de_pages = ceil($tcount[0]["cpt"] / $nbr_element_par_page);
+$debut = ($page - 1) * $nbr_element_par_page;
+
+// Récupération des éléments
+$sel = $pdo->prepare("SELECT id,nom, email, doc, location, secteur FROM entreprise ORDER BY nom ASC LIMIT $debut, $nbr_element_par_page");
+$sel->setFetchMode(PDO::FETCH_ASSOC);
+$sel->execute();
+$tab = $sel->fetchAll();
+
+if (count($tab) == 0) {
+    header("Location: ./");
+    exit();
+}
+
+echo $tcount[0]["cpt"];
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -79,7 +114,7 @@
                             <a href="signup.html" class="dropdown-item">Sign Up</a>
                             <a href="404.html" class="dropdown-item">404 Error</a>
                             <a href="Secteur_activite.html" class="dropdown-item active">Secteur d'activite</a>
-                            <a href="listsecteur.php" class="dropdown-item">list Secteur</a>
+                            <a href="listsecteur.php" class="dropdown-item active">list Secteur</a>
                             <a href="entreprise.php" class="dropdown-item">entreprise</a>
                             <a href="listentreprise.php" class="dropdown-item">list entreprise</a>
                         </div>
@@ -186,139 +221,53 @@
             <!-- Blank Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="row vh-100 bg-secondary rounded align-items-center justify-content-center mx-0">
-                    <div class="col-md-6 text-center">
-                        <h3>Ajout Secteur</h3>
-                        <form action="addsecteur.php" method="post" id="formadd">
-                            <div class="mb-3">
-                                <label for="nom" class="form-label">Name :</label>
-                                <input type="text" class="form-control" id="nom" name="nom" placeholder="Enter name here">
-                                <div id="nameError"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email :</label>
-                                <input type="text" class="form-control" id="email" name="email" placeholder="Enter email here">
-                                <div id="emailError"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="type" class="form-label">Type :</label>
-                                <input type="text" class="form-control" id="type" name="type" placeholder="Enter type here">
-                                <div id="typeError"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="nb_entreprises" class="form-label">Number of companys :</label>
-                                <input type="text" class="form-control" id="nb_entreprises" name="nb_entreprises" placeholder="Enter number of companys here">
-                                <div id="nbError"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="region" class="form-label">Region :</label>
-                                <input type="text" class="form-control" id="region" name="region" placeholder="Enter number of companys here">
-                                <div id="lieuError"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="exigence_formation" class="form-label">Training requirement :</label>
-                                <textarea class="form-control" id="exigence_formation" name="exigence_formation" rows="3" placeholder="Enter desccription here"></textarea>
-                                <div id="exigenceError"></div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Ajouter</button>
-                        </form>
-                        <script>
-                            var formElement = document.getElementById("formadd");
-                            var nameElement = document.getElementById("nom");
-                            var typeElement = document.getElementById("type");
-                            var nbElement = document.getElementById("nb_entreprises");
-                            var emailElement = document.getElementById("email");
-                            var lieuElement = document.getElementById("region");
-                            var exigenceElement = document.getElementById("exigence_formation");
-                    
-                            formElement.addEventListener("submit", function(event){
-                                var isValid = validateForm();
-                                if(isValid) {
-                                    return true;
-                                } else {
-                                    event.preventDefault();
-                                    return false;
-                                }
-                            });
-                    
-                            function validateForm(){
-                                var nameValue = nameElement.value;
-                                var typeValue = typeElement.value;
-                                var nbValue = nbElement.value;
-                                var emailValue = emailElement.value; 
-                                var lieuValue = lieuElement.value;
-                                var exigenceValue = exigenceElement.value;
-                                
-                                var nameError = document.getElementById("nameError");
-                                var typeError = document.getElementById("typeError");
-                                var nbError = document.getElementById("nbError");
-                                var emailError = document.getElementById("emailError");
-                                var lieuError = document.getElementById("lieuError");
-                                var exigenceError = document.getElementById("exigenceError");
-                    
-                                var patternName = /^[a-zA-Z]+$/;
-                                var patternType = /^[a-zA-Z]+$/;
-                                var patternnb = /^\d+$/;
-                                var patternLieu = /^[a-zA-Z]+$/;
-                                var patternemail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                                var patternexigence = /^[a-zA-Z ]+$/;
-                    
-                                var isValid = true; 
-                    
-                                if(!nameValue.match(patternName)){
-                                    nameError.innerHTML = "Name incorrect";
-                                    nameElement.style.borderColor = "red";
-                                    isValid = false; 
-                                } else {
-                                    nameError.innerHTML = "";
-                                    nameElement.style.borderColor = "green"; 
-                                }
-                    
-                                if(!typeValue.match(patternType)){
-                                    typeError.innerHTML = "type incorrect";
-                                    typeElement.style.borderColor = "red";
-                                    isValid = false;
-                                } else {
-                                    typeError.innerHTML = "";
-                                    typeElement.style.borderColor = "green"; 
-                                }
-                                if(!nbValue.match(patternnb)){
-                                    nbError.innerHTML = "nombre d'entreprise incorrect merci de saisir que des chiffres";
-                                    nbElement.style.borderColor = "red";
-                                    isValid = false;
-                                } else {
-                                    nbError.innerHTML = "";
-                                    nbElement.style.borderColor = "green"; 
-                                }
-                    
-                                if(!emailValue.match(patternemail)){
-                                    emailError.innerHTML = "email incorrect ";
-                                    emailElement.style.borderColor = "red";
-                                    isValid = false;
-                                } else {
-                                    emailError.innerHTML = "";
-                                    emailElement.style.borderColor = "green"; 
-                                }
-                    
-                                if(!lieuValue.match(patternLieu)){
-                                    lieuError.innerHTML = "Lieu incorrect";
-                                    lieuElement.style.borderColor = "red";
-                                    isValid = false;
-                                } else {
-                                    lieuError.innerHTML = "";
-                                    lieuElement.style.borderColor = "green"; 
-                                }
-                                if(!exigenceValue.match(patternexigence)){
-                                    exigenceError.innerHTML = "exigence formation incorrect";
-                                    exigenceElement.style.borderColor = "red";
-                                    isValid = false;
-                                } else {
-                                    exigenceError.innerHTML = "";
-                                    exigenceElement.style.borderColor = "green"; 
-                                }
-                                return isValid;
-                            }
-                        </script>
+                    <div class="col-md-8 offset-md-2 text-center">
+                        <h3>List Entreprise</h3>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">Id entreprise</th>
+                                <th scope="col">Nom</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">date of creation</th>
+                                <th scope="col">location</th>
+                                <th scope="col">secteur</th>
+                                <th scope="col">Update</th>
+                                <th scope="col">Delete</th>
+                            </tr>
+                        </thead>
+                        <?php foreach ($tab as $entreprise) { ?> 
+                        <tr>
+                            <td><?= $entreprise['id']; ?></td>  
+                            <td><?= $entreprise['nom'];?></td>  
+                            <td><?= $entreprise['email'];?></td>
+                            <td><?= $entreprise['doc'];?></td> 
+                            <td><?= $entreprise['location'];?></td> 
+                            <td><?= $entreprise['secteur'];?></td>
+                            <td>
+                                <form action="updateentreprise.php" method="post">
+                                    <!-- Hidden field to pass the sector ID -->
+                                    <input type="hidden" name="id" value="<?php echo $entreprise['id']; ?>">
+                                    <button type="submit" class="btn btn-danger">Update</button>
+                                 </form>
+                                </td>
+                                <td><a href="deleteentreprise.php?id=<?php echo $entreprise['id']; ?>" class="btn btn-danger">Delete</a></td>   
+                            </tr>
+                            <?php } ?>
+                        </table>
                     </div>
+                    <div id="pagination">
+                    <?php
+                    // Affichage des liens de pagination
+                    for ($i = 1; $i <= $nbr_de_pages; $i++) {
+                    if ($page != $i) {
+                        echo "<a href='?page=" . htmlspecialchars($i) . "'>" . $i . "</a> ";
+                    } else {
+                        echo "<span>" . $i . "</span> ";
+                    }
+    }
+    ?>
                 </div>
             </div>
             <!-- Blank End -->

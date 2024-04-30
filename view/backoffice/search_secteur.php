@@ -1,3 +1,19 @@
+<?php include "../../config.php";
+$pdo = config::getConnexion();
+// Traitement de la recherche
+if(isset($_GET['search'])) {
+    $search = $_GET['search'];
+    // Modification de la requête SQL pour inclure la recherche par id, nom ou email
+    $sql = "SELECT * FROM secteur_activite WHERE nom LIKE ? OR nb_entreprises LIKE ? OR id = ?";
+    $stmt = $pdo->prepare($sql);
+    // Vous devez lier la valeur de $search à chaque placeholder dans la requête
+    $stmt->execute(["%$search%", "%$search%", $search]);
+}
+else{
+    echo "erroooor";
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -79,7 +95,7 @@
                             <a href="signup.html" class="dropdown-item">Sign Up</a>
                             <a href="404.html" class="dropdown-item">404 Error</a>
                             <a href="Secteur_activite.html" class="dropdown-item active">Secteur d'activite</a>
-                            <a href="listsecteur.php" class="dropdown-item">list Secteur</a>
+                            <a href="listsecteur.html" class="dropdown-item active">list Secteur</a>
                             <a href="entreprise.php" class="dropdown-item">entreprise</a>
                             <a href="listentreprise.php" class="dropdown-item">list entreprise</a>
                         </div>
@@ -180,144 +196,61 @@
                     </div>
                 </div>
             </nav>
+            <button><a href="listsecteur.php">Back to list</a></button>
             <!-- Navbar End -->
 
-
+            <!--<div class="col-sm-12 col-xl-6">
+                        <div class="bg-secondary rounded h-100 p-4">
+                            <h6 class="mb-4">Accented Table</h6>
+                            <table class="table table-striped">-->
             <!-- Blank Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="row vh-100 bg-secondary rounded align-items-center justify-content-center mx-0">
-                    <div class="col-md-6 text-center">
-                        <h3>Ajout Secteur</h3>
-                        <form action="addsecteur.php" method="post" id="formadd">
-                            <div class="mb-3">
-                                <label for="nom" class="form-label">Name :</label>
-                                <input type="text" class="form-control" id="nom" name="nom" placeholder="Enter name here">
-                                <div id="nameError"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email :</label>
-                                <input type="text" class="form-control" id="email" name="email" placeholder="Enter email here">
-                                <div id="emailError"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="type" class="form-label">Type :</label>
-                                <input type="text" class="form-control" id="type" name="type" placeholder="Enter type here">
-                                <div id="typeError"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="nb_entreprises" class="form-label">Number of companys :</label>
-                                <input type="text" class="form-control" id="nb_entreprises" name="nb_entreprises" placeholder="Enter number of companys here">
-                                <div id="nbError"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="region" class="form-label">Region :</label>
-                                <input type="text" class="form-control" id="region" name="region" placeholder="Enter number of companys here">
-                                <div id="lieuError"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="exigence_formation" class="form-label">Training requirement :</label>
-                                <textarea class="form-control" id="exigence_formation" name="exigence_formation" rows="3" placeholder="Enter desccription here"></textarea>
-                                <div id="exigenceError"></div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Ajouter</button>
-                        </form>
-                        <script>
-                            var formElement = document.getElementById("formadd");
-                            var nameElement = document.getElementById("nom");
-                            var typeElement = document.getElementById("type");
-                            var nbElement = document.getElementById("nb_entreprises");
-                            var emailElement = document.getElementById("email");
-                            var lieuElement = document.getElementById("region");
-                            var exigenceElement = document.getElementById("exigence_formation");
-                    
-                            formElement.addEventListener("submit", function(event){
-                                var isValid = validateForm();
-                                if(isValid) {
-                                    return true;
-                                } else {
-                                    event.preventDefault();
-                                    return false;
-                                }
-                            });
-                    
-                            function validateForm(){
-                                var nameValue = nameElement.value;
-                                var typeValue = typeElement.value;
-                                var nbValue = nbElement.value;
-                                var emailValue = emailElement.value; 
-                                var lieuValue = lieuElement.value;
-                                var exigenceValue = exigenceElement.value;
-                                
-                                var nameError = document.getElementById("nameError");
-                                var typeError = document.getElementById("typeError");
-                                var nbError = document.getElementById("nbError");
-                                var emailError = document.getElementById("emailError");
-                                var lieuError = document.getElementById("lieuError");
-                                var exigenceError = document.getElementById("exigenceError");
-                    
-                                var patternName = /^[a-zA-Z]+$/;
-                                var patternType = /^[a-zA-Z]+$/;
-                                var patternnb = /^\d+$/;
-                                var patternLieu = /^[a-zA-Z]+$/;
-                                var patternemail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                                var patternexigence = /^[a-zA-Z ]+$/;
-                    
-                                var isValid = true; 
-                    
-                                if(!nameValue.match(patternName)){
-                                    nameError.innerHTML = "Name incorrect";
-                                    nameElement.style.borderColor = "red";
-                                    isValid = false; 
-                                } else {
-                                    nameError.innerHTML = "";
-                                    nameElement.style.borderColor = "green"; 
-                                }
-                    
-                                if(!typeValue.match(patternType)){
-                                    typeError.innerHTML = "type incorrect";
-                                    typeElement.style.borderColor = "red";
-                                    isValid = false;
-                                } else {
-                                    typeError.innerHTML = "";
-                                    typeElement.style.borderColor = "green"; 
-                                }
-                                if(!nbValue.match(patternnb)){
-                                    nbError.innerHTML = "nombre d'entreprise incorrect merci de saisir que des chiffres";
-                                    nbElement.style.borderColor = "red";
-                                    isValid = false;
-                                } else {
-                                    nbError.innerHTML = "";
-                                    nbElement.style.borderColor = "green"; 
-                                }
-                    
-                                if(!emailValue.match(patternemail)){
-                                    emailError.innerHTML = "email incorrect ";
-                                    emailElement.style.borderColor = "red";
-                                    isValid = false;
-                                } else {
-                                    emailError.innerHTML = "";
-                                    emailElement.style.borderColor = "green"; 
-                                }
-                    
-                                if(!lieuValue.match(patternLieu)){
-                                    lieuError.innerHTML = "Lieu incorrect";
-                                    lieuElement.style.borderColor = "red";
-                                    isValid = false;
-                                } else {
-                                    lieuError.innerHTML = "";
-                                    lieuElement.style.borderColor = "green"; 
-                                }
-                                if(!exigenceValue.match(patternexigence)){
-                                    exigenceError.innerHTML = "exigence formation incorrect";
-                                    exigenceElement.style.borderColor = "red";
-                                    isValid = false;
-                                } else {
-                                    exigenceError.innerHTML = "";
-                                    exigenceElement.style.borderColor = "green"; 
-                                }
-                                return isValid;
-                            }
-                        </script>
+                    <div class="col-md-8 offset-md-2 text-center">
+                    <form method="GET" action="">
+                    <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Search by Name or Email" name="search">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><i class="bi bi-search"></i>search</button>
+                    </div>
+                    </form>
+                        <h3>List a chercher</h3>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">Id secteur</th>
+                                <th scope="col">Nom</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Nombre d'entreprises</th>
+                                <th scope="col">Region</th>
+                                <th scope="col">Exigence</th>
+                                <th scope="col">Update</th>
+                                <th scope="col">Delete</th>
+                            </tr>
+                        </thead>
+                        <?php if (isset($stmt)){?> 
+                        
+                        <tr>
+                            <td><?php echo $stmt['id']; ?></td>  
+                            <td><?= $stmt['nom'];?></td>  
+                            <td><?= $stmt['email'];?></td>
+                            <td><?= $stmt['type'];?></td> 
+                            <td><?= $stmt['nb_entreprises'];?></td> 
+                            <td><?= $stmt['region'];?></td>
+                            <td><?= $stmt['exigence_formation'];?></td>
+                            <td>
+                                <form action="updatesecteur.php" method="post">
+                                    <!-- Hidden field to pass the sector ID -->
+                                    <input type="hidden" name="id" value="<?php echo $stmt['id']; ?>">
+                                    <button type="submit" class="btn btn-danger">Update</button>
+                                 </form>
+                                </td>
+                                <td><a href="deletesecteur.php?id=<?php echo $stmt['id']; ?>" class="btn btn-danger">Delete</a></td>   
+                            </tr>
+                            <?php }?>
+                        </table>
+                        </div>
                     </div>
                 </div>
             </div>

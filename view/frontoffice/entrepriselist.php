@@ -1,15 +1,15 @@
 <?php
-/*include "../../controller/SecteurC.php";
-$secC=new SecteurC();
-$list=$secC->listsecteur();
+/*include "../../controller/EntrepriseC.php";
+$entC=new EntrepriseC();
+$list=$entC->listentreprise();
 var_dump($list);*/
 include "../../config.php";
 
 $pdo = config::getConnexion();
-$query = "SELECT * FROM secteur_activite";
+$query = "SELECT * FROM entreprise";
 $list = $pdo->query($query);
 // Récupérer le nombre total d'enregistrements
-$count = $pdo->prepare("SELECT COUNT(id) AS cpt FROM secteur_activite");
+$count = $pdo->prepare("SELECT COUNT(id) AS cpt FROM entreprise");
 $count->setFetchMode(PDO::FETCH_ASSOC);
 $count->execute();
 $tcount = $count->fetchAll();
@@ -22,7 +22,7 @@ $nbr_de_pages = ceil($tcount[0]["cpt"] / $nbr_element_par_page);
 $debut = ($page - 1) * $nbr_element_par_page;
 
 // Récupération des éléments
-$sel = $pdo->prepare("SELECT * FROM secteur_activite ORDER BY nom ASC LIMIT $debut, $nbr_element_par_page");
+$sel = $pdo->prepare("SELECT id,nom, email, doc, location, secteur FROM entreprise ORDER BY nom ASC LIMIT $debut, $nbr_element_par_page");
 $sel->setFetchMode(PDO::FETCH_ASSOC);
 $sel->execute();
 $tab = $sel->fetchAll();
@@ -97,6 +97,7 @@ echo $tcount[0]["cpt"];
                             <a href="secteurlist.php" class="dropdown-item">Secteur list</a>
                             <a href="entrepriselist.php" class="dropdown-item">Entreprise list</a>
                             <a href="entrepriseadd.php" class="dropdown-item">Entreprise add</a>
+
                         </div>
                     </div>
                     <div class="nav-item dropdown">
@@ -118,21 +119,20 @@ echo $tcount[0]["cpt"];
         <div class="container-fluid pt-4 px-4">
         <div class="row vh-100 bg-white rounded align-items-center justify-content-center mx-0">
             <div class="col-md-6 text-center">
-                <h3>List Secteur</h3>
+                <h3>List entreprises</h3>
                         <?php
-                         foreach ($tab as $secteur) {
+                         foreach ($tab as $entreprise) {
                         ?> 
                         <div class="job-item p-4 mb-4">
                               <div class="row g-4">
                                  <div class="col-sm-12 col-md-8 d-flex align-items-center">
                                   <img class="flex-shrink-0 img-fluid border rounded" src="img/com-logo-4.jpg" alt="" style="width: 80px; height: 80px;">
                                   <div class="text-start ps-4">
-                                        <h5 class="mb-3"><?= $secteur['nom']; ?></h5>
-                                        <span class="text-truncate me-3"><i class="fas fa-globe text-primary me-2"></i><?= $secteur['email']; ?></span>
-                                        <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $secteur['type']; ?></span>
-                                        <span class="text-truncate me-3"><i class="far fa-building text-primary me-2"></i><?= $secteur['nb_entreprises']; ?></span>
-                                        <span class="text-truncate me-0"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $secteur['region']; ?></span>
-                                        <span class="text-truncate me-0"><i class="fas fa-graduation-cap text-primary me-2"></i><?= $secteur['exigence_formation']; ?></span>
+                                        <h5 class="mb-3"><?= $entreprise['nom']; ?></h5>
+                                        <span class="text-truncate me-3"><i class="fas fa-globe text-primary me-2"></i><?= $entreprise['email']; ?></span>
+                                        <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $entreprise['doc']; ?></span>
+                                        <span class="text-truncate me-3"><i class="far fa-building text-primary me-2"></i><?= $entreprise['secteur']; ?></span>
+                                        <span class="text-truncate me-0"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $entreprise['location']; ?></span>
                                         </div>
                                     </div>
                                         <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
@@ -143,8 +143,8 @@ echo $tcount[0]["cpt"];
                             } 
                             ?>
                         </table>
-                        <div id="pagination">
-                            <?php
+                    <div id="pagination">
+                        <?php
                             // Affichage des liens de pagination
                             for ($i = 1; $i <= $nbr_de_pages; $i++) {
                             if ($page != $i) {
@@ -153,11 +153,10 @@ echo $tcount[0]["cpt"];
                                 echo "<span>" . $i . "</span> ";
                             }
                             }
-                            ?>
-                        </div>
+                        ?>
                     </div>
-                </div>
             </div>
+        </div>
         <!-- Job Detail End -->
 
 

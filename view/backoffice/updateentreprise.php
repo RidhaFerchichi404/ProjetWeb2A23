@@ -1,46 +1,42 @@
 <?php
-include '../../Controller/SecteurC.php';
-include '../../model/secteur.php';
+include "../../controller/EntrepriseC.php";
+include "../../model/Entreprise.php";
 $error = "";
 
 // create employe
-$sec = null;
+$ent = null;
 
 // create an instance of the controller
-$secC = new SecteurC();
+$entC = new EntrepriseC();
 if (
     isset($_POST['id']) &&
     isset($_POST['nom']) &&    
     isset($_POST['email'])&&
-    isset($_POST['type'])&&
-    isset($_POST['nb_entreprises']) &&
-    isset($_POST['region'])&&
-    isset($_POST['exigence_formation'])
+    isset($_POST['doc'])&&
+    isset($_POST['location'])&&
+    isset($_POST['secteur'])
 ) {
     if (
         !empty($_POST['id']) &&
         !empty($_POST['nom']) &&
         !empty($_POST['email']) &&
-        !empty($_POST['type']) &&
-        !empty($_POST['nb_entreprises'])&&
-        !empty($_POST['region'])&&
-        !empty($_POST['exigence_formation'])
+        !empty($_POST['doc']) &&
+        !empty($_POST['location'])&&
+        !empty($_POST['secteur'])
     ) {
-        $sec = new Secteur(
+        $ent = new Entreprise(
             $_POST['id'],
             $_POST['nom'],
             $_POST['email'],
-            $_POST['type'],
-            $_POST['nb_entreprises'],
-            $_POST['region'],
-            $_POST['exigence_formation']);
-        $secC->updatesecteur($sec, $_POST["id"]);
-        header('Location:listsecteur.php');
+            $_POST['doc'],
+            $_POST['location'],
+            $_POST['secteur']);
+        $entC->updateentreprise($ent, $_POST["id"]);
+        header('Location:listentreprise.php');
     } else
         $error = "Missing information";
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -221,32 +217,31 @@ if (
                     </div>
                 </div>
             </nav>
-            <button><a href="listsecteur.php">Back to list</a></button>
+            <button><a href="listentreprise.php">Back to list</a></button>
             <hr>
             <div id="error">
                 <?php echo $error; ?>
             </div>
             <?php
             if (isset($_POST['id'])) {
-                $sec = $secC->showsecteur($_POST['id']);
-                if ($sec) {
+                $ent = $entC->showentreprise($_POST['id']);
+                if ($ent) {
             ?>
-                <?php var_dump($sec); ?>
                 <form id="formupdate" action=""  method="POST">
                     <table border="1" align="center">
                         <tr>
                             <td>
-                                <label for="id">Id Secteur:
+                                <label for="id">Id entreprise:
                                 </label>
                             </td>
-                            <td><input type="text" name="id" id="id" value="<?php echo $sec['id']; ?>"></td>
+                            <td><input type="text" name="id" id="id" value="<?php echo $ent['id']; ?>"></td>
                         </tr>
                         <tr>
                             <td>
                                 <label for="nom">Name:
                                 </label>
                             </td>
-                                <td><input type="text" name="nom" id="nom" value="<?php echo $sec['nom']; ?>">
+                                <td><input type="text" name="nom" id="nom" value="<?php echo $ent['nom']; ?>">
                                 <div id="nameError"></div>
                             </td>
                         </tr>
@@ -256,50 +251,37 @@ if (
                                 </label>
                             </td>
                             <td>
-                                <input type="email" name="email" value="<?php echo $sec['email']; ?>" id="email">
-                                <div id="lieuError"></div>
+                                <input type="email" name="email" value="<?php echo $ent['email']; ?>" id="email">
+                                <div id="emailError"></div>
                             </td>
-                            <div id="emailError"></div>
                         </tr>
                         <tr>
                             <td>
-                                <label for="type">type:
+                                <label for="doc">date of creation:
                                 </label>
                             </td>
-                            <td><input type="text" name="type" id="type" value="<?php echo $sec['type']; ?>">
-                            <div id="lieuError"></div>
+                            <td><input type="text" name="doc" id="doc" value="<?php echo $ent['doc']; ?>">
+                            <div id="docError"></div>
                             </td>
-                            <div id="typeError"></div>
                         </tr>
                         <tr>
                             <td>
-                                <label for="nb_entreprises">Companys number:
-                                </label>
-                            </td>
-                            <td>
-                                <input type="text" name="nb_entreprises" id="nb_entreprises" value="<?php echo $sec['nb_entreprises']; ?>">
-                                <div id="lieuError"></div>
-                            </td>
-                            <div id="nbError"></div>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="region">Region:
+                                <label for="location">location:
                                 </label>
                             </td>
                             <td>
-                                <input type="text" name="region" id="region" value="<?php echo $sec['region']; ?>">
-                                <div id="lieuError"></div>
+                                <input type="text" name="location" id="location" value="<?php echo $ent['location']; ?>">
+                                <div id="locError"></div>
                             </td>
-                            
                         </tr>
                         <tr>
                             <td>
-                                <label for="exigence_formation">Training requirement:</label>
+                                <label for="secteur">id secteur:
+                                </label>
                             </td>
                             <td>
-                                <input type="text" name="exigence_formation" id="exigence_formation" value="<?php echo $sec['exigence_formation']; ?>">
-                                <div id="exigenceError"></div>
+                                <input type="text" name="secteur" id="secteur" value="<?php echo $ent['secteur']; ?>">
+                                <div id="SecError"></div>
                             </td>
                         </tr>
                         <tr>
@@ -320,102 +302,84 @@ if (
                     }}
                     ?>
                     <script>
-                        var formElement = document.getElementById("formupdate");
-                        var nameElement = document.getElementById("nom");
-                        var typeElement = document.getElementById("type");
-                        var nbElement = document.getElementById("nb_entreprises");
-                        var emailElement = document.getElementById("email");
-                        var lieuElement = document.getElementById("region");
-                        var exigenceElement = document.getElementById("exigence_formation");
-
-                        formElement.addEventListener("submit", function(event){
-                            var isValid = validateForm();
-                            if(isValid) {
-                                return true;
-                            } else {
-                                event.preventDefault();
-                                return false;
+                            var formElement = document.getElementById("formadd");
+                            var nameElement = document.getElementById("nom");
+                            var emailElement = document.getElementById("email");
+                            var locationElement = document.getElementById("location");
+                            var docElement = document.getElementById("doc");
+                            formElement.addEventListener("submit", function(event){
+                                var isValid = validateForm();
+                                if(isValid) {
+                                    return true;
+                                } else {
+                                    event.preventDefault();
+                                    return false;
+                                }
+                            });
+                    
+                            function validateForm(){
+                                var nameValue = nameElement.value;
+                                var docValue = docElement.value;
+                                var emailValue = emailElement.value; 
+                                var locationValue = locationElement.value;
+                                
+                                var nameError = document.getElementById("nameError");
+                                var docError = document.getElementById("docError");
+                                var emailError = document.getElementById("emailError");
+                                var locationError = document.getElementById("locError");
+                    
+                                var patternName = /^[a-zA-Z]+$/;
+                                var patterndoc = /^\d{4}-\d{2}-\d{2}$/;
+                                var patternLocation = /^[a-zA-Z0-9\s!"#$%&'()*+,-./:;<=>?@[\\\]^_`{|}~]*$/;
+                                var patternemail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    
+                                var isValid = true; 
+                    
+                                if(!nameValue.match(patternName)){
+                                    nameError.innerHTML = "Name incorrect";
+                                    nameElement.style.borderColor = "red";
+                                    isValid = false; 
+                                } else {
+                                    var currentDate = new Date();
+                                    var date = new Date(dateValue);
+                                
+                                    if (date >= currentDate) {
+                                        dateError.innerHTML = "Date must be before the current date";
+                                        dateElement.style.borderColor = "red";
+                                        isValid = false;
+                                    } else {
+                                        dateError.innerHTML = "";
+                                        dateElement.style.borderColor = "green";
+                                    }
+                                }
+                                if(!docValue.match(patterndoc)){
+                                    docError.innerHTML = "type incorrect";
+                                    docElement.style.borderColor = "red";
+                                    isValid = false;
+                                } else {
+                                    typeError.innerHTML = "";
+                                    typeElement.style.borderColor = "green"; 
+                                }
+                                if(!emailValue.match(patternemail)){
+                                    emailError.innerHTML = "email incorrect ";
+                                    emailElement.style.borderColor = "red";
+                                    isValid = false;
+                                } else {
+                                    emailError.innerHTML = "";
+                                    emailElement.style.borderColor = "green"; 
+                                }
+                    
+                                if(!locationValue.match(patternlocation)){
+                                    locationError.innerHTML = "Lieu incorrect";
+                                    locationElement.style.borderColor = "red";
+                                    isValid = false;
+                                } else {
+                                    locationError.innerHTML = "";
+                                    locationElement.style.borderColor = "green"; 
+                                }
+                                return isValid;
                             }
-                        });
-
-                        function validateForm(){
-                            var nameValue = nameElement.value;
-                            var typeValue = typeElement.value;
-                            var nbValue = nbElement.value;
-                            var emailValue = emailElement.value; 
-                            var lieuValue = lieuElement.value;
-                            var exigenceValue = exigenceElement.value;
-                            
-                            var nameError = document.getElementById("nameError");
-                            var typeError = document.getElementById("typeError");
-                            var nbError = document.getElementById("nbError");
-                            var emailError = document.getElementById("emailError");
-                            var lieuError = document.getElementById("lieuError");
-                            var exigenceError = document.getElementById("exigenceError");
-
-                            var patternName = /^[a-zA-Z]+$/;
-                            var patternType = /^[a-zA-Z]+$/;
-                            var patternnb = /^\d+$/;
-                            var patternLieu = /^[a-zA-Z]+$/;
-                            var patternemail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                            var patternexigence = /^[a-zA-Z]+$/;
-
-                            var isValid = true; 
-
-                            if(!nameValue.match(patternName)){
-                                nameError.innerHTML = "Name incorrect";
-                                nameElement.style.borderColor = "red";
-                                isValid = false; 
-                            } else {
-                                nameError.innerHTML = "";
-                                nameElement.style.borderColor = "green"; 
-                            }
-
-                            if(!typeValue.match(patternType)){
-                                typeError.innerHTML = "type incorrect";
-                                typeElement.style.borderColor = "red";
-                                isValid = false;
-                            } else {
-                                typeError.innerHTML = "";
-                                typeElement.style.borderColor = "green"; 
-                            }
-                            if(!nbValue.match(patternnb)){
-                                nbError.innerHTML = "nombre d'entreprise incorrect merci de saisir que des chiffres";
-                                nbElement.style.borderColor = "red";
-                                isValid = false;
-                            } else {
-                                nbError.innerHTML = "";
-                                nbElement.style.borderColor = "green"; 
-                            }
-
-                            if(!emailValue.match(patternemail)){
-                                emailError.innerHTML = "email incorrect ";
-                                emailElement.style.borderColor = "red";
-                                isValid = false;
-                            } else {
-                                emailError.innerHTML = "";
-                                emailElement.style.borderColor = "green"; 
-                            }
-
-                            if(!lieuValue.match(patternLieu)){
-                                lieuError.innerHTML = "Lieu incorrect";
-                                lieuElement.style.borderColor = "red";
-                                isValid = false;
-                            } else {
-                                lieuError.innerHTML = "";
-                                lieuElement.style.borderColor = "green"; 
-                            }
-                            if(!exigenceValue.match(patternexigence)){
-                                exigenceError.innerHTML = "exigence formation incorrect";
-                                exigenceElement.style.borderColor = "red";
-                                isValid = false;
-                            } else {
-                                exigenceError.innerHTML = "";
-                                exigenceElement.style.borderColor = "green"; 
-                            }
-                            return isValid;
-                        }
-                    </script>
+                        </script>
                     <div class="container-fluid pt-4 px-4">
                                 <div class="bg-secondary rounded-top p-4">
                                     <div class="row">

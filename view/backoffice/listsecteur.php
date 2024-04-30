@@ -1,8 +1,41 @@
 <?php
-include "../../controller/SecteurC.php";
+/*include "../../controller/SecteurC.php";
 $secC=new SecteurC();
 $list=$secC->listsecteur();
-var_dump($list);
+var_dump($list);*/
+include "../../config.php";
+
+$pdo = config::getConnexion();
+$query = "SELECT * FROM secteur_activite";
+$list = $pdo->query($query);
+
+// Récupérer le nombre total d'enregistrements
+$count = $pdo->prepare("SELECT COUNT(id) AS cpt FROM secteur_activite");
+$count->setFetchMode(PDO::FETCH_ASSOC);
+$count->execute();
+$tcount = $count->fetchAll();
+ 
+// Pagination
+@$page = $_GET["page"];
+if (empty($page)) $page = 1;
+$nbr_element_par_page = 4; // Changer la valeur à 4 pour afficher 4 éléments par page
+$nbr_de_pages = ceil($tcount[0]["cpt"] / $nbr_element_par_page);
+$debut = ($page - 1) * $nbr_element_par_page;
+
+// Récupération des éléments
+$sel = $pdo->prepare("SELECT * FROM secteur_activite LIMIT $debut, $nbr_element_par_page");
+$sel->setFetchMode(PDO::FETCH_ASSOC);
+$sel->execute();
+$tab = $sel->fetchAll();
+
+if (count($tab) == 0) {
+    header("Location: ./");
+    exit();
+}
+
+echo $tcount[0]["cpt"];
+
+
 ?>
 
 <!DOCTYPE html>
@@ -87,6 +120,8 @@ var_dump($list);
                             <a href="404.html" class="dropdown-item">404 Error</a>
                             <a href="Secteur_activite.html" class="dropdown-item active">Secteur d'activite</a>
                             <a href="listsecteur.html" class="dropdown-item active">list Secteur</a>
+                            <a href="entreprise.php" class="dropdown-item">entreprise</a>
+                            <a href="listentreprise.php" class="dropdown-item">list entreprise</a>
                         </div>
                     </div>
                 </div>
@@ -187,53 +222,79 @@ var_dump($list);
             </nav>
             <!-- Navbar End -->
 
-
+            <!--<div class="col-sm-12 col-xl-6">
+                        <div class="bg-secondary rounded h-100 p-4">
+                            <h6 class="mb-4">Accented Table</h6>
+                            <table class="table table-striped">-->
             <!-- Blank Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="row vh-100 bg-secondary rounded align-items-center justify-content-center mx-0">
-                    <div class="col-md-6 text-center">
-                        <h3>List Secteur</h3>
-                        <center>
-                        <table class="table">
-                        <thead>
+                    <div class="col-md-8 offset-md-2 text-center">
+                    </form>
+                        <h3>List a chercher</h3>
+                        <form method="GET" action="">
+                    <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Search by nom or nb_entreprise" name="search">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><i class="bi bi-search"></i>search</button>
+                    </div>
+                    <?php
+                    if(isset($_GET['search'])) {
+                    $search = $_GET['search'];
+                    // Modification de la requête SQL pour inclure la recherche par id, nom ou email
+                    $sql = "SELECT * FROM secteur_activite WHERE nom LIKE ? OR nb_entreprises LIKE ? OR id = ?";
+                    $stmt = $pdo->prepare($sql);
+                    // Vous devez lier la valeur de $search à chaque placeholder dans la requête
+                        $stmt->execute(["%$search%", "%$search%", $search]);
+                    }
+                    ?>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                            <thead>
                             <tr>
                                 <th scope="col">Id secteur</th>
                                 <th scope="col">Nom</th>
                                 <th scope="col">Email</th>
-                                <th scope="col">type</th>
-                                <th scope="col">nombre d'entreprises</th>
-                                <th scope="col">region</th>
-                                <th scope="col">exigence</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Nombre d'entreprises</th>
+                                <th scope="col">Region</th>
+                                <th scope="col">Exigence</th>
                                 <th scope="col">Update</th>
                                 <th scope="col">Delete</th>
                             </tr>
                         </thead>
-                        <div class="table-container">
-                            <?php
-                            foreach ($list as $secteur) {
-                            ?> 
-                            <tr>
-                                <td><?php echo $secteur['id']; ?></td>  
-                                <td><?= $secteur ['nom'];?></td>  
-                                <td><?= $secteur ['email'];?></td>
-                                <td><?= $secteur ['type'];?></td> 
-                                <td><?= $secteur ['nb_entreprises'];?></td> 
-                                <td><?= $secteur ['region'];?></td>
-                                <td><?= $secteur ['exigence_formation'];?></td>
-                                <td>
-                                    <form action="updatesecteur.php" method="post">
-                                    <!-- Champ cache pour passer l'ID du secteur -->
+                        <?php foreach ($tab as $secteur) { ?> 
+                        <tr>
+                            <td><?php echo $secteur['id']; ?></td>  
+                            <td><?= $secteur['nom'];?></td>  
+                            <td><?= $secteur['email'];?></td>
+                            <td><?= $secteur['type'];?></td> 
+                            <td><?= $secteur['nb_entreprises'];?></td> 
+                            <td><?= $secteur['region'];?></td>
+                            <td><?= $secteur['exigence_formation'];?></td>
+                            <td>
+                                <form action="updatesecteur.php" method="post">
+                                    <!-- Hidden field to pass the sector ID -->
                                     <input type="hidden" name="id" value="<?php echo $secteur['id']; ?>">
-                                    <button type="submit">update</button>
-                                </form>
+                                    <button type="submit" class="btn btn-danger">Update</button>
+                                 </form>
                                 </td>
-                                <td><a href="delete.php?id=<?php echo $secteur['id']; ?>">Delete</a></td>   
+                                <td><a href="deletesecteur.php?id=<?php echo $secteur['id']; ?>" class="btn btn-danger">Delete</a></td>   
                             </tr>
-                            <?php
-                            } 
-                            ?>
+                            <?php } ?>
                         </table>
-                        </center>
+                        </div>
+                        <div id="pagination">
+                        <?php
+                        // Affichage des liens de pagination
+                        for ($i = 1; $i <= $nbr_de_pages; $i++) {
+                        if ($page != $i) {
+                            echo "<a href='?page=" . htmlspecialchars($i) . "'>" . $i . "</a> ";
+                        } else {
+                            echo "<span>" . $i . "</span> ";
+                        }
+                        }
+                        ?>
+                        </div>
                     </div>
                 </div>
             </div>
