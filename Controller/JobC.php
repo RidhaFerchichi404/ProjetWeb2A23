@@ -16,24 +16,24 @@
 
 
 
-        public function updateJob($job,$id){
-
-            try {
-                $db = config::getConnexion();
-                $query = $db->prepare(
-                    'UPDATE offres_emploi SET 
-                    job_title = :job_title, 
-                    company_name = :company_name, 
-                    company_description = :company_description, 
-                    company_website = :company_website
-                    job_description = :job_description
-                    job_requirements = :job_requirements
-                    salary = :salary
-                    location = :location
+        public function updateJob($job, $id)
+    {
+        try {
+            $db = config::getConnexion();
+            $query = $db->prepare(
+                'UPDATE offres_emploi SET 
+                job_title = :job_title, 
+                company_name = :company_name, 
+                company_description = :company_description, 
+                company_website = :company_website,
+                job_description = :job_description,
+                job_requirements = :job_requirements,
+                salary = :salary,
+                location = :location
                 WHERE id= :id'
-                );
-                $query->execute([
-                    'id' => $job->getId(),
+            );
+            $query->execute([
+                'id' => $id,
                 'job_title' => $job->getJobTitle(),
                 'company_name' => $job->getCompanyName(),
                 'company_description' => $job->getCompanyDescription(),
@@ -42,14 +42,12 @@
                 'job_requirements' => $job->getJobRequirements(),
                 'salary' => $job->getSalary(),
                 'location' => $job->getLocation()
-                ]);
-                echo $query->rowCount() . " records UPDATED successfully <br>";
-            } catch (PDOException $e) {
-                $e->getMessage();
-            }
-        
+            ]);
+            echo $query->rowCount() . " records UPDATED successfully <br>";
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage(); // Print error message
         }
-         
+    }
         
   
         public function deleteJob($id){
@@ -103,6 +101,43 @@
             die('Error: ' . $e->getMessage());
         }
     }
+    // Inside JobC class
+public function getJobById($id) {
+    try {
+        $db = config::getConnexion();
+        $query = $db->prepare('SELECT * FROM offres_emploi WHERE id = :id');
+        $query->execute(['id' => $id]);
+        return $query->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
 }
-    
+
+
+
+public function countJobs() {
+    try {
+        $db = config::getConnexion();
+        $query = $db->query("SELECT COUNT(*) AS total_jobs FROM offres_emploi");
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+        return $result['total_jobs'];
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+}
+
+// Method to fetch jobs for the current page
+public function paginateJobs($offset, $limit) {
+    try {
+        $db = config::getConnexion();
+        $query = $db->prepare("SELECT * FROM offres_emploi LIMIT :limit OFFSET :offset");
+        $query->bindParam(':limit', $limit, PDO::PARAM_INT);
+        $query->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $query->execute();
+        return $query->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+}
+}
 ?>

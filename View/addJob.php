@@ -171,7 +171,6 @@
             </table>
         </form>
     </div>
-
     <script>
         function validateForm() {
             var jobTitle = document.getElementById('job_title').value;
@@ -183,12 +182,15 @@
             var salary = document.getElementById('salary').value;
             var location = document.getElementById('location').value;
 
-
-            if (jobTitle.trim() === '' || companyName.trim() === '' || company_description.trim() === ''  || company_website.trim() === '' || job_description.trim() === '' || job_requirements.trim() === '' || salary.trim() === '' || location.trim() === '' ) {
-                alert(' fields are required');
+            if (jobTitle.trim() === '' || companyName.trim() === '' || company_description.trim() === ''  || company_website.trim() === '' || job_description.trim() === '' || job_requirements.trim() === '' || location.trim() === '' ) {
+                alert('Fields are required');
                 return false;
             }
 
+            if (isNaN(parseFloat(salary)) || !isFinite(salary) || parseFloat(salary) <= 0) {
+                alert('Salary must be a positive number');
+                return false;
+            }
 
             return true; 
         }

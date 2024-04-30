@@ -2,9 +2,25 @@
     include "../Controller/JobC.php";
     include "../Model/Job.php";
     $jobC = new JobC();
-    $list = $jobC->ListJob();
-    //print_r($list);
+    $jobs = $jobC->ListJob();
+    
+    // Define the number of jobs per page
+$limit = 3;
 
+// Get the current page number
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+// Calculate the offset for SQL query
+$offset = ($page - 1) * $limit;
+
+// Fetch total number of jobs
+$totalJobs = $jobC->countJobs();
+
+// Calculate total number of pages
+$totalPages = ceil($totalJobs / $limit);
+
+// Fetch jobs for the current page
+$jobs = $jobC->paginateJobs($offset, $limit);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -262,18 +278,19 @@
             <div class="container-fluid pt-4 px-4">
                 <div class="bg-secondary text-center rounded p-4">
                     <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h6 class="mb-0">Recent Salse</h6>
+                        <h6 class="mb-0">JOB LIST</h6>
                         <a href="">Show All</a>
                     </div>
                     <div class="table-responsive">
                     <table border="1" align="center" width="70%">
                     <?php
-        foreach ($list as $jobOffer) {
+        foreach ($jobs as $jobOffer) {
         ?>  
             <div class="job-item p-4 mb-4">
                                 <div class="row g-4">
                                     <div class="col-sm-12 col-md-8 d-flex align-items-center">
                                         <img class="flex-shrink-0 img-fluid border rounded" src="img/Job.jpg" alt="" style="width: 80px; height: 80px;">
+                                        
                                         <div class="text-start ps-4">
                                         
                                             <h5 class="mb-3"><?= $jobOffer['job_title']; ?></h5>
@@ -284,17 +301,37 @@
                                            
                                         </div>
                                     </div>
+                                    <?php $idOffre = $jobOffer['id']; ?>
                                     <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
                                         <div class="d-flex mb-3">
-                                        <a s class="btn btn-primary" href="updateJob.php?id=<?php echo $jobOffer['id']; ?>">Update</a>
-                                        <a style="margin-left: 40px;" class="btn btn-primary" href="Delete.php?id=<?php echo $jobOffer['id']; ?>">Delete </a>
-                                        </div>
+                                        <a class="btn btn-primary" href="addcandidature.php?id_offre=<?= $idOffre ?>">ADD Candidature</a>
+
+                                        <a style="margin-left: 40px;" class="btn btn-primary"  href="listcandidature.php?id_offre=<?= $idOffre  ?>">Candidature List</a>
+
+                                        <a style="margin-left: 40px;" class="btn btn-primary" href="updateJob.php?id=<?php echo $jobOffer['id']; ?>">Update Job</a>
+                                        <a style="margin-left: 40px;" class="btn btn-primary" href="Delete.php?id=<?php echo $jobOffer['id']; ?>">Delete Job</a>
+                                        
+    
+                                    </div>
                                     </div>
                                 </div>
                             </div>
         <?php
         }
-        ?>       
+        ?>      
+        <!-- Pagination links -->
+        <div class="pagination">
+                        <?php if ($page > 1) : ?>
+                            <a href="?page=<?= $page - 1 ?>" class="btn btn-primary">Previous</a>
+                        <?php endif; ?>
+                        <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                            <a href="?page=<?= $i ?>" class="btn btn-primary <?= $page == $i ? 'active' : '' ?>"><?= $i ?></a>
+                        <?php endfor; ?>
+                        <?php if ($page < $totalPages) : ?>
+                            <a href="?page=<?= $page + 1 ?>" class="btn btn-primary">Next</a>
+                        <?php endif; ?>
+                    </div>
+        <a style="margin-left: 1200px;" class="btn btn-primary" href="addJob2.php?id=<?php echo $jobOffer['id']; ?>">ADD JOB </a> 
          <div style="display: flex; align-items: center;  margin-left: 20px;">
                     <label for="Recherche">Search</label>
                     <input class="border px-4 py-2"  id="input" type="text" style="margin-right: 10px;">

@@ -1,11 +1,31 @@
 <?php
-    include "../Controller/JobC.php";
-    include "../Model/Job.php";
-    $jobC = new JobC();
-    $list = $jobC->ListJob();
-    //print_r($list);
+// listJob2.php
 
+// Include JobC.php and create an instance of JobC class
+include "../Controller/JobC.php";
+$jobC = new JobC();
+
+// Define the number of jobs per page
+$limit = 3;
+
+// Get the current page number
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+// Calculate the offset for SQL query
+$offset = ($page - 1) * $limit;
+
+// Fetch total number of jobs
+$totalJobs = $jobC->countJobs();
+
+// Calculate total number of pages
+$totalPages = ceil($totalJobs / $limit);
+
+// Fetch jobs for the current page
+$jobs = $jobC->paginateJobs($offset, $limit);
+
+// Rest of your HTML and PHP code for displaying jobs and pagination
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,7 +35,6 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
-
     <!-- Favicon -->
     <link href="img/favicon.ico" rel="icon">
 
@@ -53,7 +72,7 @@
         <!-- Navbar Start -->
         <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
             <a href="index.html" class="navbar-brand d-flex align-items-center text-center py-0 px-4 px-lg-5">
-                <h1 class="m-0 text-primary">JobEntry</h1>
+                <h1 class="m-0 text-primary">CareerHub</h1>
             </a>
             <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="navbar-toggler-icon"></span>
@@ -100,13 +119,12 @@
         </div>
         <!-- Header End -->
 
-
         <!-- Jobs Start -->
         <div class="container-xxl py-5">
             <div class="container">
                 <h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">Jobs</h1>
                 <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.3s">
-                    <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
+                <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
                         <li class="nav-item">
                             <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3 active" data-bs-toggle="pill" href="#tab-1">
                                 <h6 class="mt-n1 mb-0">Featured</h6>
@@ -126,11 +144,10 @@
                        
                
                     <table border="1" align="center" width="70%">
-                    <?php
-        foreach ($list as $jobOffer) {
-        ?>  
-            <div class="job-item p-4 mb-4">
-                                <div class="row g-4">
+                    <?php foreach ($jobs as $jobOffer) : ?>
+                        <!-- Display each job item here -->
+                        <div class="job-item p-4 mb-4">
+                        <div class="row g-4">
                                     <div class="col-sm-12 col-md-8 d-flex align-items-center">
                                         <img class="flex-shrink-0 img-fluid border rounded" src="img/Job.jpg" alt="" style="width: 80px; height: 80px;">
                                         <div class="text-start ps-4">
@@ -143,44 +160,35 @@
                                            
                                         </div>
                                     </div>
+                                    <?php $idOffre = $jobOffer['id']; ?>
+
                                     <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
                                         <div class="d-flex mb-3">
                                             <a class="btn btn-light btn-square me-3" href=""><i class="far fa-heart text-primary"></i></a>
-                                            <a class="btn btn-primary" href="">Apply Now</a>
+                                            <a class="btn btn-primary" href="addcandidature.php?id_offre=<?= $idOffre ?>">Apply Now</a>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-        <?php
-        }
-        ?>       
-         <div style="display: flex; align-items: center;  margin-left: 20px;">
-                    <label for="Recherche">Search</label>
-                    <input class="border px-4 py-2"  id="input" type="text" style="margin-right: 10px;">
-                   
-                </div>
-                <title>AJAX Search Example</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $("input").on("keyup", function() {
-                var value = $(this).val().toLowerCase();
-                $("table tr").filter(function() {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                });
-            });
-        });
-    </script>
-        </table>   
-             
-                            <a class="btn btn-primary py-3 px-5" href="">Browse More Jobs</a>
+                            
                         </div>
+                    <?php endforeach; ?>
+
+                    <!-- Pagination links -->
+                    <div class="pagination">
+                        <?php if ($page > 1) : ?>
+                            <a href="?page=<?= $page - 1 ?>" class="btn btn-primary">Previous</a>
+                        <?php endif; ?>
+                        <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                            <a href="?page=<?= $i ?>" class="btn btn-primary <?= $page == $i ? 'active' : '' ?>"><?= $i ?></a>
+                        <?php endfor; ?>
+                        <?php if ($page < $totalPages) : ?>
+                            <a href="?page=<?= $page + 1 ?>" class="btn btn-primary">Next</a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
         <!-- Jobs End -->
-
 
         <!-- Footer Start -->
         <div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
@@ -265,3 +273,4 @@
 </body>
 
 </html>
+
