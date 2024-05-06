@@ -8,6 +8,7 @@ class Candidature{
         $this->id_candidature = $id_candidature;
         $this->cv = $cv;
         $this->id_offre = $id_offre;
+        
     }
 
     // Getter method for id_candidature
@@ -39,5 +40,7 @@ class Candidature{
     public function setIdOffre(?int $id_offre): void {
         $this->id_offre = $id_offre;
     }
+
+    
 }
 ?>

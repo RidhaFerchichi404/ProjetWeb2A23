@@ -23,7 +23,7 @@ $totalPages = ceil($totalJobs / $limit);
 // Fetch jobs for the current page
 $jobs = $jobC->paginateJobs($offset, $limit);
 
-// Rest of your HTML and PHP code for displaying jobs and pagination
+
 ?>
 
 <!DOCTYPE html>
@@ -116,6 +116,15 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                     </ol>
                 </nav>
             </div>
+            <form method="POST" action="" style="display: flex;">
+            <input type="text" name="search" onkeyup="myFunction()" placeholder="Search..." style="border-radius: 6px 6px 6px 6px; border-color: green">
+    <button type="submit" style="background: none; border: none; cursor: pointer; padding: 0 10px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="green" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" style="width: 30px; height: 30px;">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+    </button>
+</form>
         </div>
         <!-- Header End -->
 
@@ -131,12 +140,12 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="d-flex align-items-center text-start mx-3 pb-3" data-bs-toggle="pill" href="#tab-2">
+                            <a id="full-time-tab" class="d-flex align-items-center text-start mx-3 pb-3" data-bs-toggle="pill" href="#tab-2">
                                 <h6 class="mt-n1 mb-0">Full Time</h6>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="d-flex align-items-center text-start mx-3 me-0 pb-3" data-bs-toggle="pill" href="#tab-3">
+                            <a id="part-time-tab" class="d-flex align-items-center text-start mx-3 me-0 pb-3" data-bs-toggle="pill" href="#tab-3">
                                 <h6 class="mt-n1 mb-0">Part Time</h6>
                             </a>
                         </li>
@@ -154,7 +163,7 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                                         
                                             <h5 class="mb-3"><?= $jobOffer['job_title']; ?></h5>
                                             <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $jobOffer['location']; ?></span>
-                                            <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $jobOffer['job_description']; ?></span>
+                                            <span class="job-description text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $jobOffer['job_description']; ?></span>
                                             <span class="text-truncate me-3"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $jobOffer['salary']; ?></span>
                                             <span class="text-truncate me-0"><i class="fas fa-globe text-primary me-2"></i><?= $jobOffer['company_website']; ?></span>
                                            
@@ -163,15 +172,32 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                                     <?php $idOffre = $jobOffer['id']; ?>
 
                                     <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                        <div class="d-flex mb-3">
-                                            <a class="btn btn-light btn-square me-3" href=""><i class="far fa-heart text-primary"></i></a>
-                                            <a class="btn btn-primary" href="addcandidature.php?id_offre=<?= $idOffre ?>">Apply Now</a>
-                                        </div>
+                                    <div class="d-flex mb-3">
+                                        <a class="btn btn-light btn-square me-3" href=""><i class="far fa-heart text-primary"></i></a>
+                                        <?php
+                                        // Get the deadline date of the job offer from the database
+                                        $deadlineDate = new DateTime($jobOffer['deadline_date']);
+                                        // Get the current date
+                                        $currentDate = new DateTime();
+                                        echo '<a class="btn btn-primary me-3" href="view_job.php?id=' . $idOffre . '">View</a>';
+
+                                        // Check if the deadline date has passed
+                                        if ($currentDate > $deadlineDate) {
+                                            // If the deadline date has passed, display a message
+                                            echo '<button class="btn btn-danger">Expired</button>';
+                                        } else {
+                                            // If the deadline date is still valid, display the "Apply Now" button
+                                            echo '<a class="btn btn-primary" href="addcandidature.php?id_offres =' . $idOffre . '" >Apply Now</a>';
+                                        }
+                                        ?>
                                     </div>
+</div>
+
                                 </div>
                             
                         </div>
                     <?php endforeach; ?>
+                    
 
                     <!-- Pagination links -->
                     <div class="pagination">
@@ -189,6 +215,64 @@ $jobs = $jobC->paginateJobs($offset, $limit);
             </div>
         </div>
         <!-- Jobs End -->
+<!-- Suggested job offers section -->
+<div class="container mt-5">
+    <h2 class="mb-4">Suggested Job Offers for you</h2>
+    <div class="row">
+        <?php
+        // Fetch suggested job offers
+        $suggestedJobOffers = $jobC->getSuggestedJobOffers();
+
+        // Display suggested job offers
+        foreach ($suggestedJobOffers as $suggestedJob) {
+            ?>
+                     <!-- Display each job item here -->
+                     <div class="job-item p-4 mb-4">
+                        <div class="row g-4">
+                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
+                                        <img class="flex-shrink-0 img-fluid border rounded" src="img/Job.jpg" alt="" style="width: 80px; height: 80px;">
+                                        <div class="text-start ps-4">
+                                        
+                                            <h5 class="mb-3"><?= $suggestedJob['job_title']; ?></h5>
+                                            <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $suggestedJob['location']; ?></span>
+                                            <span class="job-description text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $suggestedJob['job_description']; ?></span>
+                                            <span class="text-truncate me-3"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $suggestedJob['salary']; ?></span>
+                                            <span class="text-truncate me-0"><i class="fas fa-globe text-primary me-2"></i><?= $suggestedJob['company_website']; ?></span>
+                                           
+                                        </div>
+                                    </div>
+                                    <?php $idOffre = $jobOffer['id']; ?>
+
+                                    <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
+                                    <div class="d-flex mb-3">
+                                        <a class="btn btn-light btn-square me-3" href=""><i class="far fa-heart text-primary"></i></a>
+                                        <?php
+                                        // Get the deadline date of the job offer from the database
+                                        $deadlineDate = new DateTime($jobOffer['deadline_date']);
+                                        // Get the current date
+                                        $currentDate = new DateTime();
+                                        echo '<a class="btn btn-primary me-3" href="view_job.php?id=' . $idOffre . '">View</a>';
+
+                                        // Check if the deadline date has passed
+                                        if ($currentDate > $deadlineDate) {
+                                            // If the deadline date has passed, display a message
+                                            echo '<button class="btn btn-danger">Expired</button>';
+                                        } else {
+                                            // If the deadline date is still valid, display the "Apply Now" button
+                                            echo '<a class="btn btn-primary" href="addcandidature.php?id_offre=' . $idOffre . '" >Apply Now</a>';
+                                        }
+                                        ?>
+                                    </div>
+</div>
+
+                                </div>
+                            
+                        </div>
+            <?php
+        }
+        ?>
+    </div>
+</div>
 
         <!-- Footer Start -->
         <div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
@@ -270,6 +354,54 @@ $jobs = $jobC->paginateJobs($offset, $limit);
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+    <script>
+    function myFunction() {
+    var input, filter, jobItems, i, txtValue;
+    input = document.getElementsByName("search")[0];
+    filter = input.value.toUpperCase();
+    jobItems = document.getElementsByClassName("job-item");
+
+    // Loop through all job items, and hide/show those that match the search query
+    for (i = 0; i < jobItems.length; i++) {
+        txtValue = jobItems[i].textContent || jobItems[i].innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            jobItems[i].style.display = "";
+        } else {
+            jobItems[i].style.display = "none";
+        }
+    }
+}
+// Function to filter jobs based on description
+function filterJobs(description) {
+    var jobItems = document.getElementsByClassName("job-item");
+
+    for (var i = 0; i < jobItems.length; i++) {
+        var jobDescription = jobItems[i].querySelector('.job-description').textContent.trim();
+
+        if (description === 'Full Time' && jobDescription === 'Full Time') {
+            jobItems[i].style.display = "";
+        } else if (description === 'Part Time' && jobDescription === 'Part Time') {
+            jobItems[i].style.display = "";
+        } else {
+            jobItems[i].style.display = "none";
+        }
+    }
+}
+
+// Add event listeners to "Full Time" and "Part Time" tabs
+document.getElementById('full-time-tab').addEventListener('click', function() {
+    filterJobs('Full Time');
+});
+
+document.getElementById('part-time-tab').addEventListener('click', function() {
+    filterJobs('Part Time');
+});
+
+
+
+</script>
+
+
 </body>
 
 </html>

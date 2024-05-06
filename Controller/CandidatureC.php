@@ -44,7 +44,7 @@
 
 		public function ajouterCandidature($candidature)
 {
-    $sql = "INSERT INTO candidature (id_candidature, cv, id_offre) 
+    $sql = "INSERT INTO candidature (id_candidature, cv, id_offre ) 
             VALUES (:id_candidature, :cv, :id_offre)";
     
     $db = config::getConnexion();
@@ -62,6 +62,7 @@
                 'id_candidature' => $candidature->getIdCandidature(),
                 'cv' => $candidature->getCv(),
                 'id_offre' => $candidature->getIdOffre(),
+				
             ]);
         } else {
             // If the id_offre doesn't exist, handle the error (e.g., display an error message)
@@ -80,10 +81,12 @@
 				$query = $db->prepare(
 					'UPDATE candidature SET 
 						cv= :cv,
+						
 					WHERE id_candidature= :id_candidature'
 				);
 				$query->execute([
 					'cv' => $candidature->getcontenu(),
+					
 					'id_candidature' => $id_candidature
 				]);
 				echo $query->rowCount() . " records UPDATED successfully <br>";

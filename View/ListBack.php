@@ -122,7 +122,8 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                     <i class="fa fa-bars"></i>
                 </a>
                 <form class="d-none d-md-flex ms-4">
-                    <input class="form-control bg-dark border-0" type="search" placeholder="Search">
+                    <input class="form-control bg-dark border-0" type="text" name="search" onkeyup="myFunction()" placeholder="Search..." >
+
                 </form>
                 <div class="navbar-nav align-items-center ms-auto">
                     <div class="nav-item dropdown">
@@ -273,19 +274,27 @@ $jobs = $jobC->paginateJobs($offset, $limit);
             </div>
             <!-- Sales Chart End -->
 
-
+<!-- Search Input -->
+<div class="container-fluid pt-4 px-4">
+                <div class="row mb-3">
+                    <div class="col-12">
+                    </div>
+                </div>
+            </div>
             <!-- Recent Sales Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="bg-secondary text-center rounded p-4">
                     <div class="d-flex align-items-center justify-content-between mb-4">
                         <h6 class="mb-0">JOB LIST</h6>
-                        <a href="">Show All</a>
                     </div>
                     <div class="table-responsive">
-                    <table border="1" align="center" width="70%">
-                    <?php
-        foreach ($jobs as $jobOffer) {
-        ?>  
+                    <table class="table" id="table">
+                    <tbody id="jobList" class='initial-list'>
+
+                    <?php foreach ($jobs as $jobOffer) {
+?>  
+                                <!-- Your table body HTML code here -->
+                            
             <div class="job-item p-4 mb-4">
                                 <div class="row g-4">
                                     <div class="col-sm-12 col-md-8 d-flex align-items-center">
@@ -293,7 +302,7 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                                         
                                         <div class="text-start ps-4">
                                         
-                                            <h5 class="mb-3"><?= $jobOffer['job_title']; ?></h5>
+                                            <h5 class="mb-3 job-title"><?= $jobOffer['job_title']; ?></h5>
                                             <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $jobOffer['location']; ?></span>
                                             <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $jobOffer['job_description']; ?></span>
                                             <span class="text-truncate me-3"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $jobOffer['salary']; ?></span>
@@ -304,7 +313,7 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                                     <?php $idOffre = $jobOffer['id']; ?>
                                     <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
                                         <div class="d-flex mb-3">
-                                        <a class="btn btn-primary" href="addcandidature.php?id_offre=<?= $idOffre ?>">ADD Candidature</a>
+                                        <a class="btn btn-primary" href="addcandidature2.php?id_offre=<?= $idOffre ?>">ADD Candidature</a>
 
                                         <a style="margin-left: 40px;" class="btn btn-primary"  href="listcandidature.php?id_offre=<?= $idOffre  ?>">Candidature List</a>
 
@@ -319,6 +328,8 @@ $jobs = $jobC->paginateJobs($offset, $limit);
         <?php
         }
         ?>      
+                        <a style="margin-left: 1200px;" class="btn btn-primary" href="addJob2.php?id=<?php echo $jobOffer['id']; ?>">ADD JOB </a> 
+
         <!-- Pagination links -->
         <div class="pagination">
                         <?php if ($page > 1) : ?>
@@ -331,24 +342,7 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                             <a href="?page=<?= $page + 1 ?>" class="btn btn-primary">Next</a>
                         <?php endif; ?>
                     </div>
-        <a style="margin-left: 1200px;" class="btn btn-primary" href="addJob2.php?id=<?php echo $jobOffer['id']; ?>">ADD JOB </a> 
-         <div style="display: flex; align-items: center;  margin-left: 20px;">
-                    <label for="Recherche">Search</label>
-                    <input class="border px-4 py-2"  id="input" type="text" style="margin-right: 10px;">
-                   
-                </div>
-                <title>AJAX Search Example</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $("input").on("keyup", function() {
-                var value = $(this).val().toLowerCase();
-                $("table tr").filter(function() {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                });
-            });
-        });
-    </script>
+                    </tbody>
         </table>                              
                     </div>
                 </div>
@@ -515,6 +509,25 @@ $jobs = $jobC->paginateJobs($offset, $limit);
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+    <script>
+    function myFunction() {
+    var input, filter, jobItems, i, txtValue;
+    input = document.getElementsByName("search")[0];
+    filter = input.value.toUpperCase();
+    jobItems = document.getElementsByClassName("job-item");
+
+    // Loop through all job items, and hide/show those that match the search query
+    for (i = 0; i < jobItems.length; i++) {
+        txtValue = jobItems[i].textContent || jobItems[i].innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            jobItems[i].style.display = "";
+        } else {
+            jobItems[i].style.display = "none";
+        }
+    }
+}  
+    </script>
+    
 </body>
 
 </html>

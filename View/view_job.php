@@ -1,122 +1,56 @@
 <?php
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-require 'C:\xamppx\htdocs\TEST_MYCRUD1\PHPMailer-master\src\Exception.php';
-require 'C:\xamppx\htdocs\TEST_MYCRUD1\PHPMailer-master\src\PHPMailer.php';
-require 'C:\xamppx\htdocs\TEST_MYCRUD1\PHPMailer-master\src\SMTP.php';
-require 'C:\xamppx\htdocs\TEST_MYCRUD1\config.php';
 
-    // Include config.php only if it's not already included
-    if (!class_exists('config')) {
-        include "../config.php";
-    }
 
-    // Initialize jobDetails array
-    $jobDetails = [];
+    include "../Controller/JobC.php";
+    $jobC = new JobC();
+// Check if the job ID is provided in the URL
+if (isset($_GET['id'])) {
+    // Get the job ID from the URL
+    $jobId = $_GET['id'];
 
-    // Check if id_offre is set in the URL
-    if(isset($_GET['id_offre'])) {
-        $id_offre = $_GET['id_offre'];
+    // Increment the view counter for the job offer
+    $jobC->incrementViewCounter($jobId);
 
-        // Get PDO connection
-        $pdo = config::getConnexion();
-
-        // Define SQL query to select job details by id_offre
-        $sql = "SELECT * FROM offres_emploi WHERE id = :id_offre";
-
-        try {
-            // Prepare the SQL statement
-            $stmt = $pdo->prepare($sql);
-
-            // Bind the parameter
-            $stmt->bindParam(':id_offre', $id_offre);
-
-            // Execute the query
-            $stmt->execute();
-
-            // Fetch the job details
-            $jobDetails = $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch(PDOException $e) {
-            // Handle errors
-            echo "Error: " . $e->getMessage();
-        }
-    }
-
-    
-    if(isset($_POST['btn_img']) ) {
-        // Get the id_offre from the URL parameters
-        $id_offre = isset($_GET['id_offre']) ? $_GET['id_offre'] : null;
-
-        // Check if id_offre is not null
-        if ($id_offre !== null) {
-            // Include the config file
-            require_once "../config.php";
-                
-            // Get PDO connection
-            $pdo = config::getConnexion();
-                
-            // Define SQL query to insert image
-            $sql = "INSERT INTO `candidature` (`cv`, `id_offre`) VALUES (:filename, :id_offre )";
-                
-            // Get file details
-            $filename = $_FILES["choosefile"]["name"];
-            $tempfile = $_FILES["choosefile"]["tmp_name"];
-            $folder = "image/".$filename;
-            // Check if file name is not empty
-            if($filename == "") {
-                echo "<div class='alert alert-danger' role='alert'><h4 class='text-center'>Blank not Allowed</h4></div>";
-            } else {
-                try {
-                    // Prepare the SQL statement
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->bindParam(':filename', $filename);
-                    $stmt->bindParam(':id_offre', $id_offre); // Bind id_offre
-                    // Execute the query
-                    $stmt->execute();
-                    
-                    // Move the uploaded file to the folder
-                    move_uploaded_file($tempfile, $folder);
-                    
-// Create a new PHPMailer instance
-$mail = new PHPMailer();
-    
-// Set the SMTP server details
-$mail->isSMTP();
-$mail->Host = 'smtp.gmail.com';
-$mail->Port = 587;
-$mail->SMTPSecure = 'tls';
-$mail->SMTPAuth = true;
-$mail->Username = 'aichasmaoui22@gmail.com';
-$mail->Password = 'vmeh dryk xqsf vldf';
-
-// Set the email details
-$mail->setFrom('webreverso2a28@gmail.com', 'CareerHub');
-$mail->addAddress('aichasmaoui22@gmail.com');
-$mail->Subject = 'Candidature Recorded';
-$mail->Body = 'Your candidature has been recorded successfully.';
-
-// Send the email
-if ($mail->send()) {
-
-header('Location:ListJob2.php');
-} else {
-echo 'Delivery confirmation email failed to send';
+    // Fetch job details
 }
-
-
-                    echo "<div class='alert alert-success' role='alert'><h4 class='text-center'>Image uploaded</h4></div>";
-                } catch(PDOException $e) {
-                    echo "Error: " . $e->getMessage();
-                }
-            }
-        } else {
-            // Handle the case where id_offre is not passed
-            echo "Error: No job ID specified.";
-        }
-    }
-            
-            
    
+
+                    // Include config.php only if it's not already included
+                    if (!class_exists('config')) {
+                        include "../config.php";
+                    }
+                    
+                    // Initialize jobDetails array
+                    $jobDetails = [];
+                
+                    // Check if id_offre is set in the URL
+                    if(isset($_GET['id'])) {
+                        $id_offre = $_GET['id'];
+                
+                        // Get PDO connection
+                        $pdo = config::getConnexion();
+                
+                        // Define SQL query to select job details by id_offre
+                        $sql = "SELECT * FROM offres_emploi WHERE id = :id";
+                
+                        try {
+                            // Prepare the SQL statement
+                            $stmt = $pdo->prepare($sql);
+                
+                            // Bind the parameter
+                            $stmt->bindParam(':id', $id_offre);
+                
+                            // Execute the query
+                            $stmt->execute();
+                
+                            // Fetch the job details
+                            $jobDetails = $stmt->fetch(PDO::FETCH_ASSOC);
+                        } catch(PDOException $e) {
+                            // Handle errors
+                            echo "Error: " . $e->getMessage();
+                        }
+                    }
+                    
     
 
 ?>
@@ -254,8 +188,7 @@ echo 'Delivery confirmation email failed to send';
                 
                 <div class="job-info-card card">
                     <div class="card-body">
-                        
-                        <?php if (!empty($jobDetails)) : ?>
+                       <?php if (!empty($jobDetails)) : ?>
                             <h2 class="job-info-title">Job Details :</h2>
                         <h2 class="card-title"><?php echo isset($jobDetails['job_title']) ? $jobDetails['job_title'] : ''; ?></h2>
                         <p class="card-text">Company: <?php echo isset($jobDetails['company_name']) ? $jobDetails['company_name'] : ''; ?></p>
@@ -265,17 +198,7 @@ echo 'Delivery confirmation email failed to send';
                         <p class="card-text">Salary: <?php echo isset($jobDetails['salary']) ? $jobDetails['salary'] : ''; ?></p>
                         <p class="card-text">Location: <?php echo isset($jobDetails['location']) ? $jobDetails['location'] : ''; ?></p>
                         <?php endif; ?>
-                        <hr>
                         
-                        <div class="upload-form">
-                        <form action="addcandidature.php?id_offre=<?php echo $_GET['id_offre']; ?>" method="post"
-                                class="form-control" enctype="multipart/form-data">
-                                <input type="file" class="form-control" name="choosefile" id="">
-                                <div class="col-6 m-auto">
-                                    <button type="submit" name="btn_img" class="btn btn-outline-success m-4">Submit</button>
-                                </div>
-                            </form>
-                        </div>
                     </div>
                 </div>
             </div>

@@ -11,7 +11,8 @@
     && isset($_POST["job_description"])
     && isset($_POST["job_requirements"])
     && isset($_POST["salary"])
-    && isset($_POST["location"])){
+    && isset($_POST["location"])
+    && isset($_POST["deadline_date"])){
         if(!empty($_POST["job_title"])
         && !empty($_POST["company_name"])
         && !empty($_POST["company_description"])
@@ -19,7 +20,8 @@
         && !empty($_POST["job_description"])
         && !empty($_POST["job_requirements"])
         && !empty($_POST["salary"])
-        && !empty($_POST["location"])){
+        && !empty($_POST["location"])
+        && !empty($_POST["deadline_date"])){
             $job = new Job(null
             ,$_POST["job_title"]
             ,$_POST["company_name"]
@@ -29,6 +31,7 @@
             ,$_POST["job_requirements"]
             ,$_POST["salary"]
             ,$_POST["location"]
+            ,$_POST["deadline_date"] 
             );
             
             $jobC->addJob($job);
@@ -374,6 +377,12 @@
         <label for="location" class="col-sm-3 col-form-label text-sm-end">Location:</label>
         <div class="col-sm-9">
             <input type="text" name="location" id="location" maxlength="50" class="form-control">
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="deadline_date" class="col-sm-3 col-form-label text-sm-end">deadline date:</label>
+        <div class="col-sm-9">
+            <input type="date" name="deadline_date" id="deadline_date" maxlength="50" class="form-control">
         </div>
     </div>
     <div class="row mb-3">
