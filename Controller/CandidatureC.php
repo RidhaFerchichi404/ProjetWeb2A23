@@ -44,7 +44,11 @@
 
 		public function ajouterCandidature($candidature)
 {
+<<<<<<< HEAD
     $sql = "INSERT INTO candidature (id_candidature, cv, id_offre ) 
+=======
+    $sql = "INSERT INTO candidature (id_candidature, cv, id_offre) 
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
             VALUES (:id_candidature, :cv, :id_offre)";
     
     $db = config::getConnexion();
@@ -62,7 +66,10 @@
                 'id_candidature' => $candidature->getIdCandidature(),
                 'cv' => $candidature->getCv(),
                 'id_offre' => $candidature->getIdOffre(),
+<<<<<<< HEAD
 				
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
             ]);
         } else {
             // If the id_offre doesn't exist, handle the error (e.g., display an error message)
@@ -81,12 +88,18 @@
 				$query = $db->prepare(
 					'UPDATE candidature SET 
 						cv= :cv,
+<<<<<<< HEAD
 						
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
 					WHERE id_candidature= :id_candidature'
 				);
 				$query->execute([
 					'cv' => $candidature->getcontenu(),
+<<<<<<< HEAD
 					
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
 					'id_candidature' => $id_candidature
 				]);
 				echo $query->rowCount() . " records UPDATED successfully <br>";

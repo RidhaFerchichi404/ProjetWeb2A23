@@ -1,4 +1,5 @@
 <?php
+<<<<<<< HEAD
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 require 'C:\xamppx\htdocs\TEST_MYCRUD1\PHPMailer-master\src\Exception.php';
@@ -6,11 +7,14 @@ require 'C:\xamppx\htdocs\TEST_MYCRUD1\PHPMailer-master\src\PHPMailer.php';
 require 'C:\xamppx\htdocs\TEST_MYCRUD1\PHPMailer-master\src\SMTP.php';
 require 'C:\xamppx\htdocs\TEST_MYCRUD1\config.php';
 
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
     // Include config.php only if it's not already included
     if (!class_exists('config')) {
         include "../config.php";
     }
 
+<<<<<<< HEAD
     // Initialize jobDetails array
     $jobDetails = [];
 
@@ -44,6 +48,9 @@ require 'C:\xamppx\htdocs\TEST_MYCRUD1\config.php';
 
     
     if(isset($_POST['btn_img']) ) {
+=======
+    if(isset($_POST['btn_img'])) {
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
         // Get the id_offre from the URL parameters
         $id_offre = isset($_GET['id_offre']) ? $_GET['id_offre'] : null;
 
@@ -56,12 +63,20 @@ require 'C:\xamppx\htdocs\TEST_MYCRUD1\config.php';
             $pdo = config::getConnexion();
                 
             // Define SQL query to insert image
+<<<<<<< HEAD
             $sql = "INSERT INTO `candidature` (`cv`, `id_offre`) VALUES (:filename, :id_offre )";
+=======
+            $sql = "INSERT INTO `candidature` (`cv`, `id_offre`) VALUES (:filename, :id_offre)";
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
                 
             // Get file details
             $filename = $_FILES["choosefile"]["name"];
             $tempfile = $_FILES["choosefile"]["tmp_name"];
             $folder = "image/".$filename;
+<<<<<<< HEAD
+=======
+                
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
             // Check if file name is not empty
             if($filename == "") {
                 echo "<div class='alert alert-danger' role='alert'><h4 class='text-center'>Blank not Allowed</h4></div>";
@@ -71,12 +86,17 @@ require 'C:\xamppx\htdocs\TEST_MYCRUD1\config.php';
                     $stmt = $pdo->prepare($sql);
                     $stmt->bindParam(':filename', $filename);
                     $stmt->bindParam(':id_offre', $id_offre); // Bind id_offre
+<<<<<<< HEAD
+=======
+                    
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
                     // Execute the query
                     $stmt->execute();
                     
                     // Move the uploaded file to the folder
                     move_uploaded_file($tempfile, $folder);
                     
+<<<<<<< HEAD
 // Create a new PHPMailer instance
 $mail = new PHPMailer();
     
@@ -104,6 +124,8 @@ echo 'Delivery confirmation email failed to send';
 }
 
 
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
                     echo "<div class='alert alert-success' role='alert'><h4 class='text-center'>Image uploaded</h4></div>";
                 } catch(PDOException $e) {
                     echo "Error: " . $e->getMessage();
@@ -114,6 +136,7 @@ echo 'Delivery confirmation email failed to send';
             echo "Error: No job ID specified.";
         }
     }
+<<<<<<< HEAD
             
             
    
@@ -365,4 +388,36 @@ echo 'Delivery confirmation email failed to send';
     <script src="js/main.js"></script>
 </body>
 
+=======
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>Upload Image</title>
+</head>
+<body>
+
+    <div class="alert alert-secondary" role="alert">
+        <h4 class="text-center">Upload Image</h4>
+    </div>
+    <div class="container col-12 m-5">
+        <div class="col-6 m-auto">
+
+            <form action="addcandidature.php?id_offre=<?php echo $_GET['id_offre']; ?>" method="post" class="form-control" enctype="multipart/form-data">
+                <input type="file" class="form-control" name="choosefile"  id="">
+                <div class="col-6 m-auto">
+                    <button type="submit" name="btn_img" class="btn btn-outline-success m-4">Submit</button>
+                </div>
+            </form>
+            
+
+        </div>
+    </div>
+
+</body>
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
 </html>

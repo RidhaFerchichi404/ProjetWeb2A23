@@ -20,7 +20,10 @@ function updateJob($jobData)
         isset($jobData["job_requirements"]) &&
         isset($jobData["salary"]) &&
         isset($jobData["location"])
+<<<<<<< HEAD
         && isset($jobData["deadline_date"])
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
     ) {
         // Check if form fields are not empty
         if (
@@ -33,7 +36,10 @@ function updateJob($jobData)
             !empty($jobData["job_requirements"]) &&
             !empty($jobData["salary"]) &&
             !empty($jobData["location"])
+<<<<<<< HEAD
             && !empty($jobData["deadline_date"])
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
         ) {
             // Create a new job object
             $job = new Job(
@@ -45,8 +51,12 @@ function updateJob($jobData)
                 $jobData['job_description'],
                 $jobData['job_requirements'],
                 $jobData['salary'],
+<<<<<<< HEAD
                 $jobData['location'],
                 $jobData['deadline_date']
+=======
+                $jobData['location']
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
             );
 
             // Update the job in the database
@@ -384,9 +394,12 @@ $error = updateJob($_POST);
 
                         <label for="location">Location:</label>
                         <input type="text" value="<?php echo $job['location']; ?>" id="location" name="location">
+<<<<<<< HEAD
                         
                         <label for="deadline_date">deadline date:</label>
                         <input type="date" value="<?php echo $job['deadline_date']; ?>" id="deadline_date" name="deadline_date">
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
 
                         <input type="submit" value="Submit">
                     <?php } ?>

@@ -122,8 +122,12 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                     <i class="fa fa-bars"></i>
                 </a>
                 <form class="d-none d-md-flex ms-4">
+<<<<<<< HEAD
                     <input class="form-control bg-dark border-0" type="text" name="search" onkeyup="myFunction()" placeholder="Search..." >
 
+=======
+                    <input class="form-control bg-dark border-0" type="search" placeholder="Search">
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
                 </form>
                 <div class="navbar-nav align-items-center ms-auto">
                     <div class="nav-item dropdown">
@@ -274,6 +278,7 @@ $jobs = $jobC->paginateJobs($offset, $limit);
             </div>
             <!-- Sales Chart End -->
 
+<<<<<<< HEAD
 <!-- Search Input -->
 <div class="container-fluid pt-4 px-4">
                 <div class="row mb-3">
@@ -281,11 +286,15 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                     </div>
                 </div>
             </div>
+=======
+
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
             <!-- Recent Sales Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="bg-secondary text-center rounded p-4">
                     <div class="d-flex align-items-center justify-content-between mb-4">
                         <h6 class="mb-0">JOB LIST</h6>
+<<<<<<< HEAD
                     </div>
                     <div class="table-responsive">
                     <table class="table" id="table">
@@ -295,6 +304,15 @@ $jobs = $jobC->paginateJobs($offset, $limit);
 ?>  
                                 <!-- Your table body HTML code here -->
                             
+=======
+                        <a href="">Show All</a>
+                    </div>
+                    <div class="table-responsive">
+                    <table border="1" align="center" width="70%">
+                    <?php
+        foreach ($jobs as $jobOffer) {
+        ?>  
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
             <div class="job-item p-4 mb-4">
                                 <div class="row g-4">
                                     <div class="col-sm-12 col-md-8 d-flex align-items-center">
@@ -302,7 +320,11 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                                         
                                         <div class="text-start ps-4">
                                         
+<<<<<<< HEAD
                                             <h5 class="mb-3 job-title"><?= $jobOffer['job_title']; ?></h5>
+=======
+                                            <h5 class="mb-3"><?= $jobOffer['job_title']; ?></h5>
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
                                             <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $jobOffer['location']; ?></span>
                                             <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $jobOffer['job_description']; ?></span>
                                             <span class="text-truncate me-3"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $jobOffer['salary']; ?></span>
@@ -313,7 +335,11 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                                     <?php $idOffre = $jobOffer['id']; ?>
                                     <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
                                         <div class="d-flex mb-3">
+<<<<<<< HEAD
                                         <a class="btn btn-primary" href="addcandidature2.php?id_offre=<?= $idOffre ?>">ADD Candidature</a>
+=======
+                                        <a class="btn btn-primary" href="addcandidature.php?id_offre=<?= $idOffre ?>">ADD Candidature</a>
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
 
                                         <a style="margin-left: 40px;" class="btn btn-primary"  href="listcandidature.php?id_offre=<?= $idOffre  ?>">Candidature List</a>
 
@@ -328,8 +354,11 @@ $jobs = $jobC->paginateJobs($offset, $limit);
         <?php
         }
         ?>      
+<<<<<<< HEAD
                         <a style="margin-left: 1200px;" class="btn btn-primary" href="addJob2.php?id=<?php echo $jobOffer['id']; ?>">ADD JOB </a> 
 
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
         <!-- Pagination links -->
         <div class="pagination">
                         <?php if ($page > 1) : ?>
@@ -342,7 +371,28 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                             <a href="?page=<?= $page + 1 ?>" class="btn btn-primary">Next</a>
                         <?php endif; ?>
                     </div>
+<<<<<<< HEAD
                     </tbody>
+=======
+        <a style="margin-left: 1200px;" class="btn btn-primary" href="addJob2.php?id=<?php echo $jobOffer['id']; ?>">ADD JOB </a> 
+         <div style="display: flex; align-items: center;  margin-left: 20px;">
+                    <label for="Recherche">Search</label>
+                    <input class="border px-4 py-2"  id="input" type="text" style="margin-right: 10px;">
+                   
+                </div>
+                <title>AJAX Search Example</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("input").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("table tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
         </table>                              
                     </div>
                 </div>
@@ -509,6 +559,7 @@ $jobs = $jobC->paginateJobs($offset, $limit);
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+<<<<<<< HEAD
     <script>
     function myFunction() {
     var input, filter, jobItems, i, txtValue;
@@ -528,6 +579,8 @@ $jobs = $jobC->paginateJobs($offset, $limit);
 }  
     </script>
     
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
 </body>
 
 </html>

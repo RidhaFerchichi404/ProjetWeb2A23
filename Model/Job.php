@@ -9,10 +9,16 @@
         private ?string $job_requirements = null;
         private ?float $salary = null; 
         private ?string $location = null;  
+<<<<<<< HEAD
         private ?string $deadline_date = null; 
         private ?int $view_counter = null;
         
         public function __construct($a = null,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k) {
+=======
+
+
+        public function __construct($a = null,$b,$c,$d,$e,$f,$g,$h,$i) {
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
             $this->id = $a;
             $this->job_title = $b;
             $this->company_name = $c;
@@ -22,8 +28,11 @@
             $this->job_requirements = $g;
             $this->salary = $h;
             $this->location = $i;
+<<<<<<< HEAD
             $this->deadline_date = $j;
             $this->view_counter = $k; 
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
         }
 
         // Getter method for id
@@ -116,6 +125,7 @@
         $this->location = $location;
     }
 
+<<<<<<< HEAD
     // Getter method for deadline_date
     public function getDeadline_date(): ?string {
         return $this->deadline_date;
@@ -136,5 +146,8 @@
     {
         $this->view_counter = $view_counter;
     }
+=======
+        
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
     }
 ?>

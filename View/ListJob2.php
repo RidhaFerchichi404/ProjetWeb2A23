@@ -23,7 +23,11 @@ $totalPages = ceil($totalJobs / $limit);
 // Fetch jobs for the current page
 $jobs = $jobC->paginateJobs($offset, $limit);
 
+<<<<<<< HEAD
 
+=======
+// Rest of your HTML and PHP code for displaying jobs and pagination
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
 ?>
 
 <!DOCTYPE html>
@@ -116,6 +120,7 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                     </ol>
                 </nav>
             </div>
+<<<<<<< HEAD
             <form method="POST" action="" style="display: flex;">
             <input type="text" name="search" onkeyup="myFunction()" placeholder="Search..." style="border-radius: 6px 6px 6px 6px; border-color: green">
     <button type="submit" style="background: none; border: none; cursor: pointer; padding: 0 10px;">
@@ -125,6 +130,8 @@ $jobs = $jobC->paginateJobs($offset, $limit);
         </svg>
     </button>
 </form>
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
         </div>
         <!-- Header End -->
 
@@ -140,12 +147,20 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                             </a>
                         </li>
                         <li class="nav-item">
+<<<<<<< HEAD
                             <a id="full-time-tab" class="d-flex align-items-center text-start mx-3 pb-3" data-bs-toggle="pill" href="#tab-2">
+=======
+                            <a class="d-flex align-items-center text-start mx-3 pb-3" data-bs-toggle="pill" href="#tab-2">
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
                                 <h6 class="mt-n1 mb-0">Full Time</h6>
                             </a>
                         </li>
                         <li class="nav-item">
+<<<<<<< HEAD
                             <a id="part-time-tab" class="d-flex align-items-center text-start mx-3 me-0 pb-3" data-bs-toggle="pill" href="#tab-3">
+=======
+                            <a class="d-flex align-items-center text-start mx-3 me-0 pb-3" data-bs-toggle="pill" href="#tab-3">
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
                                 <h6 class="mt-n1 mb-0">Part Time</h6>
                             </a>
                         </li>
@@ -163,7 +178,11 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                                         
                                             <h5 class="mb-3"><?= $jobOffer['job_title']; ?></h5>
                                             <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $jobOffer['location']; ?></span>
+<<<<<<< HEAD
                                             <span class="job-description text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $jobOffer['job_description']; ?></span>
+=======
+                                            <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $jobOffer['job_description']; ?></span>
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
                                             <span class="text-truncate me-3"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $jobOffer['salary']; ?></span>
                                             <span class="text-truncate me-0"><i class="fas fa-globe text-primary me-2"></i><?= $jobOffer['company_website']; ?></span>
                                            
@@ -172,6 +191,7 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                                     <?php $idOffre = $jobOffer['id']; ?>
 
                                     <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
+<<<<<<< HEAD
                                     <div class="d-flex mb-3">
                                         <a class="btn btn-light btn-square me-3" href=""><i class="far fa-heart text-primary"></i></a>
                                         <?php
@@ -193,11 +213,21 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                                     </div>
 </div>
 
+=======
+                                        <div class="d-flex mb-3">
+                                            <a class="btn btn-light btn-square me-3" href=""><i class="far fa-heart text-primary"></i></a>
+                                            <a class="btn btn-primary" href="addcandidature.php?id_offre=<?= $idOffre ?>">Apply Now</a>
+                                        </div>
+                                    </div>
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
                                 </div>
                             
                         </div>
                     <?php endforeach; ?>
+<<<<<<< HEAD
                     
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
 
                     <!-- Pagination links -->
                     <div class="pagination">
@@ -215,6 +245,7 @@ $jobs = $jobC->paginateJobs($offset, $limit);
             </div>
         </div>
         <!-- Jobs End -->
+<<<<<<< HEAD
 <!-- Suggested job offers section -->
 <div class="container mt-5">
     <h2 class="mb-4">Suggested Job Offers for you</h2>
@@ -273,6 +304,8 @@ $jobs = $jobC->paginateJobs($offset, $limit);
         ?>
     </div>
 </div>
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
 
         <!-- Footer Start -->
         <div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
@@ -354,6 +387,7 @@ $jobs = $jobC->paginateJobs($offset, $limit);
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+<<<<<<< HEAD
     <script>
     function myFunction() {
     var input, filter, jobItems, i, txtValue;
@@ -402,6 +436,8 @@ document.getElementById('part-time-tab').addEventListener('click', function() {
 </script>
 
 
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
 </body>
 
 </html>

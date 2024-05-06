@@ -11,8 +11,12 @@
     && isset($_POST["job_description"])
     && isset($_POST["job_requirements"])
     && isset($_POST["salary"])
+<<<<<<< HEAD
     && isset($_POST["location"])
     && isset($_POST["deadline_date"])){
+=======
+    && isset($_POST["location"])){
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
         if(!empty($_POST["job_title"])
         && !empty($_POST["company_name"])
         && !empty($_POST["company_description"])
@@ -20,8 +24,12 @@
         && !empty($_POST["job_description"])
         && !empty($_POST["job_requirements"])
         && !empty($_POST["salary"])
+<<<<<<< HEAD
         && !empty($_POST["location"])
         && !empty($_POST["deadline_date"])){
+=======
+        && !empty($_POST["location"])){
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
             $job = new Job(null
             ,$_POST["job_title"]
             ,$_POST["company_name"]
@@ -31,7 +39,10 @@
             ,$_POST["job_requirements"]
             ,$_POST["salary"]
             ,$_POST["location"]
+<<<<<<< HEAD
             ,$_POST["deadline_date"] 
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
             );
             
             $jobC->addJob($job);
@@ -379,12 +390,15 @@
             <input type="text" name="location" id="location" maxlength="50" class="form-control">
         </div>
     </div>
+<<<<<<< HEAD
     <div class="mb-3 row">
         <label for="deadline_date" class="col-sm-3 col-form-label text-sm-end">deadline date:</label>
         <div class="col-sm-9">
             <input type="date" name="deadline_date" id="deadline_date" maxlength="50" class="form-control">
         </div>
     </div>
+=======
+>>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
     <div class="row mb-3">
         <div class="col-sm-3"></div>
         <div class="col-sm-9 text-center">
