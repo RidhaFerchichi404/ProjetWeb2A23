@@ -1,4 +1,5 @@
 <?php
+    include_once "../config.php";
     class ParticipantC{
         public function ListParticipants(){
             $sql = "SELECT * FROM participant";
@@ -8,7 +9,7 @@
                 $list = $db->query($sql);
                 return $list;
             }catch(Exception $e){
-                die('error de lister les events !!'. $e->getMessage());
+                die('error de lister les Participants !!'. $e->getMessage());
             }
         }
 
@@ -21,11 +22,11 @@
                 $req->execute();
             }
             catch(Exception $e){
-                die('error de suppression !! '. $e->getMessage());
+                die('error de suppression du participant !! '. $e->getMessage());
             }
         }
 
-        public function addParticipant($pr,$idEvent){
+       /* public function addParticipant($pr,$idEvent){
             //var_dump($ev); // testing
             $sql = "INSERT INTO participant VALUES(NULL,:nomPart,:agePart,:emailPart,:idEvent)";
             $db = config::getConnexion();
@@ -39,9 +40,50 @@
                 ]);
             }
             catch(Exception $e){
-                die('error d ajout !! '. $e->getMessage());
+                die('error d ajout du participant !! '. $e->getMessage());
+            }
+        }*/
+
+        public function addParticipant($pr, $idEvent){
+            try {
+                $sql = "INSERT INTO participant VALUES (null,:nomPart, :agePart, :emailPart, :idEvent)";
+                $db = config::getConnexion();
+                $req = $db->prepare($sql);
+        
+                // Bind parameters
+                $req->bindParam(":nomPart", $nomPart);
+                $req->bindParam(":agePart", $agePart);
+                $req->bindParam(":emailPart", $emailPart);
+                $req->bindParam(":idEvent", $idEvent);
+        
+                // Set parameter values
+                $nomPart = $pr->getNomPart();
+                $agePart = $pr->getAgePart();
+                $emailPart = $pr->getEmailPart();
+        
+                // Execute the query
+                $req->execute();
+        
+                // Check if the query was successful
+                if ($req->rowCount() > 0) {
+                    // Participant added successfully
+                    return true;
+                } else {
+                    // Participant not added
+                    return false;
+                }
+            } catch (PDOException $e) {
+                // Handle database errors
+                echo 'Error adding participant: ' . $e->getMessage();
+                return false;
+            } catch (Exception $e) {
+                // Handle other errors
+                echo 'Error adding participant: ' . $e->getMessage();
+                return false;
             }
         }
+        
+        
 
         public function getParticipantById($idPart){
             $sql = "SELECT * FROM participant WHERE idPart = :idPart";

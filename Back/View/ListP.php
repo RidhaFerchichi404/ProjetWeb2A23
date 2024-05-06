@@ -89,6 +89,7 @@
                                         <th scope="col">Name of participant</th>
                                         <th scope="col">Age of participant</th>
                                         <th scope="col">Emailt of particiapnt</th>
+                                        <th scope="col">Update</th>
                                         <th scope="col">Delete</th>
                                     </tr>
                                 </thead>
@@ -103,6 +104,12 @@
                                         <td><?= $p['nomPart']; ?></td>
                                         <td><?= $p['agePart']; ?></td>
                                         <td><?= $p['emailPart']; ?></td>
+                                        <td>
+                                            <form method="post" action="UpdateP.php" >
+                                                <input type="hidden" name="idPart" value="<?= $p['idPart']; ?>">
+                                                <button type="submit" class="btn btn-primary">Update</button>
+                                            </form>
+                                        </td>
                                         <td>
                                             <form action="DeleteParticipant.php" method="post">
                                                 <input type="hidden" name="idPart" value="<?= $p['idPart']; ?>">

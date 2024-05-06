@@ -89,6 +89,7 @@
                                         <th scope="col">Theme of Event</th>
                                         <th scope="col">Date of Event</th>
                                         <th scope="col">Place of Event</th>
+                                        <th scope="col">Nb participants</th>
                                         <th scope="col">Update</th>
                                         <th scope="col">Delete</th>
                                     </tr>
@@ -104,6 +105,7 @@
                                         <td><?= $Event['themeEvent']; ?></td>
                                         <td><?= $Event['dateEvent']; ?></td>
                                         <td><?= $Event['lieuEvent']; ?></td>
+                                        <td><?= $Event['NbPart']; ?></td>
                                         <td>
                                             <form method="post" action="Update.php" >
                                                 <input type="hidden" name="idEvent" value="<?= $Event['idEvent']; ?>">

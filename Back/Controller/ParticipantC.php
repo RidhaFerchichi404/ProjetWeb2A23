@@ -1,5 +1,6 @@
 <?php
 include "../config.php";
+include "../Model/Participant.php";
 
 class ParticipantC{
         public function ListParticipants(){
@@ -44,14 +45,52 @@ class ParticipantC{
             }
         }
 
+        public function updatePart($pr,$id,$idE){
+            try{
+                $db = config::getConnexion();
+                $sql = "UPDATE participant SET idPart = :idPart 
+                    , nomPart = :nomPart
+                    , agePart = :agePart
+                    , emailPart = :emailPart 
+                    , idEvent = :idEvent WHERE idPart = :idPart";
+                $req = $db->prepare($sql);
+                $req->bindValue(":idPart", $id);
+                $req->execute([
+                    "idPart"=>$pr->getIdPart(),
+                    "nomPart"=>$pr->getNomPart(),
+                    "agePart"=>$pr->getAgePart(),
+                    "emailPart"=>$pr->getEmailPart(),
+                    "idEvent"=>$idE
+                ]);
+                echo $req->rowCount() . " records UPDATED successfully <br>";
+            }
+            catch(Exception $e){
+                die('error de modification !! '. $e->getMessage());
+            }
+        }
+
         public function getParticipantsByEventId($idEvent){
             $sql = "SELECT * FROM participant WHERE idEvent = :idEvent";
             $db = config::getConnexion();
             $req = $db->prepare($sql);
-            $req->bindValue(":idEvent", $idEvent); // Corrected parameter name
+            $req->bindValue(":idEvent", $idEvent); 
             try{
                 $req->execute();
-                return $req->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows
+                return $req->fetchAll(PDO::FETCH_ASSOC); 
+            }
+            catch(Exception $e){
+                die('Error retrieving data: ' . $e->getMessage());
+            }
+        }
+
+        public function getParticipantsByPartId($idPart){
+            $sql = "SELECT * FROM participant WHERE idPart = :idPart";
+            $db = config::getConnexion();
+            $req = $db->prepare($sql);
+            $req->bindValue(":idPart", $idPart); 
+            try{
+                $req->execute();
+                return $req->fetchAll(PDO::FETCH_ASSOC); 
             }
             catch(Exception $e){
                 die('Error retrieving data: ' . $e->getMessage());

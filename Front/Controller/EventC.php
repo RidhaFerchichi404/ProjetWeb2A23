@@ -7,7 +7,8 @@ include "../config.php";
             $db = config::getConnexion();
             //echo "connection successful !! ";
             try{
-                $list = $db->query($sql);
+                $stmt = $db->query($sql);
+                $list = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 return $list;
             }catch(Exception $e){
                 die('error de lister les events !!'. $e->getMessage());
@@ -194,6 +195,19 @@ include "../config.php";
             }
         }
         
+
+        public function deleteEventOnZero($idEvent){
+            $db = config::getConnexion();
+            try{
+                $sql = "DELETE FROM events WHERE idEvent = :idEvent";
+                $req = $db->prepare($sql);
+                $req->bindValue(":idEvent",$idEvent);
+                $req->execute();
+            }
+            catch(Exception $e){
+                die('Error de supression de levent !!' . $e->getMessage());
+            }
+        }
         
         
     }

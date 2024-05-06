@@ -1,35 +1,27 @@
 <?php
 
-include '../Controller/EventC.php';
-include "../Model/Event.php";
+include '../Controller/ParticipantC.php';
 
 $error = "";
-$ev = null;
-$evC = new EventC();
+$Pr = null;
+$PrC = new ParticipantC();
 if (
-    isset($_POST["nomEvent2"]) &&
-    isset($_POST["orgEvent2"]) &&
-    isset($_POST["themeEvent2"]) &&
-    isset($_POST["dateEvent2"]) &&
-    isset($_POST["lieuEvent2"])
+    isset($_POST["idPart2"]) &&
+    isset($_POST["nomPart2"]) &&
+    isset($_POST["agePart2"]) &&
+    isset($_POST["emailPart2"]) &&
+    isset($_POST["idEventPart2"])
 ) {
     if (
-        !empty($_POST["nomEvent2"]) &&
-        !empty($_POST["orgEvent2"]) &&
-        !empty($_POST["themeEvent2"]) &&
-        !empty($_POST["dateEvent2"]) &&
-        !empty($_POST["lieuEvent2"])
+        !empty($_POST["idPart2"])&&
+        !empty($_POST["nomPart2"]) &&
+        !empty($_POST["agePart2"]) &&
+        !empty($_POST["emailPart2"]) &&
+        !empty($_POST["idEventPart2"]) 
     ) {
-        
-        $ev = new Event($_POST['idEvent2'],
-            $_POST['nomEvent2'],
-            $_POST['orgEvent2'],
-            $_POST['themeEvent2'],
-            $_POST['dateEvent2'],
-            $_POST['lieuEvent2']
-        );
-        $evC->updateEvent($ev,$_POST["idEvent2"]);
-        header('Location:List.php');
+        $Pr = new Participant($_POST["idPart2"],$_POST["nomPart2"],$_POST["agePart2"],$_POST["emailPart2"]);
+        $PrC->updatePart($Pr,$_POST["idPart2"],$_POST["idEventPart2"]);
+        header('Location:ListP.php');
     } else
         $error = "Missing information";
 }
@@ -93,7 +85,9 @@ if (
                         <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Events management</a>
                         <div class="dropdown-menu bg-transparent border-0">
                             <a href="Index.php" class="dropdown-item">Add an Event</a>
+                            <a href="AddParticipant.php" class="dropdown-item">Add a participant</a>
                             <a href="List.php" class="dropdown-item">List of Events</a>
+                            <a href="ListP.php" class="dropdown-item">List of participants</a>
                         </div>
                     </div>
                 </div>
@@ -107,53 +101,50 @@ if (
             <!-- Blank Start -->
             <?php echo $error; ?>
             <?php
-                if (isset($_POST['idEvent'])) {
-                    $ev = $evC->getEventById($_POST['idEvent']);
+                if (isset($_POST['idPart'])) {
+                    $Pr = $PrC->getParticipantsByPartId($_POST['idPart']);
+                    var_dump($Pr);
             ?>
         <div class="container-fluid pt-4 px-4">
             <div class="row vh-100 bg-secondary rounded align-items-center justify-content-center mx-0">
                 <div class="col-md-6 text-center">
                     <div class="col-sm-12 col-xl-6">
                         <div class="bg-secondary rounded h-100 p-4">
-                            <h6 class="mb-4">Update the Event</h6>
-                            <form action="" method="POST" id="UpdateForm">
+                            <h6 class="mb-4">Update the Participant</h6>
+                            <form action="" method="POST" id="UpdatePForm">
                             <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="idEvent2" id="idEvent2" value="<?= $ev['idEvent'] ?? ''; ?>">
-                                    <label for="floatingInput">Event id</label>
+                                    <input type="text" class="form-control" name="idPart2" id="idPart2" value="<?= $Pr['idPart'] ?? ''; ?>">
+                                    <label for="floatingInput">Participant id</label>
+                                    <span class="mb-4" id="idPError" class="error"></span>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="nomPart2" id="nomPart2" value="<?= $Pr['nomPart'] ?? ''; ?>">
+                                    <label for="floatingInput">Participant name</label>
                                     <span class="mb-4" id="nameError" class="error"></span>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="nomEvent2" id="nomEvent2" value="<?= $ev['nomEvent'] ?? ''; ?>">
-                                    <label for="floatingInput">Event name</label>
-                                    <span class="mb-4" id="nameError" class="error"></span>
+                                    <input type="text" class="form-control" name="agePart2" id="agePart2" value="<?= $Pr['agePart'] ?? ''; ?>">
+                                    <label for="floatingPassword">Age of Participant</label>
+                                    <span class="mb-4" id="ageError" class="error"></span>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="orgEvent2" id="orgEvent2" value="<?= $ev['orgEvent'] ?? ''; ?>">
-                                    <label for="floatingPassword">Organiser</label>
-                                    <span class="mb-4" id="orgError" class="error"></span>
+                                    <input type="text" class="form-control" name="emailPart2" id="emailPart2" value="<?= $Pr['emailPart'] ?? ''; ?>">
+                                    <label for="floatingInput">Email of participant</label>
+                                    <span class="mb-4" id="emailError" class="error"></span>
                                 </div>
                                 <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="themeEvent2" id="themeEvent2" value="<?= $ev['themeEvent'] ?? ''; ?>">
-                                    <label for="floatingInput">Theme of the event</label>
-                                    <span class="mb-4" id="themeError" class="error"></span>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <input type="date" class="form-control" name="dateEvent2" id="dateEvent2" value="<?= $ev['dateEvent'] ?? ''; ?>">
-                                    <label for="floatingInput">Date of the Event</label>
-                                    <span class="mb-4" id="dateError" class="error"></span>
-                                </div>
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control" name="lieuEvent2" id="lieuEvent2" value="<?= $ev['lieuEvent'] ?? ''; ?>">
-                                    <label for="floatingInput">Location of the event</label>
-                                    <span class="mb-4" id="lieuError" class="error"></span>
+                                    <input type="text" class="form-control" name="idEventPart2" id="idEventPart2" value="<?= $Pr['idEvent'] ?? ''; ?>">
+                                    <label for="floatingInput">id of The event for participant</label>
+                                    <span class="mb-4" id="idEError" class="error"></span>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Update</button>
-                                <button class="btn btn-primary" action="List.php">Back to list</button>
+                                <button class="btn btn-primary" action="ListP.php">Back to list</button>
                             </form>
+                                
                             <?php
                                 }
                             ?>
-                            <script src="UpdateFormValidator.js"></script>
+                            <script src="UpdatePFormValidator.js"></script>
                         </div>
                     </div>
                 </div>

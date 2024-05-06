@@ -1,31 +1,61 @@
 <?php
-include "../Controller/ParticipantC.php";
-include "../Model/Participant.php";
-include "../Controller/EventC.php";
-include "../Model/Event.php";
+include_once "../Controller/ParticipantC.php";
+include_once "../Model/Participant.php";
 
 $error = null;
 $pr = null;
 
+if (isset($_POST['idEvent'])) {
+    echo "idEventSent: " . $_POST['idEvent'] . "<br>";
+} else {
+    echo "idEvent is not set in the POST data.<br>";
+}
+
+if (isset($_POST['nomPart2'])) {
+    echo "nomPart2: " . $_POST['nomPart2'] . "<br>";
+} else {
+    echo "nomPart2 is not set in the POST data.<br>";
+}
+
+if (isset($_POST['agePart2'])) {
+    echo "agePart2: " . $_POST['agePart2'] . "<br>";
+} else {
+    echo "agePart2 is not set in the POST data.<br>";
+}
+
+if (isset($_POST['emailPart2'])) {
+    echo "emailPart2: " . $_POST['emailPart2'] . "<br>";
+} else {
+    echo "emailPart2 is not set in the POST data.<br>";
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (
-        isset($_POST['idEvent']) &&
-        isset($_POST['nomPart']) &&
-        isset($_POST['agePart']) &&
-        isset($_POST['emailPart']) &&
-        !empty($_POST['idEvent']) &&
-        !empty($_POST['nomPart']) &&
-        !empty($_POST['agePart']) &&
-        !empty($_POST['emailPart'])){
-        $pr = new Participant(null, $_POST['nomPart'], $_POST['agePart'], $_POST['emailPart']);
-        $prC = new ParticipantC();
-        $prC->addParticipant($pr, $_POST['idEvent']);
-        header('Location:job-list.php'); 
-    } else {
-        $error = "Missing information";
+    if(isset($_POST['idEvent']) 
+    && isset($_POST["nomPart2"]) 
+    && isset($_POST["agePart2"]) 
+    && isset($_POST["emailPart2"])){
+        if(!empty($_POST['idEvent']) 
+        && !empty($_POST["nomPart2"]) 
+        && !empty($_POST["agePart2"]) 
+        && !empty($_POST["emailPart2"])){
+            $pr = new Participant(null, $_POST["nomPart2"], $_POST["agePart2"], $_POST["emailPart2"]);
+            $prC = new ParticipantC();
+            $success = $prC->addParticipant($pr, $_POST['idEvent']);
+            if ($success) {
+                echo "Participant added successfully!";
+                header("Location: job-list.php");
+                exit();
+            } else {
+                echo "Failed to add participant.";
+            }
+        
+        } else {
+            $error = "Missing information";
+        }
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -122,31 +152,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="container text-center">
                 <div class="row justify-content-center">
                     <div class="col-lg-6">
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" id="participationForm">
+                    <form action="" method="post" id="participationForm">
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input type="text" class="form-control" name="nomPart" id="nomPart" placeholder="Your Name">
-                                        <label for="nomPart">Your Name</label>
+                                        <input type="text" class="form-control" name="nomPart2" id="nomPart2" placeholder="Your Name">
+                                        <label for="nomPart2">Your Name</label>
                                         <span class="mb-4" id="nameError" class="error"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input type="text" class="form-control" name="agePart" id="agePart" placeholder="Your Age">
-                                        <label for="agePart">Your Age</label>
+                                        <input type="text" class="form-control" name="agePart2" id="agePart2" placeholder="Your Age">
+                                        <label for="agePart2">Your Age</label>
                                         <span class="mb-4" id="ageError" class="error"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-floating">
-                                        <input type="email" class="form-control" name="emailPart" id="emailPart" placeholder="Your Email">
-                                        <label for="emailPart">Your Email</label>
+                                        <input type="email" class="form-control" name="emailPart2" id="emailPart2" placeholder="Your Email">
+                                        <label for="emailPart2">Your Email</label>
                                         <span class="mb-4" id="emailError" class="error"></span>
                                     </div>
                                 </div>
                                 <div class="col-12">
-                                    <button class="btn btn-primary w-100 py-3" type="submit">Participate</button>
+                                    <button type="submit" class="btn btn-primary w-100 py-3" >Participate</button>
                                 </div>
                             </div>
                         </form>

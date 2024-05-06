@@ -7,14 +7,16 @@ class Event{
     private ?string $themeEvent = null;
     private ?DateTime $dateEvent = null;
     private ?string $lieuEvent = null;
+    private ?int $NbPart = null;
 
-    public function __construct($a = null, $b, $c, $d, $e, $f){
+    public function __construct($a = null, $b, $c, $d, $e, $f, $g){
         $this->idEvent = $a;
         $this->nomEvent = $b;
         $this->orgEvent = $c;
         $this->themeEvent = $d;
         $this->dateEvent = new DateTime($e);
         $this->lieuEvent = $f;
+        $this->NbPart = $g;
     }
 
     public function getId(){
@@ -41,6 +43,10 @@ class Event{
         return $this->lieuEvent;
     }
 
+    public function getNbPart(){
+        return $this->NbPart;
+    }
+
     public function setNomEvenet($a){
         $this->nomEvent = $a;
     }
@@ -59,6 +65,10 @@ class Event{
 
     public function setLieu($e){
         $this->lieuEvent = $e;
+    }
+
+    public function setNbPart($f){
+        $this->NbPart = $f;
     }
 }
 

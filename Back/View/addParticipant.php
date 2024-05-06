@@ -1,6 +1,5 @@
 <?php
     include "../Controller/ParticipantC.php";
-    include "../Model/Participant.php";
     $error = null;
     $pr = null;
     if(isset($_POST["NameP"])

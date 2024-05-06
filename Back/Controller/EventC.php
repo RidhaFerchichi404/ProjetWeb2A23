@@ -29,7 +29,8 @@ include "../config.php";
 
         public function addEvent($ev){
             //var_dump($ev); // testing
-            $sql = "INSERT INTO events VALUES(NULL,:nomEv,:orgEv,:themeEv,:dateEv,:lieuEv)";
+            $sql = "INSERT INTO events (nomEvent, orgEvent, themeEvent, dateEvent, lieuEvent, NbPart) 
+                    VALUES (:nomEv, :orgEv, :themeEv, :dateEv, :lieuEv, :NbPart)";
             $db = config::getConnexion();
             try{
                 $req = $db->prepare($sql);
@@ -38,7 +39,8 @@ include "../config.php";
                     "orgEv"=> $ev->getOrganisteur(),
                     "themeEv"=> $ev->getTheme(),
                     "dateEv"=> $ev->getDate()->format('Y/m/d'),
-                    "lieuEv"=> $ev->getLieu()
+                    "lieuEv"=> $ev->getLieu(),
+                    "NbPart"=> $ev->getNbPart()
                 ]);
             }
             catch(Exception $e){

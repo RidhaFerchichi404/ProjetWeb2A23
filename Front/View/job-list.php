@@ -6,6 +6,16 @@
     $error = "";
     $evC = new EventC();
     $list = $evC->ListEvents();
+
+
+    // Pagination variables
+$eventsPerPage = 4;
+$totalEvents = count($list);
+$totalPages = ceil($totalEvents / $eventsPerPage);
+$currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
+$offset = ($currentPage - 1) * $eventsPerPage;
+$events = array_slice($list, $offset, $eventsPerPage);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -193,52 +203,70 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["search_option"])) {
         <!-- Search End -->
 
         <!-- Jobs Start -->
-
-        <div class="container-xxl py-5">
-            <div class="container">
-                <h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">The Best Events</h1>
-                <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.3s">
-                    <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
-                        <li class="nav-item">
-                            <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3 active" data-bs-toggle="pill" href="#tab-1">
-                                <h6 class="mt-n1 mb-0">Featured</h6>
-                            </a>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                    <div id="tab-1" class="tab-pane fade show p-0 active">
+<div class="container-xxl py-5">
+    <div class="container">
+        <h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">The Best Events</h1>
+        <div class="tab-class text-center wow fadeInUp" data-wow-delay="0.3s">
+            <ul class="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
+                <li class="nav-item">
+                    <a class="d-flex align-items-center text-start mx-3 ms-0 pb-3 active" data-bs-toggle="pill" href="#tab-1">
+                        <h6 class="mt-n1 mb-0">Featured</h6>
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div id="tab-1" class="tab-pane fade show p-0 active">
                     <?php
-                        $events = $evC->ListEventsWithPlacesLeft();
-                        foreach($events as $Event){
-                        ?>
-                        <div class="job-item p-4 mb-4">
-                            <div class="row g-4">
-                                <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                    <div class="text-start ps-4">
-                                        <h5 class="mb-3"><?= $Event['nomEvent'];?></h5>
-                                        <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $Event['lieuEvent']; ?>></span>
-                                        <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $Event['dateEvent']; ?></span>
-                                        <span class="text-truncate me-0"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $Event['orgEvent']; ?></span>
-                                        <span class="text-truncate me-0"><i class="fa fa-user text-primary me-2"></i><?= $Event['placesLeft']; ?> Participants Left</span>
+                    $list2 = $evC->ListEventsWithPlacesLeft();
+                    $eventsPerPage = 4;
+                    $totalEvents = count($list2);
+                    $totalPages = ceil($totalEvents / $eventsPerPage);
+                    $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
+                    $offset = ($currentPage - 1) * $eventsPerPage;
+                    $eventsToDisplay = array_slice($list2, $offset, $eventsPerPage);
+
+                    foreach ($eventsToDisplay as $Event) :
+                        if ($Event['placesLeft'] === 0) {
+                            $evC->deleteEventOnZero($Event['idEvent']);
+                        } else {
+                    ?>
+                            <div class="job-item p-4 mb-4">
+                                <div class="row g-4">
+                                    <div class="col-sm-12 col-md-8 d-flex align-items-center">
+                                        <div class="text-start ps-4">
+                                            <h5 class="mb-3"><?= $Event['nomEvent']; ?></h5>
+                                            <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $Event['idEvent']; ?></span>
+                                            <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i><?= $Event['lieuEvent']; ?></span>
+                                            <span class="text-truncate me-3"><i class="far fa-clock text-primary me-2"></i><?= $Event['dateEvent']; ?></span>
+                                            <span class="text-truncate me-0"><i class="far fa-money-bill-alt text-primary me-2"></i><?= $Event['orgEvent']; ?></span>
+                                            <span class="text-truncate me-0"><i class="fa fa-user text-primary me-2"></i><?= $Event['placesLeft']; ?> Participants Left</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
-                                    <div class="d-flex mb-3">
-                                        <form action="Participation.php" method="post">
-                                            <input type="hidden" name="idEvent" value="<?= $Event['idEvent']; ?>">
-                                            <button class="btn btn-primary" type="submit">Participate Now </button>
-                                        </form>
+                                    <div class="col-sm-12 col-md-4 d-flex flex-column align-items-start align-items-md-end justify-content-center">
+                                        <div class="d-flex mb-3">
+                                            <form action="Participation.php" method="post">
+                                                <input type="hidden" name="idEvent" value="<?= isset($Event['idEvent']) ? $Event['idEvent'] : '' ?>">
+                                                <button class="btn btn-primary" type="submit">Participate Now </button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <?php
+                    <?php
                         }
-                        ?>
-                    </div>
+                    endforeach;
+                    ?>
                 </div>
             </div>
+            <div class="pagination">
+                <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                    <a href="?page=<?= $i ?>" class="<?= $i == $currentPage ? 'active' : '' ?>"><?= $i ?></a>
+                <?php endfor; ?>
+            </div>
         </div>
+    </div>
+</div>
+
         <!-- Jobs End -->
 
 

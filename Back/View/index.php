@@ -7,18 +7,21 @@
     && isset($_POST["OrgEv"])
     && isset($_POST["ThemeEv"])
     && isset($_POST["DateEv"])
-    && isset($_POST["LieuEv"])){
+    && isset($_POST["LieuEv"])
+    && isset($_POST["NbPartEv"])){
         if(!empty($_POST["NameEv"])
         && !empty($_POST["OrgEv"])
         && !empty($_POST["ThemeEv"])
         && !empty($_POST["DateEv"])
-        && !empty($_POST["LieuEv"])){
+        && !empty($_POST["LieuEv"])
+        && !empty($_POST["NbPartEv"])){
             $ev = new Event(null,
             $_POST["NameEv"],
             $_POST["OrgEv"],
             $_POST["ThemeEv"],
             $_POST["DateEv"],
-            $_POST["LieuEv"]);
+            $_POST["LieuEv"],
+            $_POST["NbPartEv"]);
             //var_dump($_POST["DateEv"]); // testing
             $evC = new EventC();
             $evC->addEvent($ev);
@@ -135,6 +138,11 @@
                                     <input type="text" class="form-control" name="LieuEv" id="LieuEv">
                                     <label for="floatingInput">Location of the event</label>
                                     <span class="mb-4" id="lieuError" class="error"></span>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="NbPartEv" id="NbPartEv">
+                                    <label for="floatingInput">Number of max participants</label>
+                                    <span class="mb-4" id="PartError" class="error"></span>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Submit</button>
                                 </form>
