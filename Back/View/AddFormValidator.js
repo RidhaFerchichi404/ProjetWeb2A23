@@ -4,6 +4,7 @@ var orgElement = document.getElementById("OrgEv");
 var themeElement = document.getElementById("ThemeEv");
 var dateElement = document.getElementById("DateEv");
 var lieuElement = document.getElementById("LieuEv");
+var NbPartEvElement = document.getElementById("NbPartEv");
 
 formElement.addEventListener("submit", function(event){
     // Validate the form
@@ -25,17 +26,20 @@ function validateForm(){
     var themeValue = themeElement.value;
     var dateValue = dateElement.value; 
     var lieuValue = lieuElement.value;
+    var NbPartEvValue = NbPartEvElement.value;
     
     var nameError = document.getElementById("nameError");
     var orgError = document.getElementById("orgError");
     var themeError = document.getElementById("themeError");
     var dateError = document.getElementById("dateError");
     var lieuError = document.getElementById("lieuError");
+    var NbPartEvError = document.getElementById("PartError");
 
     var patternName = /^[a-zA-Z]+$/;
     var patternOrg = /^[a-zA-Z]+$/;
     var patternTheme = /^[a-zA-Z]+$/;
     var patternLieu = /^[a-zA-Z]+$/;
+    var patternNbPartEv = /^[1-9]\d*$/;
 
     var isValid = true; 
 
@@ -82,6 +86,15 @@ function validateForm(){
     } else {
         lieuError.innerHTML = "";
         lieuElement.style.borderColor = "green"; 
+    }
+
+    if(!NbPartEvValue.match(patternNbPartEv)){
+        NbPartEvError.innerHTML = "Number of max participants must be a positive number";
+        NbPartEvElement.style.borderColor = "red";
+        isValid = false;
+    } else {
+        NbPartEvError.innerHTML = "";
+        NbPartEvElement.style.borderColor = "green"; 
     }
 
     return isValid; 

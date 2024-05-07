@@ -26,7 +26,8 @@ if (
             $_POST['orgEvent2'],
             $_POST['themeEvent2'],
             $_POST['dateEvent2'],
-            $_POST['lieuEvent2']
+            $_POST['lieuEvent2'],
+            $_POST['NbPart2']
         );
         $evC->updateEvent($ev,$_POST["idEvent2"]);
         header('Location:List.php');
@@ -146,6 +147,11 @@ if (
                                     <input type="text" class="form-control" name="lieuEvent2" id="lieuEvent2" value="<?= $ev['lieuEvent'] ?? ''; ?>">
                                     <label for="floatingInput">Location of the event</label>
                                     <span class="mb-4" id="lieuError" class="error"></span>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" name="NbPart2" id="NbPart2" value="<?= $ev['NbPart'] ?? ''; ?>">
+                                    <label for="floatingInput">Number of max participants</label>
+                                    <span class="mb-4" id="PartError" class="error"></span>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Update</button>
                                 <button class="btn btn-primary" action="List.php">Back to list</button>

@@ -70,7 +70,8 @@ include "../config.php";
                     , orgEvent = :orgEvent
                     , themeEvent = :themeEvent
                     , dateEvent = :dateEvent
-                    , lieuEvent = :lieuEvent WHERE idEvent = :idEvent";
+                    , lieuEvent = :lieuEvent
+                    , NbPart = :NbPart WHERE idEvent = :idEvent";
                 $req = $db->prepare($sql);
                 $req->bindValue(":idEvent", $id);
                 $req->execute([
@@ -79,7 +80,8 @@ include "../config.php";
                     "orgEvent"=> $ev->getOrganisteur(),
                     "themeEvent"=> $ev->getTheme(),
                     "dateEvent"=> $ev->getDate()->format('Y-m-d'),
-                    "lieuEvent"=> $ev->getLieu()
+                    "lieuEvent"=> $ev->getLieu(),
+                    "NbPart"=> $ev->getNbPart()
                 ]);
                 echo $req->rowCount() . " records UPDATED successfully <br>";
             }

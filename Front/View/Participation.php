@@ -1,57 +1,24 @@
 <?php
-include_once "../Controller/ParticipantC.php";
-include_once "../Model/Participant.php";
-
+include "../Controller/ParticipantC.php";
+include "../Model/Participant.php";
 $error = null;
 $pr = null;
 
-if (isset($_POST['idEvent'])) {
-    echo "idEventSent: " . $_POST['idEvent'] . "<br>";
-} else {
-    echo "idEvent is not set in the POST data.<br>";
-}
-
-if (isset($_POST['nomPart2'])) {
-    echo "nomPart2: " . $_POST['nomPart2'] . "<br>";
-} else {
-    echo "nomPart2 is not set in the POST data.<br>";
-}
-
-if (isset($_POST['agePart2'])) {
-    echo "agePart2: " . $_POST['agePart2'] . "<br>";
-} else {
-    echo "agePart2 is not set in the POST data.<br>";
-}
-
-if (isset($_POST['emailPart2'])) {
-    echo "emailPart2: " . $_POST['emailPart2'] . "<br>";
-} else {
-    echo "emailPart2 is not set in the POST data.<br>";
-}
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if(isset($_POST['idEvent']) 
-    && isset($_POST["nomPart2"]) 
-    && isset($_POST["agePart2"]) 
-    && isset($_POST["emailPart2"])){
-        if(!empty($_POST['idEvent']) 
-        && !empty($_POST["nomPart2"]) 
-        && !empty($_POST["agePart2"]) 
-        && !empty($_POST["emailPart2"])){
-            $pr = new Participant(null, $_POST["nomPart2"], $_POST["agePart2"], $_POST["emailPart2"]);
-            $prC = new ParticipantC();
-            $success = $prC->addParticipant($pr, $_POST['idEvent']);
-            if ($success) {
-                echo "Participant added successfully!";
-                header("Location: job-list.php");
-                exit();
-            } else {
-                echo "Failed to add participant.";
-            }
-        
-        } else {
-            $error = "Missing information";
-        }
+if(isset($_POST['idEvent']) 
+&& isset($_POST["nomPart2"]) 
+&& isset($_POST["agePart2"]) 
+&& isset($_POST["emailPart2"])){
+    if(!empty($_POST['idEvent']) 
+    && !empty($_POST["nomPart2"]) 
+    && !empty($_POST["agePart2"]) 
+    && !empty($_POST["emailPart2"])){
+        $Pr = new Participant(null, $_POST["nomPart2"], $_POST["agePart2"], $_POST["emailPart2"]);
+        $prC = new ParticipantC();
+        $prC->addParticipant($Pr,$_POST['idEvent']);
+        $error = "Participant added successfully!";
+        header("Location: job-list.php");
+    } else {
+        $error = "Missing information";
     }
 }
 ?>
@@ -176,6 +143,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     </div>
                                 </div>
                                 <div class="col-12">
+                                    <input type="hidden" name="idEvent" value="<?= isset($_POST['idEvent']) ? $_POST['idEvent'] : '' ?>">
                                     <button type="submit" class="btn btn-primary w-100 py-3" >Participate</button>
                                 </div>
                             </div>
