@@ -20,10 +20,8 @@ function updateJob($jobData)
         isset($jobData["job_requirements"]) &&
         isset($jobData["salary"]) &&
         isset($jobData["location"])
-<<<<<<< HEAD
         && isset($jobData["deadline_date"])
-=======
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
+        && isset($jobData["view_counter"])
     ) {
         // Check if form fields are not empty
         if (
@@ -36,10 +34,8 @@ function updateJob($jobData)
             !empty($jobData["job_requirements"]) &&
             !empty($jobData["salary"]) &&
             !empty($jobData["location"])
-<<<<<<< HEAD
             && !empty($jobData["deadline_date"])
-=======
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
+            && !empty($jobData["view_counter"])
         ) {
             // Create a new job object
             $job = new Job(
@@ -51,17 +47,15 @@ function updateJob($jobData)
                 $jobData['job_description'],
                 $jobData['job_requirements'],
                 $jobData['salary'],
-<<<<<<< HEAD
                 $jobData['location'],
-                $jobData['deadline_date']
-=======
-                $jobData['location']
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
+                $jobData['deadline_date'],
+                $jobData['view_counter']
+
             );
 
             // Update the job in the database
             $JobC->updateJob($job, $jobData["id"]);
-            header('Location: ListBack.php');
+            header('Location:ListBack.php');
             exit(); // Ensure script execution stops after redirection
         } else {
             $error = "Missing information";
@@ -82,18 +76,6 @@ if ($id) {
 // Call the updateJob function when the form is submitted
 $error = updateJob($_POST);
 ?>
-
-
-
-
-
-
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -114,21 +96,6 @@ $error = updateJob($_POST);
             justify-content: center;
             align-items: center;
             height: 100vh;
-        }
-
-        .form-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-
-        form {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: calc(100% / 3); /* One-third width */
         }
 
         h1 {
@@ -175,6 +142,30 @@ $error = updateJob($_POST);
             color: red;
             margin-bottom: 20px;
         }
+        /* Add this CSS to your existing styles */
+.navbar {
+    z-index: 1000; /* Ensure the navbar stays on top */
+}
+
+.content {
+    margin-top: 70px; /* Adjust this value based on your navbar height */
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+form {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Full width */
+    max-width: 600px; /* Limit width for better readability */
+}
+
     </style>
 
     <!-- Favicon -->
@@ -344,25 +335,86 @@ $error = updateJob($_POST);
                     </div>
                 </div>
             </nav>
+            
             <!-- Navbar End -->
+<!-- Sale & Revenue Start -->
+<div class="container-fluid pt-4 px-4">
+                <div class="row g-4">
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                            <i class="fa fa-chart-line fa-3x text-primary"></i>
+                            <div class="ms-3">
+                                <p class="mb-2">Today Sale</p>
+                                <h6 class="mb-0">$1234</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                            <i class="fa fa-chart-bar fa-3x text-primary"></i>
+                            <div class="ms-3">
+                                <p class="mb-2">Total Sale</p>
+                                <h6 class="mb-0">$1234</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                            <i class="fa fa-chart-area fa-3x text-primary"></i>
+                            <div class="ms-3">
+                                <p class="mb-2">Today Revenue</p>
+                                <h6 class="mb-0">$1234</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-xl-3">
+                        <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                            <i class="fa fa-chart-pie fa-3x text-primary"></i>
+                            <div class="ms-3">
+                                <p class="mb-2">Total Revenue</p>
+                                <h6 class="mb-0">$1234</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Sale & Revenue End -->
 
 
-           
-
-
-           
-
+            <!-- Sales Chart Start -->
+            <div class="container-fluid pt-4 px-4">
+                <div class="row g-4">
+                    <div class="col-sm-12 col-xl-6">
+                        <div class="bg-secondary text-center rounded p-4">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h6 class="mb-0">Worldwide Sales</h6>
+                                <a href="">Show All</a>
+                            </div>
+                            <canvas id="worldwide-sales"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-xl-6">
+                        <div class="bg-secondary text-center rounded p-4">
+                            <div class="d-flex align-items-center justify-content-between mb-4">
+                                <h6 class="mb-0">Salse & Revenue</h6>
+                                <a href="">Show All</a>
+                            </div>
+                            <canvas id="salse-revenue"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Sales Chart End -->
             <!-- Recent Sales Start -->
             <div class="container-fluid pt-4 px-4">
                 <div class="bg-secondary text-center rounded p-4">
                     <div class="d-flex align-items-center justify-content-between mb-4">
-                        <h6 class="mb-0">Recent Salse</h6>
-                        <a href="">Show All</a>
+                        <h6 class="mb-0">UPDATE</h6>
                     </div>
                     <div class="table-responsive">
                     <div class="form-container">
                 <form method="POST" action="" class="bg-secondary text-center rounded p-4" onsubmit="return validateForm()">
-                    <h1>Modify Job</h1>
+                    <h1>Update Job</h1>
                     <?php if (!empty($error)) {
                         echo "<p class='error'>$error</p>";
                     } ?>
@@ -394,12 +446,12 @@ $error = updateJob($_POST);
 
                         <label for="location">Location:</label>
                         <input type="text" value="<?php echo $job['location']; ?>" id="location" name="location">
-<<<<<<< HEAD
                         
                         <label for="deadline_date">deadline date:</label>
                         <input type="date" value="<?php echo $job['deadline_date']; ?>" id="deadline_date" name="deadline_date">
-=======
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
+
+                        <label for="view_counter">view counter:</label>
+                        <input type="text" value="<?php echo $job['view_counter']; ?>" id="view_counter" name="view_counter" readonly>
 
                         <input type="submit" value="Submit">
                     <?php } ?>

@@ -11,12 +11,7 @@
     && isset($_POST["job_description"])
     && isset($_POST["job_requirements"])
     && isset($_POST["salary"])
-<<<<<<< HEAD
-    && isset($_POST["location"])
-    && isset($_POST["deadline_date"])){
-=======
     && isset($_POST["location"])){
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
         if(!empty($_POST["job_title"])
         && !empty($_POST["company_name"])
         && !empty($_POST["company_description"])
@@ -24,12 +19,7 @@
         && !empty($_POST["job_description"])
         && !empty($_POST["job_requirements"])
         && !empty($_POST["salary"])
-<<<<<<< HEAD
-        && !empty($_POST["location"])
-        && !empty($_POST["deadline_date"])){
-=======
         && !empty($_POST["location"])){
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
             $job = new Job(null
             ,$_POST["job_title"]
             ,$_POST["company_name"]
@@ -39,10 +29,6 @@
             ,$_POST["job_requirements"]
             ,$_POST["salary"]
             ,$_POST["location"]
-<<<<<<< HEAD
-            ,$_POST["deadline_date"] 
-=======
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
             );
             
             $jobC->addJob($job);
@@ -52,11 +38,6 @@
             $error = "Missing info"; 
         }
      }
-<<<<<<< HEAD
-     $email = isset($_POST["email"]) ? $_POST["email"] : null;
-
-=======
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
 ?>
 
 <!DOCTYPE html>
@@ -182,13 +163,6 @@
                     <td><input type="text" name="location" id="location" maxlength="50"></td>
                 </tr>
                 <tr>
-<<<<<<< HEAD
-                    <td><label for="deadline_date">Deadline Date:</label></td>
-                    <td><input type="date" name="deadline_date" id="deadline_date"></td>
-                </tr>
-                <tr>
-=======
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
                     <td colspan="2" align="center">
                         <input type="submit" value="Save">
                         <input type="reset" value="Reset">
@@ -223,8 +197,6 @@
     </script>
 </body>
 </html>
-<<<<<<< HEAD
-=======
 
 
 <!--<html lang="en">
@@ -389,4 +361,3 @@
 </body>
 </html> -- >
 
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944

@@ -12,15 +12,9 @@
                 die("Message error = ". $e->getMessage());
             }
         }
-<<<<<<< HEAD
         
 
         
-=======
-
-
-
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
 
         public function updateJob($job, $id)
     {
@@ -35,12 +29,8 @@
                 job_description = :job_description,
                 job_requirements = :job_requirements,
                 salary = :salary,
-<<<<<<< HEAD
                 location = :location,
                 deadline_date = :deadline_date
-=======
-                location = :location
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
                 WHERE id= :id'
             );
             $query->execute([
@@ -52,13 +42,9 @@
                 'job_description' => $job->getJobDescription(),
                 'job_requirements' => $job->getJobRequirements(),
                 'salary' => $job->getSalary(),
-<<<<<<< HEAD
                 'location' => $job->getLocation(),
                 'deadline_date' => $job->getDeadline_date()
 
-=======
-                'location' => $job->getLocation()
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
             ]);
             echo $query->rowCount() . " records UPDATED successfully <br>";
         } catch (PDOException $e) {
@@ -81,13 +67,8 @@
         }
         public function addJob($job)
         {
-<<<<<<< HEAD
             $sql = "INSERT INTO offres_emploi (job_title, company_name, company_description, company_website, job_description, job_requirements, salary, location,deadline_date) 
                     VALUES ( :job_title, :company_name, :company_description, :company_website, :job_description, :job_requirements, :salary, :location, :deadline_date)";
-=======
-            $sql = "INSERT INTO offres_emploi (job_title, company_name, company_description, company_website, job_description, job_requirements, salary, location) 
-                    VALUES ( :job_title, :company_name, :company_description, :company_website, :job_description, :job_requirements, :salary, :location)";
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
             
             $db = config::getConnexion();
             
@@ -102,13 +83,9 @@
                     "job_description" => $job->getJobDescription(),
                     "job_requirements" => $job->getJobRequirements(),
                     "salary" => $job->getSalary(),
-<<<<<<< HEAD
                     "location" => $job->getLocation(),
                     "deadline_date" => $job->getDeadline_date()
 
-=======
-                    "location" => $job->getLocation()
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
                 ]);
             } catch(Exception $e) {
                 die('Erreur lors de l\'ajout : ' . $e->getMessage());
@@ -167,7 +144,6 @@ public function paginateJobs($offset, $limit) {
         echo "Error: " . $e->getMessage();
     }
 }
-<<<<<<< HEAD
 public function updateDeadlineDate($id, $deadline_date) {
     try {
         $db = config::getConnexion();
@@ -231,13 +207,11 @@ public function getViewCounter($id)
 public function getSuggestedJobOffers() {
     try {
         $db = config::getConnexion();
-        $query = $db->query("SELECT * FROM offres_emploi WHERE view_counter >= 3");
+        $query = $db->query("SELECT * FROM offres_emploi WHERE view_counter >= 10");
         return $query->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
     }
 }
-=======
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
 }
 ?>

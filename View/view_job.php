@@ -180,7 +180,6 @@ if (isset($_GET['id'])) {
         <!-- Header End -->
 
         <!-- Content Start -->
-        <h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">Upload Your CV</h1>
 
         <div class="container">
         <div class="row">

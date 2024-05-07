@@ -13,11 +13,7 @@
     
     
     // Initiate the wowjs
-<<<<<<< HEAD
-    // new WOW().init();
-=======
     new WOW().init();
->>>>>>> 3103e848a4578e384e8d2ce0071c5fc9abb8c944
 
 
     // Sticky Navbar
