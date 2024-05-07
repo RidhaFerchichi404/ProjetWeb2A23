@@ -1,41 +1,21 @@
 <?php
-/*include "../../controller/SecteurC.php";
+include "../../controller/SecteurC.php";
 $secC=new SecteurC();
 $list=$secC->listsecteur();
-var_dump($list);*/
-include "../../config.php";
-
-$pdo = config::getConnexion();
-$query = "SELECT * FROM secteur_activite";
-$list = $pdo->query($query);
-
-// Récupérer le nombre total d'enregistrements
-$count = $pdo->prepare("SELECT COUNT(id) AS cpt FROM secteur_activite");
-$count->setFetchMode(PDO::FETCH_ASSOC);
-$count->execute();
-$tcount = $count->fetchAll();
- 
-// Pagination
-@$page = $_GET["page"];
-if (empty($page)) $page = 1;
-$nbr_element_par_page = 4; // Changer la valeur à 4 pour afficher 4 éléments par page
-$nbr_de_pages = ceil($tcount[0]["cpt"] / $nbr_element_par_page);
-$debut = ($page - 1) * $nbr_element_par_page;
-
-// Récupération des éléments
-$sel = $pdo->prepare("SELECT * FROM secteur_activite LIMIT $debut, $nbr_element_par_page");
-$sel->setFetchMode(PDO::FETCH_ASSOC);
-$sel->execute();
-$tab = $sel->fetchAll();
-
-if (count($tab) == 0) {
-    header("Location: ./");
-    exit();
+// Check if the search form is submitted
+$limit = 4;
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+if (isset($_POST['submit-search'])) {
+    $search = $_POST['search'];
+    $list = $secC->searchsec($search);
+    $totalJobs = count($list);
+}else {
+    // Fetch paginated data if the search form is not submitted
+    $offset = ($page - 1) * $limit;
+    $totalJobs = $secC->countsec();
+    $list = $secC->paginatesec($offset, $limit);
 }
-
-echo $tcount[0]["cpt"];
-
-
+$totalPages = ceil($totalJobs / $limit);
 ?>
 
 <!DOCTYPE html>
@@ -220,33 +200,19 @@ echo $tcount[0]["cpt"];
                     </div>
                 </div>
             </nav>
+
             <!-- Navbar End -->
 
-            <!--<div class="col-sm-12 col-xl-6">
-                        <div class="bg-secondary rounded h-100 p-4">
-                            <h6 class="mb-4">Accented Table</h6>
-                            <table class="table table-striped">-->
             <!-- Blank Start -->
+            <button class="btn btn-primary"><a href="statsec.php" class="text-white">statistique</a></button>
             <div class="container-fluid pt-4 px-4">
                 <div class="row vh-100 bg-secondary rounded align-items-center justify-content-center mx-0">
                     <div class="col-md-8 offset-md-2 text-center">
+                    <form class="search-form" action="" method="POST">
+                         <input type="text" id="search-box" name="search" placeholder="search here...">
+                         <button type="submit" name="submit-search"><i class="fas fa-search"></i> Search</button>
                     </form>
-                        <h3>List a chercher</h3>
-                        <form method="GET" action="">
-                    <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="Search by nom or nb_entreprise" name="search">
-                    <button class="btn btn-outline-secondary" type="submit" id="button-addon2"><i class="bi bi-search"></i>search</button>
-                    </div>
-                    <?php
-                    if(isset($_GET['search'])) {
-                    $search = $_GET['search'];
-                    // Modification de la requête SQL pour inclure la recherche par id, nom ou email
-                    $sql = "SELECT * FROM secteur_activite WHERE nom LIKE ? OR nb_entreprises LIKE ? OR id = ?";
-                    $stmt = $pdo->prepare($sql);
-                    // Vous devez lier la valeur de $search à chaque placeholder dans la requête
-                        $stmt->execute(["%$search%", "%$search%", $search]);
-                    }
-                    ?>
+                        <h3>List secteur</h3>
                         <div class="table-responsive">
                             <table class="table table-striped">
                             <thead>
@@ -262,7 +228,7 @@ echo $tcount[0]["cpt"];
                                 <th scope="col">Delete</th>
                             </tr>
                         </thead>
-                        <?php foreach ($tab as $secteur) { ?> 
+                        <?php foreach ($list as $secteur) { ?> 
                         <tr>
                             <td><?php echo $secteur['id']; ?></td>  
                             <td><?= $secteur['nom'];?></td>  
@@ -284,16 +250,15 @@ echo $tcount[0]["cpt"];
                         </table>
                         </div>
                         <div id="pagination">
-                        <?php
-                        // Affichage des liens de pagination
-                        for ($i = 1; $i <= $nbr_de_pages; $i++) {
-                        if ($page != $i) {
-                            echo "<a href='?page=" . htmlspecialchars($i) . "'>" . $i . "</a> ";
-                        } else {
-                            echo "<span>" . $i . "</span> ";
-                        }
-                        }
-                        ?>
+                        <?php if ($page > 1) : ?>
+                                <a href="?page=<?= $page - 1 ?>" class="btn btn-primary">Previous</a>
+                            <?php endif; ?>
+                            <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                                <a href="?page=<?= $i ?>" class="btn btn-primary <?= $page == $i ? 'active' : '' ?>"><?= $i ?></a>
+                            <?php endfor; ?>
+                            <?php if ($page < $totalPages) : ?>
+                                <a href="?page=<?= $page + 1 ?>" class="btn btn-primary">Next</a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>

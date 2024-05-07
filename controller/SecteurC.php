@@ -1,5 +1,5 @@
 <?php
-include "../../config.php";
+require_once "../../config.php";
     class SecteurC{
         public function listsecteur(){
             $sql="SELECT * FROM secteur_activite";
@@ -98,6 +98,43 @@ include "../../config.php";
                     return $sec;
                 } catch (Exception $e) {
                     die('Error: ' . $e->getMessage());
+                }
+            }
+            public function countsec() {
+                try {
+                    $db = config::getConnexion();
+                    $query = $db->query("SELECT COUNT(*) AS total_secteurs FROM secteur_activite");
+                    $result = $query->fetch(PDO::FETCH_ASSOC);
+                    return $result['total_secteurs'];
+                } catch (PDOException $e) {
+                    echo "Error: " . $e->getMessage();
+                }
+            }
+            
+            // Method to fetch jobs for the current page
+            public function paginatesec($offset, $limit) {
+                try {
+                    $db = config::getConnexion();
+                    $query = $db->prepare("SELECT * FROM secteur_activite LIMIT :limit OFFSET :offset");
+                    $query->bindParam(':limit', $limit, PDO::PARAM_INT);
+                    $query->bindParam(':offset', $offset, PDO::PARAM_INT);
+                    $query->execute();
+                    return $query->fetchAll(PDO::FETCH_ASSOC);
+                } catch (PDOException $e) {
+                    echo "Error: " . $e->getMessage();
+                }
+            }
+            public function searchsec($search)
+            {
+                $requete = "SELECT * FROM secteur_activite WHERE CONCAT(id, nom, email, type, nb_entreprises, region, exigence_formation) LIKE '%$search%'";
+                $db = config::getConnexion();
+                try {
+                    $querry = $db->prepare($requete);
+                    $querry->execute();
+                    $result = $querry->fetchAll();
+                    return $result ;
+                } catch (PDOException $e) {
+                    echo "Error: " .$e->getMessage();
                 }
             }
     }

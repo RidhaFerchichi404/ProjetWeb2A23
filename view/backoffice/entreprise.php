@@ -314,7 +314,6 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
 
                                 return isValid;
                             }
-
                         </script>
                     </div>
                 </div>

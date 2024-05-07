@@ -1,38 +1,23 @@
 <?php
-/*include "../../controller/EntrepriseC.php";
+include "../../controller/EntrepriseC.php";
 $entC=new EntrepriseC();
 $list=$entC->listentreprise();
-var_dump($list);*/
-include "../../config.php";
-
-$pdo = config::getConnexion();
-$query = "SELECT * FROM entreprise";
-$list = $pdo->query($query);
-// Récupérer le nombre total d'enregistrements
-$count = $pdo->prepare("SELECT COUNT(id) AS cpt FROM entreprise");
-$count->setFetchMode(PDO::FETCH_ASSOC);
-$count->execute();
-$tcount = $count->fetchAll();
- 
-// Pagination
-@$page = $_GET["page"];
-if (empty($page)) $page = 1;
-$nbr_element_par_page = 4; // Changer la valeur à 4 pour afficher 4 éléments par page
-$nbr_de_pages = ceil($tcount[0]["cpt"] / $nbr_element_par_page);
-$debut = ($page - 1) * $nbr_element_par_page;
-
-// Récupération des éléments
-$sel = $pdo->prepare("SELECT id,nom, email, doc, location, secteur FROM entreprise ORDER BY nom ASC LIMIT $debut, $nbr_element_par_page");
-$sel->setFetchMode(PDO::FETCH_ASSOC);
-$sel->execute();
-$tab = $sel->fetchAll();
-
-if (count($tab) == 0) {
-    header("Location: ./");
-    exit();
+var_dump($list);
+$limit = 3;
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+if (isset($_POST['submit-search'])) {
+    $search = $_POST['search'];
+    $list = $entC->searchent($search);
+    $totalJobs = count($list);
+}else {
+    // Fetch paginated data if the search form is not submitted
+    $offset = ($page - 1) * $limit;
+    $totalJobs = $entC->countent();
+    $list = $entC->paginateent($offset, $limit);
 }
-
-echo $tcount[0]["cpt"];
+$totalPages = ceil($totalJobs / $limit);
+    
+?>
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -119,9 +104,13 @@ echo $tcount[0]["cpt"];
         <div class="container-fluid pt-4 px-4">
         <div class="row vh-100 bg-white rounded align-items-center justify-content-center mx-0">
             <div class="col-md-6 text-center">
+            <form class="search-form" action="" method="POST">
+                        <input type="text" id="search-box" name="search" placeholder="search here...">
+                        <button type="submit" name="submit-search"><i class="fas fa-search"></i> Search</button>
+                    </form>
                 <h3>List entreprises</h3>
                         <?php
-                         foreach ($tab as $entreprise) {
+                         foreach ($list as $entreprise) {
                         ?> 
                         <div class="job-item p-4 mb-4">
                               <div class="row g-4">
@@ -144,16 +133,15 @@ echo $tcount[0]["cpt"];
                             ?>
                         </table>
                     <div id="pagination">
-                        <?php
-                            // Affichage des liens de pagination
-                            for ($i = 1; $i <= $nbr_de_pages; $i++) {
-                            if ($page != $i) {
-                                echo "<a href='?page=" . htmlspecialchars($i) . "'>" . $i . "</a> ";
-                            } else {
-                                echo "<span>" . $i . "</span> ";
-                            }
-                            }
-                        ?>
+                    <?php if ($page > 1) : ?>
+                                <a href="?page=<?= $page - 1 ?>" class="btn btn-primary">Previous</a>
+                            <?php endif; ?>
+                            <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                                <a href="?page=<?= $i ?>" class="btn btn-primary <?= $page == $i ? 'active' : '' ?>"><?= $i ?></a>
+                            <?php endfor; ?>
+                            <?php if ($page < $totalPages) : ?>
+                                <a href="?page=<?= $page + 1 ?>" class="btn btn-primary">Next</a>
+                            <?php endif; ?>
                     </div>
             </div>
         </div>

@@ -217,7 +217,7 @@ if (
                     </div>
                 </div>
             </nav>
-            <button><a href="listentreprise.php">Back to list</a></button>
+            <button class="btn btn-primary"><a href="listentreprise.php" class="text-white">Back to list</a></button>
             <hr>
             <div id="error">
                 <?php echo $error; ?>
@@ -227,74 +227,45 @@ if (
                 $ent = $entC->showentreprise($_POST['id']);
                 if ($ent) {
             ?>
-                <form id="formupdate" action=""  method="POST">
-                    <table border="1" align="center">
-                        <tr>
-                            <td>
-                                <label for="id">Id entreprise:
-                                </label>
-                            </td>
-                            <td><input type="text" name="id" id="id" value="<?php echo $ent['id']; ?>"></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="nom">Name:
-                                </label>
-                            </td>
-                                <td><input type="text" name="nom" id="nom" value="<?php echo $ent['nom']; ?>">
-                                <div id="nameError"></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="email">Email:
-                                </label>
-                            </td>
-                            <td>
-                                <input type="email" name="email" value="<?php echo $ent['email']; ?>" id="email">
-                                <div id="emailError"></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="doc">date of creation:
-                                </label>
-                            </td>
-                            <td><input type="text" name="doc" id="doc" value="<?php echo $ent['doc']; ?>">
-                            <div id="docError"></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="location">location:
-                                </label>
-                            </td>
-                            <td>
-                                <input type="text" name="location" id="location" value="<?php echo $ent['location']; ?>">
-                                <div id="locError"></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="secteur">id secteur:
-                                </label>
-                            </td>
-                            <td>
-                                <input type="text" name="secteur" id="secteur" value="<?php echo $ent['secteur']; ?>">
-                                <div id="SecError"></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>
-                                <input type="submit" value="Update">
-                            </td>
-                            <td>
-                                <input type="reset" value="Reset">
-                            </td>
-                        </tr>
-                    </table>
-                </form>
+                <div class="container-fluid pt-4 px-4">
+    <div class="row vh-100 bg-secondary rounded align-items-center justify-content-center mx-0">
+        <div class="col-md-6 text-center">
+            <form id="formupdate" action="" method="POST">
+                <div class="mb-3">
+                    <label for="id" class="form-label">Id entreprise:</label>
+                    <input type="text" class="form-control" id="id" name="id" value="<?php echo $ent['id']; ?>" readonly>
+                </div>
+                <div class="mb-3">
+                    <label for="nom" class="form-label">Name:</label>
+                    <input type="text" class="form-control" id="nom" name="nom" value="<?php echo $ent['nom']; ?>">
+                    <div id="nameError"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email" value="<?php echo $ent['email']; ?>">
+                    <div id="emailError"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="doc" class="form-label">date of creation:</label>
+                    <input type="date" class="form-control" id="doc" name="doc" value="<?php echo $ent['doc']; ?>">
+                    <div id="docError"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="location" class="form-label">location:</label>
+                    <input type="text" class="form-control" id="location" name="location" value="<?php echo $ent['location']; ?>">
+                    <div id="locError"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="secteur" class="form-label">id secteur:</label>
+                    <input type="text" class="form-control" id="secteur" name="secteur" value="<?php echo $ent['secteur']; ?>">
+                    <div id="SecError"></div>
+                </div>
+                <button type="submit" class="btn btn-primary">Update</button>
+                <button type="reset" class="btn btn-secondary">Reset</button>
+            </form>
+        </div>
+    </div>
+                </div>
                     <?php
                     }
                     else{

@@ -1,35 +1,32 @@
 <?php
-
-include "../../config.php";
-
-$pdo = config::getConnexion();
-$query = "SELECT * FROM entreprise";
-$list = $pdo->query($query);
-// Récupérer le nombre total d'enregistrements
-$count = $pdo->prepare("SELECT COUNT(id) AS cpt FROM entreprise");
-$count->setFetchMode(PDO::FETCH_ASSOC);
-$count->execute();
-$tcount = $count->fetchAll();
- 
-// Pagination
-@$page = $_GET["page"];
-if (empty($page)) $page = 1;
-$nbr_element_par_page = 4; // Changer la valeur à 4 pour afficher 4 éléments par page
-$nbr_de_pages = ceil($tcount[0]["cpt"] / $nbr_element_par_page);
-$debut = ($page - 1) * $nbr_element_par_page;
-
-// Récupération des éléments
-$sel = $pdo->prepare("SELECT id,nom, email, doc, location, secteur FROM entreprise ORDER BY nom ASC LIMIT $debut, $nbr_element_par_page");
-$sel->setFetchMode(PDO::FETCH_ASSOC);
-$sel->execute();
-$tab = $sel->fetchAll();
-
-if (count($tab) == 0) {
-    header("Location: ./");
-    exit();
+include "../../controller/EntrepriseC.php";
+//include "../../config.php";
+$entC=new EntrepriseC();
+$list=$entC->listentreprise();
+var_dump($list);
+$limit = 3;
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+if (isset($_POST['submit-search'])) {
+    $search = $_POST['search'];
+    $list = $entC->searchent($search);
+    $totalJobs = count($list);
+}else {
+    // Fetch paginated data if the search form is not submitted
+    $offset = ($page - 1) * $limit;
+    $totalJobs = $entC->countent();
+    $list = $entC->paginateent($offset, $limit);
 }
+$totalPages = ceil($totalJobs / $limit);
 
-echo $tcount[0]["cpt"];
+/*// Handling status update requests
+$pdo=config::getConnexion();
+if (isset($_GET['action status'], $_GET['id']) && in_array($_GET['action status'], ['accepted', 'refused'])) {
+    $stmt = $pdo->prepare("UPDATE entreprise SET status = ? WHERE id = ?");
+    $stmt->execute([$_GET['action status'], $_GET['id']]);
+    header("Location: listentreprise.php"); // Redirect to avoid re-submission
+    exit;
+}*/
+
 ?>
 
 
@@ -222,54 +219,77 @@ echo $tcount[0]["cpt"];
             <div class="container-fluid pt-4 px-4">
                 <div class="row vh-100 bg-secondary rounded align-items-center justify-content-center mx-0">
                     <div class="col-md-8 offset-md-2 text-center">
-                        <h3>List Entreprise</h3>
-                        <div class="table-responsive">
-                            <table class="table table-striped">
+                    <form class="search-form" action="" method="POST">
+                        <input type="text" id="search-box" name="search" placeholder="search here...">
+                        <button type="submit" name="submit-search"><i class="fas fa-search"></i> Search</button>
+                    </form>
+                    <h3>List Entreprise</h3>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
                             <thead>
-                            <tr>
-                                <th scope="col">Id entreprise</th>
-                                <th scope="col">Nom</th>
-                                <th scope="col">Email</th>
-                                <th scope="col">date of creation</th>
-                                <th scope="col">location</th>
-                                <th scope="col">secteur</th>
-                                <th scope="col">Update</th>
-                                <th scope="col">Delete</th>
-                            </tr>
-                        </thead>
-                        <?php foreach ($tab as $entreprise) { ?> 
-                        <tr>
-                            <td><?= $entreprise['id']; ?></td>  
-                            <td><?= $entreprise['nom'];?></td>  
-                            <td><?= $entreprise['email'];?></td>
-                            <td><?= $entreprise['doc'];?></td> 
-                            <td><?= $entreprise['location'];?></td> 
-                            <td><?= $entreprise['secteur'];?></td>
-                            <td>
-                                <form action="updateentreprise.php" method="post">
-                                    <!-- Hidden field to pass the sector ID -->
-                                    <input type="hidden" name="id" value="<?php echo $entreprise['id']; ?>">
-                                    <button type="submit" class="btn btn-danger">Update</button>
-                                 </form>
-                                </td>
-                                <td><a href="deleteentreprise.php?id=<?php echo $entreprise['id']; ?>" class="btn btn-danger">Delete</a></td>   
-                            </tr>
-                            <?php } ?>
-                        </table>
+                                <tr>
+                                    <th scope="col">Id entreprise</th>
+                                    <th scope="col">Nom</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">date of creation</th>
+                                    <th scope="col">location</th>
+                                    <th scope="col">secteur</th>
+                                    <th scope="col">status</th>
+                                    <th scope="col">Actions</th>
+                                    <th scope="col">Update</th>
+                                    <th scope="col">Delete</th>
+                                </tr>
+                            </thead>
+                                <?php foreach ($list as $entreprise) { ?>
+                                    <tr>
+                                        <td><?= $entreprise['id']; ?></td>
+                                        <td><?= $entreprise['nom']; ?></td>
+                                        <td><?= $entreprise['email']; ?></td>
+                                        <td><?= $entreprise['doc']; ?></td>
+                                        <td><?= $entreprise['location']; ?></td>
+                                        <td><?= $entreprise['secteur']; ?></td>
+                                        <td><?= $entreprise['status']; ?></td>
+                                        <td>
+                                        <form action="mailA.php" method="post">
+                                            <input type="hidden" name="id" value="<?= $entreprise['id']; ?>">
+                                            <input type="hidden" name="email" value="<?= $entreprise['email']; ?>">
+                                            <button type="submit" class="btn btn-success">Accept</button>
+                                        </form>
+                                        
+                                        <form action="mailR.php" method="post">
+                                            <input type="hidden" name="id" value="<?= $entreprise['id']; ?>">
+                                            <input type="hidden" name="email" value="<?= $entreprise['email']; ?>">
+                                        </form>
+                                            <button class="btn btn-danger">Refuse</button>
+                                        </td>
+                                        <td>
+                                            <form action="updateentreprise.php" method="post">
+                                                <!-- Hidden field to pass the sector ID -->
+                                                <input type="hidden" name="id" value="<?php echo $entreprise['id']; ?>">
+                                                <button type="submit" class="btn btn-danger">Update</button>
+                                            </form>
+                                        </td>
+                                        <td><a href="deleteentreprise.php?id=<?php echo $entreprise['id']; ?>" class="btn btn-danger">Delete</a></td>
+
+                                    </tr>
+                                <?php } ?>
+                            </table>
+                        </div>
+                        <div class="pagination mt-4 d-flex justify-content-center">
+                            <?php if ($page > 1) : ?>
+                                <a href="?page=<?= $page - 1 ?>" class="btn btn-primary">Previous</a>
+                            <?php endif; ?>
+                            <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                                <a href="?page=<?= $i ?>" class="btn btn-primary <?= $page == $i ? 'active' : '' ?>"><?= $i ?></a>
+                            <?php endfor; ?>
+                            <?php if ($page < $totalPages) : ?>
+                                <a href="?page=<?= $page + 1 ?>" class="btn btn-primary">Next</a>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                    <div id="pagination">
-                    <?php
-                    // Affichage des liens de pagination
-                    for ($i = 1; $i <= $nbr_de_pages; $i++) {
-                    if ($page != $i) {
-                        echo "<a href='?page=" . htmlspecialchars($i) . "'>" . $i . "</a> ";
-                    } else {
-                        echo "<span>" . $i . "</span> ";
-                    }
-    }
-    ?>
                 </div>
             </div>
+
             <!-- Blank End -->
 
 

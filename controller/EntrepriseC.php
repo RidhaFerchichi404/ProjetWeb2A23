@@ -1,5 +1,5 @@
 <?php
-include "../../config.php";
+require_once "../../config.php";
 class EntrepriseC{
     public function listentreprise(){
         $sql="SELECT * FROM entreprise";
@@ -85,6 +85,43 @@ class EntrepriseC{
                 die('Error: ' . $e->getMessage());
             }
         }
-             
+
+        public function countent() {
+            try {
+                $db = config::getConnexion();
+                $query = $db->query("SELECT COUNT(*) AS total_entreprises FROM entreprise");
+                $result = $query->fetch(PDO::FETCH_ASSOC);
+                return $result['total_entreprises'];
+            } catch (PDOException $e) {
+                echo "Error: " . $e->getMessage();
+            }
+        }
+        
+        // Method to fetch jobs for the current page
+        public function paginateent($offset, $limit) {
+            try {
+                $db = config::getConnexion();
+                $query = $db->prepare("SELECT * FROM entreprise LIMIT :limit OFFSET :offset");
+                $query->bindParam(':limit', $limit, PDO::PARAM_INT);
+                $query->bindParam(':offset', $offset, PDO::PARAM_INT);
+                $query->execute();
+                return $query->fetchAll(PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                echo "Error: " . $e->getMessage();
+            }
+        }
+        function searchent($search){
+            $requete = "SELECT * FROM entreprise WHERE CONCAT(id, nom, email,doc,location,secteur) LIKE '%$search%'";
+            $db = config::getConnexion();
+            try {
+            $querry = $db->prepare($requete);
+            $querry->execute();
+            $result = $querry->fetchAll();
+            return $result ;
+            } catch (PDOException $e) {
+                echo "Error: " .$e->getMessage();
+            }
+        }
+
 }
 ?>

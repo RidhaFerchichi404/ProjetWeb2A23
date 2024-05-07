@@ -221,7 +221,7 @@ if (
                     </div>
                 </div>
             </nav>
-            <button><a href="listsecteur.php">Back to list</a></button>
+            <button class="btn btn-primary"><a href="listsecteur.php" class="text-white">Back to list</a></button>
             <hr>
             <div id="error">
                 <?php echo $error; ?>
@@ -231,88 +231,50 @@ if (
                 $sec = $secC->showsecteur($_POST['id']);
                 if ($sec) {
             ?>
-                <?php var_dump($sec); ?>
-                <form id="formupdate" action=""  method="POST">
-                    <table border="1" align="center">
-                        <tr>
-                            <td>
-                                <label for="id">Id Secteur:
-                                </label>
-                            </td>
-                            <td><input type="text" name="id" id="id" value="<?php echo $sec['id']; ?>"></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="nom">Name:
-                                </label>
-                            </td>
-                                <td><input type="text" name="nom" id="nom" value="<?php echo $sec['nom']; ?>">
-                                <div id="nameError"></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="email">Email:
-                                </label>
-                            </td>
-                            <td>
-                                <input type="email" name="email" value="<?php echo $sec['email']; ?>" id="email">
-                                <div id="lieuError"></div>
-                            </td>
-                            <div id="emailError"></div>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="type">type:
-                                </label>
-                            </td>
-                            <td><input type="text" name="type" id="type" value="<?php echo $sec['type']; ?>">
-                            <div id="lieuError"></div>
-                            </td>
-                            <div id="typeError"></div>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="nb_entreprises">Companys number:
-                                </label>
-                            </td>
-                            <td>
-                                <input type="text" name="nb_entreprises" id="nb_entreprises" value="<?php echo $sec['nb_entreprises']; ?>">
-                                <div id="lieuError"></div>
-                            </td>
-                            <div id="nbError"></div>
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="region">Region:
-                                </label>
-                            </td>
-                            <td>
-                                <input type="text" name="region" id="region" value="<?php echo $sec['region']; ?>">
-                                <div id="lieuError"></div>
-                            </td>
-                            
-                        </tr>
-                        <tr>
-                            <td>
-                                <label for="exigence_formation">Training requirement:</label>
-                            </td>
-                            <td>
-                                <input type="text" name="exigence_formation" id="exigence_formation" value="<?php echo $sec['exigence_formation']; ?>">
-                                <div id="exigenceError"></div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>
-                                <input type="submit" value="Update">
-                            </td>
-                            <td>
-                                <input type="reset" value="Reset">
-                            </td>
-                        </tr>
-                    </table>
-                </form>
+            <div class="container-fluid pt-4 px-4">
+                <div class="row vh-100 bg-secondary rounded align-items-center justify-content-center mx-0">
+                    <div class="col-md-6 text-center">
+                                <form id="formupdate" action="" method="POST">
+                                <div class="mb-3">
+                                    <label for="id" class="form-label">Id Secteur:</label>
+                                    <input type="text" class="form-control" id="id" name="id" value="<?php echo $sec['id']; ?>" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nom" class="form-label">Name:</label>
+                                    <input type="text" class="form-control" id="nom" name="nom" value="<?php echo $sec['nom']; ?>">
+                                    <div id="nameError"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email:</label>
+                                    <input type="email" class="form-control" id="email" name="email" value="<?php echo $sec['email']; ?>">
+                                    <div id="emailError"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="type">Type:</label>
+                                    <input type="text" class="form-control" id="type" name="type" value="<?php echo $sec['type']; ?>">
+                                    <div id="typeError"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nb_entreprises">Companys number:</label>
+                                    <input type="text" class="form-control" id="nb_entreprises" name="nb_entreprises" value="<?php echo $sec['nb_entreprises']; ?>">
+                                    <div id="nbError"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="region">Region:</label>
+                                    <input type="text" class="form-control" id="region" name="region" value="<?php echo $sec['region']; ?>">
+                                    <div id="regionError"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exigence_formation">Training requirement:</label>
+                                    <input type="text" class="form-control" id="exigence_formation" name="exigence_formation" value="<?php echo $sec['exigence_formation']; ?>">
+                                    <div id="exigenceError"></div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Update</button>
+                                <button type="reset" class="btn btn-secondary">Reset</button>
+                            </form>
+                            </div>
+                        </div>
+                    </div>
                     <?php
                     }
                     else{
