@@ -1,27 +1,24 @@
 <?php
-include '../Controller/CommentaireC.php'; // Inclure le fichier contenant la classe CommentaireC
+include '../Controller/CommentaireC.php';
 include '../Model/commentaire.php';
-$error = null;
-$sub = null;
-$id_sujet=isset($_GET['id_sujet']) ? $_GET['id_sujet'] :null;
-$subC = new CommentaireC(); // Instanciation de la classe CommentaireC
 
-if (isset($_POST['id_sujet']) && isset($_POST['id_utilisateur']) && isset($_POST['text'])) {
-    if (!empty($_POST['id_sujet']) && !empty($_POST['id_utilisateur']) && !empty($_POST['text'])) {
+$id_sujet = isset($_GET['id_sujet']) ? $_GET['id_sujet'] : null;
+$subC = new CommentaireC();
 
-        $sub = new commentaire(
-            null, $_GET['id_sujet']
-            ,
-            $_POST['id_utilisateur'],
-            $_POST['text']
-        );
-        
-        $subC->addCommentaire($sub); // Appel de la méthode addCommentaire
+if (isset($_POST['id_poste'], $_POST['id_utilisateur'], $_POST['text'])) {
+    $id_poste = $_POST['id_poste'];
+    $id_utilisateur = $_POST['id_utilisateur'];
+    $text = $_POST['text'];
 
-        header('Location:detailsforum.php');
-        exit(); // Assurez-vous de terminer l'exécution du script après la redirection
+    $commentaire = new commentaire(null, $id_poste, $id_utilisateur, $text);
+    
+    if ($subC->addCommentaire($commentaire)) {
+        header("Location:detailsforum.php?id_sujet=$id_sujet");
+        exit();
     } else {
-        $error = "Missing information";
+        echo "Failed to add comment.";
     }
+} else {
+    echo "Missing information";
 }
 ?>

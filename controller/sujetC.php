@@ -19,6 +19,22 @@ class sujetC
             die('Error: ' . $e->getMessage());
         }
     }
+    public function getSujetDetailsByID($id)
+{
+    $sql = "SELECT * FROM sujet WHERE id_sujet = :id";
+    $db = config::getConnexion();
+
+    try {
+        $query = $db->prepare($sql);
+        $query->bindParam(':id', $id);
+        $query->execute();
+        $sujet = $query->fetch(PDO::FETCH_ASSOC);
+        return $sujet;
+    } catch (Exception $e) {
+        die('Error: ' . $e->getMessage());
+    }
+}
+
 
     public function listsujet()
     {
@@ -121,4 +137,7 @@ class sujetC
             echo "Error: " . $e->getMessage();
         }
     }
+    
+
+    
 }

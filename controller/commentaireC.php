@@ -4,7 +4,19 @@ require '../config.php';
 
 class CommentaireC
 {
-
+    public function getCommentsBySubject($subject_id) {
+        $sql = "SELECT * FROM commentaire WHERE id_sujet = :subject_id";
+        $db = Config::getConnexion();
+        try {
+            $stmt = $db->prepare($sql);
+            $stmt->bindParam(":subject_id", $subject_id);
+            $stmt->execute();
+            $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $comments;
+        } catch (Exception $e) {
+            die('Error:' . $e->getMessage());
+        }
+    }
     public function getCommentaire($id)
     {
         $sql = "SELECT * FROM commentaire WHERE id_commentaire = :id";
@@ -192,4 +204,5 @@ class sujetC
             echo($e);
         }
     }
+   
 }

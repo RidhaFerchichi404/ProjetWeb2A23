@@ -8,6 +8,7 @@ $sub = null;
 $id_sujet=isset($_GET['id_sujet']) ? $_GET['id_sujet'] :null;
 
 $subC = new CommentaireC(); // Instanciation de la classe CommentaireC
+$recentComments = $subC->getCommentsBySubject($id_sujet);
 
 if ( isset($_POST['id_utilisateur']) && isset($_POST['text'])) {
     if ( !empty($_POST['id_utilisateur']) && !empty($_POST['text'])) {
@@ -21,12 +22,13 @@ if ( isset($_POST['id_utilisateur']) && isset($_POST['text'])) {
         
         $subC->addCommentaire($sub); // Appel de la méthode addCommentaire
 
-        header('Location:detailsforum.php');
+        header('Location: detailsforum.php?id_sujet=' . $id_sujet);
         exit(); // Assurez-vous de terminer l'exécution du script après la redirection
     } else {
         $error = "Missing information";
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -121,7 +123,38 @@ if ( isset($_POST['id_utilisateur']) && isset($_POST['text'])) {
         </div>
         <!-- Header End -->
 
+        <div class="container-xxl py-5">
+    <div class="container">
+        <h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">Communiquer avec nous</h1>
+        <div class="row g-4">
+            <?php if (!empty($recentComments)) { ?>
+                
+                <div class="job-item col-lg-3 col-md-6 col-sm-12 wow fadeInUp" data-wow-delay="0.1s">
+                        
+                        <h5>Recent Comments:</h5>
+                        <ul>
+                            <?php foreach ($recentComments as $comment) : ?>
+                                <?php $id_sujet=$comment['id_commentaire'];
+                
+                ?>
+                                <li><?= htmlspecialchars($comment['text']); ?></li>
+                                <form action="update_comment.php?id_commentaire=<?=$id_sujet?>" method="post" style="display: inline;">
+                                 <input type="hidden" name="comment_id" value="<?= $comment ['id_sujet']; ?>">
+                                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
 
+                                    </form>
+          
+                            <?php endforeach; ?>
+                        </ul>
+                    </a>
+                    
+                </div>
+            <?php } ?>
+        </div>
+    </div>
+</div>
+
+   
         <!-- Job Detail Start -->
         <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
             <div class="container">

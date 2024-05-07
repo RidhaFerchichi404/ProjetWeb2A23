@@ -2,9 +2,10 @@
 <!DOCTYPE html>
 <html lang="en">
 
+
 <head>
     <meta charset="utf-8">
-    <title>CareerHub- Job Portal Website Template</title>
+    <title>CareerHub - Job Portal Website Template</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -30,6 +31,9 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+        <!-- Include CKEditor source file -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/35.0.0/classic/ckeditor.js"></script>
+
 </head>
 
 <body>
@@ -56,16 +60,16 @@
                     <a href="index.html" class="nav-item nav-link">Home</a>
                     <a href="about.html" class="nav-item nav-link">About</a>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Jobs</a>
+                        <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Jobs</a>
                         <div class="dropdown-menu rounded-0 m-0">
                             <a href="job-list.html" class="dropdown-item">Job List</a>
-                            <a href="job-detail.html" class="dropdown-item">Job Detail</a>
+                            <a href="job-detail.html" class="dropdown-item active">Job Detail</a>
                         </div>
                     </div>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">List des sujets</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Détails du sujet</a>
                         <div class="dropdown-menu rounded-0 m-0">
-                            <a href="category.html" class="dropdown-item active">Job Category</a>
+                            <a href="category.html" class="dropdown-item">Job Category</a>
                             <a href="testimonial.html" class="dropdown-item">Testimonial</a>
                             <a href="404.html" class="dropdown-item">404</a>
                         </div>
@@ -81,100 +85,43 @@
         <!-- Header End -->
         <div class="container-xxl py-5 bg-dark page-header mb-5">
             <div class="container my-5 pt-5 pb-4">
-                <h1 class="display-3 text-white mb-3 animated slideInDown">List des sujets</h1>
+                <h1 class="display-3 text-white mb-3 animated slideInDown"> modifier votre commentaire</h1>
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb text-uppercase">
-                        <li class="breadcrumb-item text-white active" aria-current="page">Sujets</li>
-                    </ol>
+                    
                 </nav>
             </div>
         </div>
         <!-- Header End -->
 
+<class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <form action="update.php" method="post"> 
+            <div class="col-sm-12 col-xl-12">
+                <div class="bg-secondary rounded h-100 p-4">
+                    <input type="hidden" name="id_commentaire" value="<?= isset($_GET['id_commentaire']) ? htmlspecialchars($_GET['id_commentaire']) : ''; ?>">
 
-        <!-- Category Start -->
-
-        <?php
-include "../controller/sujetC.php";
-$c = new sujetC();
-$tab = $c->listsujet();
-
-// Define the number of jobs per page
-$limit = 4;
-
-// Get the current page number
-$page = isset($_GET['page']) ? $_GET['page'] : 1;
-
-// Calculate the offset for SQL query
-$offset = ($page - 1) * $limit;
-
-// Fetch total number of jobs
-$totalJobs = $c->countJobs();
-
-// Calculate total number of pages
-$totalPages = ceil($totalJobs / $limit);
-
-// Fetch jobs for the current page
-$tab = $c->paginateJobs($offset, $limit);
-
-?>
-<form method="POST" action="" style="display: flex;">
-    <input  onkeyup="myFunction()" type="text" name="search" placeholder="Search..." style="border-radius: 4px 0 0 4px;"> <!-- Added border-radius for rounded corners -->
-    <button type="submit" style="background: none; border: none; cursor: pointer; padding: 0 10px;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="blue" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" style="width: 24px; height: 24px;">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-    </button>
-</form>
-<div class="container-xxl py-5">
-    <div class="container">
-        <h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">Communiquer avec nous</h1>
-        <div class="row g-4">
-            
-            <?php foreach ($tab as $sujet) { ?>
-                <?php $id_sujet=$sujet['id_sujet'];
-                $titre=$sujet['titre'];
-              
-                ?>
-                
-            <div class="job-item col-lg-3 col-md-6 col-sm-12 wow fadeInUp" data-wow-delay="0.1s">
-                <a class="cat-item rounded p-4" href="detailsforum.php ?id_sujet=<?=$id_sujet?>?titre=<?=$titre?>">
-                    <i class="fa fa-3x fa-mail-bulk text-primary mb-4" ></i>
-                    <h6 class="mb-3"><?= htmlspecialchars($sujet['titre']); ?></h6>
-                    <p class="mb-0"><?= htmlspecialchars($sujet['contenue']); ?></p>
+                    <h2 class="mb-4 text-center">Modifier un commentaire</h2>
                     
-                </a>
-            </div>
-            <?php } ?>
-            <!-- Pagination links -->
-            <div class="pagination">
-                        <?php if ($page > 1) : ?>
-                            <a href="?page=<?= $page - 1 ?>" class="btn btn-primary">Previous</a>
-                        <?php endif; ?>
-                        <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
-                            <a href="?page=<?= $i ?>" class="btn btn-primary <?= $page == $i ? 'active' : '' ?>"><?= $i ?></a>
-                        <?php endfor; ?>
-                        <?php if ($page < $totalPages) : ?>
-                            <a href="?page=<?= $page + 1 ?>" class="btn btn-primary">Next</a>
-                        <?php endif; ?>
+                    <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="text" name="text" value="<?= isset($_GET['text']) ? htmlspecialchars($_GET['text']) : ''; ?>">
+
+                                    
+                        <label for="text">Commentaire</label>
                     </div>
-        </div>
-    </div>
-</div>
+                    <button type="submit" class="btn btn-success m-2">Modifier</button>            
+                </div>
+            </div>
+        </form>
 
-</div>
-     
-        <!-- Category End -->
-
-
+            </div>
+            
         <!-- Footer Start -->
         <div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
             <div class="container py-5">
                 <div class="row g-5">
                     <div class="col-lg-3 col-md-6">
                         <h5 class="text-white mb-4">Company</h5>
-                        <a class="btn btn-link text-white-50" href="">About Us</a>
+          <a class="btn btn-link text-white-50" href="">About Us</a>
                         <a class="btn btn-link text-white-50" href="">Contact Us</a>
                         <a class="btn btn-link text-white-50" href="">Our Services</a>
                         <a class="btn btn-link text-white-50" href="">Privacy Policy</a>
@@ -248,24 +195,5 @@ $tab = $c->paginateJobs($offset, $limit);
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
-    <script>
-    function myFunction() {
-    var input, filter, jobItems, i, txtValue;
-    input = document.getElementsByName("search")[0];
-    filter = input.value.toUpperCase();
-    jobItems = document.getElementsByClassName("job-item");
-
-    // Loop through all job items, and hide/show those that match the search query
-    for (i = 0; i < jobItems.length; i++) {
-        txtValue = jobItems[i].textContent || jobItems[i].innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-            jobItems[i].style.display = "";
-        } else {
-            jobItems[i].style.display = "none";
-        }
-    }
-}  
-    </script>
 </body>
-
-</html>
+            </html>
