@@ -2,13 +2,15 @@
 <?php
 include_once "../controller/userC.php";
 include_once "../model/user.php";
+include_once "../config.PHP";
+
+
 
 $userC = new UserC();
 
 session_start();
 
 $error = null;
-
 if (
   isset($_POST['name']) &&
   isset($_POST['phone']) &&
@@ -20,7 +22,7 @@ if (
   
   if(empty($_POST['name'] )||empty($_POST['phone'] )||empty($_POST['email'] )||empty($_POST['password'] )||empty($_POST['address'] )||empty($_POST['role'] ))
   {
-    $error = "field are empty";
+    $error = "fields are empty";
   }
   else
   {
@@ -44,16 +46,20 @@ if (
       
     }
     else{
-      $error = "name must be > 5";
+      $error = "name must be > 3";
     }
     
   }
-  
+  if($error != null)
+  {
+    echo "<script>alert('".$error."')</script>";
+  }  
 
  
 }
 
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -89,6 +95,8 @@ if (
 
 <body>
     <div class="container-xxl bg-white p-0">
+    
+
         <!-- Spinner Start -->
         <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -108,7 +116,7 @@ if (
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav ms-auto p-4 p-lg-0">
-                    <a href="index.html" class="nav-item nav-link active">Home</a>
+                    <a href="index.php" class="nav-item nav-link active">Home</a>
                     <a href="about.html" class="nav-item nav-link">About</a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Jobs</a>
@@ -125,7 +133,7 @@ if (
                             <a href="404.html" class="dropdown-item">404</a>
                         </div>
                     </div>
-                    <a href="sign-up.php" class="nav-item nav-link">Sign In</a>
+                    <a href="in.php" class="nav-item nav-link">Sign In</a>
                 </div>
                 <a href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Post A Job<i class="fa fa-arrow-right ms-3"></i></a>
             </div>
@@ -137,7 +145,7 @@ if (
         <div class="container-fluid p-0">
             <div class="owl-carousel header-carousel position-relative">
                 <div class="owl-carousel-item position-relative">
-                    <img class="img-fluid" src="img/carousel-1.jpg" alt="">
+                    <img class="img-fluid" src="new/img/carousel-1.jpg" alt="">
                     <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(43, 57, 64, .5);">
                         <div class="container">
                             <div class="row justify-content-start">
@@ -152,7 +160,7 @@ if (
                     </div>
                 </div>
                 <div class="owl-carousel-item position-relative">
-                    <img class="img-fluid" src="img/carousel-2.jpg" alt="">
+                    <img class="img-fluid" src="new/img/carousel-2.jpg" alt="">
                     <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(43, 57, 64, .5);">
                         <div class="container">
                             <div class="row justify-content-start">
@@ -238,8 +246,11 @@ if (
                   <h3 class="font-weight-bolder text-info text-gradient" align="center">REGISTER</h3>
         
                   <div class="card-body">
-                <form  role="form text-left" method="post" enctype="multipart/form-data" autocomplete="on">
-                 
+            
+
+                <form  role="form text-left" method="post" enctype="multipart/form-data"    autocomplete="on">
+             
+               
                 <div class="mb-3">
   <label for="photo" class="form-label">Upload a photo:</label>
   <input type="file" class="form-control" id="photo" name="photo">
@@ -436,7 +447,7 @@ if (
                             <div class="job-item p-4 mb-4">
                                 <div class="row g-4">
                                     <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                        <img class="flex-shrink-0 img-fluid border rounded" src="img/com-logo-1.jpg" alt="" style="width: 80px; height: 80px;">
+                                        <img class="flex-shrink-0 img-fluid border rounded" src="new/img/com-logo-1.jpg" alt="" style="width: 80px; height: 80px;">
                                         <div class="text-start ps-4">
                                             <h5 class="mb-3">Software Engineer</h5>
                                             <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i>New York, USA</span>
@@ -456,7 +467,7 @@ if (
                             <div class="job-item p-4 mb-4">
                                 <div class="row g-4">
                                     <div class="col-sm-12 col-md-8 d-flex align-items-center">
-                                        <img class="flex-shrink-0 img-fluid border rounded" src="img/com-logo-2.jpg" alt="" style="width: 80px; height: 80px;">
+                                        <img class="flex-shrink-0 img-fluid border rounded" src="new/img/com-logo-2.jpg" alt="" style="width: 80px; height: 80px;">
                                         <div class="text-start ps-4">
                                             <h5 class="mb-3">Marketing Manager</h5>
                                             <span class="text-truncate me-3"><i class="fa fa-map-marker-alt text-primary me-2"></i>New York, USA</span>
@@ -876,10 +887,10 @@ if (
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/wow/wow.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="new/lib/wow/wow.min.js"></script>
+    <script src="new/lib/easing/easing.min.js"></script>
+    <script src="new/lib/waypoints/waypoints.min.js"></script>
+    <script src="new/lib/owlcarousel/owl.carousel.min.js"></script>
 
     <!-- Template Javascript -->
     <script src="new/js/main.js"></script>

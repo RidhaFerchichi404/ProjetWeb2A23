@@ -1,26 +1,89 @@
 
 <?php
 include_once "../controller/userC.php";
-include_once "../config.php";
+include_once "../config.PHP";
+require __DIR__ . '/../vendor/autoload.php';
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+// Initialize UserC instance
 $userC = new UserC();
-session_start();
-$list = null;
-if(isset($_COOKIE['name'])) {
-  
-  $list = $userC->list();
-} else {
+    
+$log = new Logger('tables');
 
-if(isset($_SESSION['name'])) {
-  
-  $list = $userC->list();
-  setcookie('name', $_SESSION['name'], time() + (86400 * 30), "/");
+// Define the number of users per page
+$limit = 5;
 
+// Get the current page number
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+// Calculate the offset for SQL query
+$offset = ($page - 1) * $limit;
+
+// Fetch total number of users
+$totalUsers = $userC->countUsers();
+
+// Calculate total number of pages
+$totalPages = ceil($totalUsers / $limit);
+
+// Fetch users for the current page
+$list = $userC->paginateUsers($offset, $limit);
+
+$log->pushHandler(new StreamHandler(__DIR__ . '/../logs/tables.log', Logger::INFO));
+
+// Initialize variables
+$logged = ""; // Default to empty string
+// $list = null;
+$userPhoto = ""; // Default to empty string for user's photo path
+
+// Check if the user is logged in
+if (isset($_COOKIE['name'])) {
+    // If user's name is stored in cookie, retrieve it
+    $logged = $_COOKIE['name'];
+    
+} elseif (isset($_SESSION['name'])) {
+    // If user's name is stored in session, retrieve it and set cookie
+    $logged = $_SESSION['name'];
+    setcookie('name', $_SESSION['name'], time() + (86400 * 30), "/");
 } else {
-  header("location: in.php");
+    // If user is not logged in, redirect to login page
+    header("location: in.php");
+    exit; // Terminate script execution after redirection
 }
+
+// Fetch list of users
+// $list = $userC->list();
+
+
+// Get the current user's information
+$currentUser = $userC->getCurrentUser();
+$log->info('Current user log', ['currentUser' => $currentUser]);
+
+// Check if the current user exists
+if ($currentUser) {
+    $log->info('Current user exists', ['currentUser' => $currentUser]);
+    // If the current user exists, get the photo path
+    $userPhoto = $currentUser['photo'];
 }
+
+
+// search 
+// Get the search query from the form submission
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+
+// Fetch users based on the search query
+$list = $userC->searchUsers($search, $offset, $limit);
+
+
+
+
+
+
+
 
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -32,7 +95,7 @@ if(isset($_SESSION['name'])) {
     <meta content="" name="description">
 
     <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
+    <link href="dashboard/img/favicon.ico" rel="icon">
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,14 +107,14 @@ if(isset($_SESSION['name'])) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Libraries Stylesheet -->
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+    <link href="dashboard/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="dashboard/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
 
     <!-- Customized Bootstrap Stylesheet -->
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="dashboard/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Template Stylesheet -->
-    <link href="assets/css/style.css" rel="stylesheet">
+    <link href="dashboard/css/style.css" rel="stylesheet">
 </head>
 
 <body>
@@ -65,7 +128,7 @@ if(isset($_SESSION['name'])) {
         <div class="sidebar pe-4 pb-3">
             <nav class="navbar bg-secondary navbar-dark">
                 <a href="index.html" class="navbar-brand mx-4 mb-3">
-                    <h3 class="text-primary"><i class="fa fa-user-edit me-2"></i>DarkPan</h3>
+                    <h3 class="text-primary"><i class="fa fa-user-edit me-2"></i>CareerHub</h3>
                 </a>
                 <div class="d-flex align-items-center ms-4 mb-4">
                  
@@ -106,9 +169,22 @@ if(isset($_SESSION['name'])) {
                 <a href="#" class="sidebar-toggler flex-shrink-0">
                     <i class="fa fa-bars"></i>
                 </a>
-                <form class="d-none d-md-flex ms-4">
+
+
+
+                <form class="d-none d-md-flex ms-4" method="GET">
+    <input class="form-control bg-dark border-0" type="search" placeholder="Search" name="search">
+    <button class="btn btn-primary" type="submit">Search</button>
+</form>
+
+
+
+
+
+              <!--  <form class="d-none d-md-flex ms-4">
                     <input class="form-control bg-dark border-0" type="search" placeholder="Search">
-                </form>
+                </form> -->
+
                 <div class="navbar-nav align-items-center ms-auto">
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
@@ -118,7 +194,7 @@ if(isset($_SESSION['name'])) {
                         <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
                             <a href="#" class="dropdown-item">
                                 <div class="d-flex align-items-center">
-                                    <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                                    <img class="rounded-circle" src="new/img/user.jpg" alt="" style="width: 40px; height: 40px;">
                                     <div class="ms-2">
                                         <h6 class="fw-normal mb-0">Jhon send you a message</h6>
                                         <small>15 minutes ago</small>
@@ -128,7 +204,7 @@ if(isset($_SESSION['name'])) {
                             <hr class="dropdown-divider">
                             <a href="#" class="dropdown-item">
                                 <div class="d-flex align-items-center">
-                                    <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                                    <img class="rounded-circle" src="new/img/user.jpg" alt="" style="width: 40px; height: 40px;">
                                     <div class="ms-2">
                                         <h6 class="fw-normal mb-0">Jhon send you a message</h6>
                                         <small>15 minutes ago</small>
@@ -138,7 +214,7 @@ if(isset($_SESSION['name'])) {
                             <hr class="dropdown-divider">
                             <a href="#" class="dropdown-item">
                                 <div class="d-flex align-items-center">
-                                    <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
+                                    <img class="rounded-circle" src="new/img/user.jpg" alt="" style="width: 40px; height: 40px;">
                                     <div class="ms-2">
                                         <h6 class="fw-normal mb-0">Jhon send you a message</h6>
                                         <small>15 minutes ago</small>
@@ -149,6 +225,14 @@ if(isset($_SESSION['name'])) {
                             <a href="#" class="dropdown-item text-center">See all message</a>
                         </div>
                     </div>
+
+
+
+
+                   <!-- <a href="in.php" class="d-none d-lg-inline-flex">Logout</a> -->
+
+
+
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             <i class="fa fa-bell me-lg-2"></i>
@@ -171,15 +255,42 @@ if(isset($_SESSION['name'])) {
                             </a>
                             <hr class="dropdown-divider">
                             <a href="#" class="dropdown-item text-center">See all notifications</a>
-                        </div>
-                    </div>
+</div>
+</div>
+
+
+<div class="nav-item dropdown">
+    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+        <!-- Display user's photo dynamically -->
+        <img class="rounded-circle me-lg-2" src="<?php echo $userPhoto; ?>" alt="" style="width: 40px; height: 40px;">
+        <span class="d-none d-lg-inline-flex">
+            <?php echo $logged; ?>
+            
+        </span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
+        <a href="profile_user.php" class="dropdown-item">My Profile</a>
+        <a href="in.php" class="dropdown-item">Log Out</a>
+    </div>
+</div>
+
+
+</div>
+
+
+                       
+
+
+
+                        
+                   
                     <div class="nav-item dropdown">
                        
                         <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
                           
                         </div>
                     </div>
-                </div>
+                
             </nav>
             <!-- Navbar End -->
 
@@ -199,10 +310,12 @@ if(isset($_SESSION['name'])) {
 
 
             <!-- Footer Start -->
+            
             <div class="bg-secondary rounded h-100 p-4">
     <h6 class="mb-4">User List</h6>
     <div class="bg-secondary rounded h-100 p-4">
     <h6 class="mb-4">User List</h6>
+
     <div class="table-responsive">
       <table class="table">
         <thead>
@@ -219,19 +332,33 @@ if(isset($_SESSION['name'])) {
           if ($list != null) {
             $count = 1;
             foreach ($list as $user) {
-              echo "<tr>";
-              echo "<th scope='row'>".$count."</th>";
-              echo "<td>".$user['name']."</td>";
-              echo "<td>".$user['phone']."</td>";
-              echo "<td>".$user['email']."</td>";
-              echo "<td><a href='profile_edit.php?name=".$user['name']."'>Edit</a></td>";
-              echo "</tr>";
-              $count++;
+                echo "<tr>";
+                echo "<th scope='row'>".$count."</th>";
+                echo "<td>".$user['name']."</td>";
+                echo "<td>".$user['phone']."</td>";
+                echo "<td>".$user['email']."</td>";
+                echo "<td><a href='profile_edit.php?name=".$user['name']."'>Edit</a> | <a href='delete_user.php?name=".$user['name']."' onclick='return confirm(\"Are you sure?\")'>Delete</a></td>";
+
+                echo "</tr>";
+                $count++;
             }
-          }
+        }
+        
           ?>
+          
         </tbody>
       </table>
+        <div class="pagination">
+            <?php if ($page > 1) : ?>
+                <a href="?page=<?= $page - 1 ?>" class="btn btn-primary">Previous</a>
+            <?php endif; ?>
+            <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                <a href="?page=<?= $i ?>" class="btn btn-primary <?= $page == $i ? 'active' : '' ?>"><?= $i ?></a>
+            <?php endfor; ?>
+            <?php if ($page < $totalPages) : ?>
+                <a href="?page=<?= $page + 1 ?>" class="btn btn-primary">Next</a>
+            <?php endif; ?>
+        </div>
     </div>
   </div>
             <!-- Footer End -->
@@ -246,16 +373,18 @@ if(isset($_SESSION['name'])) {
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/chart/chart.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="lib/tempusdominus/js/moment.min.js"></script>
-    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="dashboard/lib/chart/chart.min.js"></script>
+    <script src="dashboard/lib/easing/easing.min.js"></script>
+    <script src="dashboard/lib/waypoints/waypoints.min.js"></script>
+    <script src="dashboard/lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="dashboard/lib/tempusdominus/js/moment.min.js"></script>
+    <script src="dashboard/lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="dashboard/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
 
     <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+    <script src="dashboard/js/main.js"></script>
 </body>
+
+
 
 </html>
