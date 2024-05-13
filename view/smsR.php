@@ -4,8 +4,8 @@ PARTICIPANT Rejected
 require 'C:\xampp\htdocs\Projet\FrontBack12\twilio-php-main\src\Twilio\autoload.php';
 
 // Your Account SID and Auth Token from console.twilio.com
-$sid = "**********************************";
-$token = "********************************";
+$sid = "";
+$token = "";
 
 
 $client = new Twilio\Rest\Client($sid, $token);
