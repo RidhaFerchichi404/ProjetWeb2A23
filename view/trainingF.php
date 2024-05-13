@@ -1,6 +1,6 @@
 <?php
 // Inclure le fichier de connexion à la base de données
-include "../cnx.php";
+include "cnx.php";
 
 
 // Récupérer les données de la table formations

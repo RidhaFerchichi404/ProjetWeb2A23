@@ -38,11 +38,11 @@ if (!empty($errors)) {
     exit;
 }
 $pdo = cnnx::getConnexion();
-/*$photo = $_FILES['photo']['name'];
+$photo = $_FILES['photo']['name'];
 $photo_tmp = $_FILES['photo']['tmp_name'];
 $destination = 'C:\xampp\htdocs\Projet\FrontBack12\view\img\\' . $photo;
 if (move_uploaded_file($photo_tmp, $destination)) {
-    // Le fichier a été téléchargé avec succès*/
+    // Le fichier a été téléchargé avec succès
     // Effectuez la requête d'insertion dans la base de données ici
     $sql = "INSERT INTO training (nom, date, adress, price, time, description, photo) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);

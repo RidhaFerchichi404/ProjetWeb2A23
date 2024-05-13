@@ -1,6 +1,6 @@
 <?php
 // Inclure le fichier de connexion à la base de données
-include "../cnx.php";
+include "cnx.php";
 ?>
 <!DOCTYPE html>
 <html lang="en">

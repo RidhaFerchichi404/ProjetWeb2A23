@@ -22,3 +22,4 @@ $client->messages->create(
         'body' => "You are  Rejected"
     ]
 );
+header('Location: list.php');

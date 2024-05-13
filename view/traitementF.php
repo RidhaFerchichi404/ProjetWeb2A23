@@ -1,5 +1,5 @@
 <?php
-include "../cnx.php"; // Inclure le fichier de connexion à la base de données
+include "cnx.php"; // Inclure le fichier de connexion à la base de données
 
 // Vérifier si le formulaire a été soumis
 

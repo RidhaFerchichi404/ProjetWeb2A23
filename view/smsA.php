@@ -22,4 +22,5 @@ $client->messages->create(
         'body' => "You are accepted for the training"
     ]
 );
+header('Location: list.php');
 
