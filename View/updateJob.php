@@ -1,6 +1,6 @@
 <?php
-include "../controller/JobC.php";
-include "../model/Job.php";
+include "../Controller/JobC.php";
+include "../Model/Job.php";
 require_once "../config.php";
 
 // Function to update job details

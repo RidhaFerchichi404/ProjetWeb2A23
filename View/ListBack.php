@@ -1,6 +1,6 @@
 <?php
-    include "../controller/JobC.php";
-    include "../model/Job.php";
+    include "../Controller/JobC.php";
+    include "../Model/Job.php";
     $jobC = new JobC();
     $jobs = $jobC->ListJob();
     

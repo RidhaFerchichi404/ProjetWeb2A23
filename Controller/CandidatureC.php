@@ -1,7 +1,7 @@
 <?php
     //require_once "../config.php";
-    include "../controller/JobC.php";
-    include "../model/Candidature.php";
+    include "../Controller/JobC.php";
+    include "../Model/Candidature.php";
 
     class candidatureC {
 

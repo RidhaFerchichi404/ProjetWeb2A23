@@ -2,7 +2,7 @@
 // listJob2.php
 
 // Include JobC.php and create an instance of JobC class
-include "../controller/JobC.php";
+include "../Controller/JobC.php";
 $jobC = new JobC();
 
 // Define the number of jobs per page
