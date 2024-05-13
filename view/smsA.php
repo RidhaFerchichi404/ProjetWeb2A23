@@ -1,7 +1,7 @@
 PARTICIPANT ACCEPTED
 <?php
 // Required if your environment does not handle autoloading
-require 'C:\xampp\htdocs\Projet\FrontBack12\twilio-php-main\src\Twilio\autoload.php';
+require 'C:\xampp\htdocs\twilio-php-main\src\Twilio\autoload.php';
 
 // Your Account SID and Auth Token from console.twilio.com
 $sid = "AC9282842a7b7b0103a65e2ab2c10828e0";
