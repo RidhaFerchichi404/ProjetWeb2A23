@@ -116,7 +116,17 @@ $jobs = $jobC->paginateJobs($offset, $limit);
                     </ol>
                 </nav>
             </div>
+            <form method="POST" action="" style="display: flex;">
+    <input id="myInput" onkeyup="myFunction()" type="text" name="search" placeholder="Search..." style="border-radius: 4px 0 0 4px;"> <!-- Added border-radius for rounded corners -->
+    <button type="submit" style="background: none; border: none; cursor: pointer; padding: 0 10px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="green" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" style="width: 24px; height: 24px;">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+    </button>
+</form>
         </div>
+
         <!-- Header End -->
 
         <!-- Jobs Start -->
