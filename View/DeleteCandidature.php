@@ -1,6 +1,6 @@
 <?php
 //require_once "../config.php";
-include "../Controller/CandidatureC.php";
+include "../controller/CandidatureC.php";
 
 // Create CandidatureC object
 $candidatureC = new CandidatureC();

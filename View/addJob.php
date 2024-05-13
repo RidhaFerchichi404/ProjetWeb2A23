@@ -1,6 +1,6 @@
 <?php
-    include "../Controller/JobC.php";
-    include "../Model/Job.php";
+    include "../controller/JobC.php";
+    include "../model/Job.php";
     $error = "";
     $job = null;
     $jobC = new JobC();

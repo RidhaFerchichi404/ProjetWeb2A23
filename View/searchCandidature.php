@@ -1,8 +1,8 @@
 <?php
 require_once "../config.php";
-include "../Controller/JobC.php";
-include "../Model/Job.php";
-require_once "../Controller/CandidatureC.php";
+include "../controller/JobC.php";
+include "../model/Job.php";
+require_once "../controller/CandidatureC.php";
 
     $jobC = new JobC();
     // Traitement du formulaire

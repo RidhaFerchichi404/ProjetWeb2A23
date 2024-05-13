@@ -1,7 +1,7 @@
 <?php
 
 
-    include "../Controller/JobC.php";
+    include "../controller/JobC.php";
     $jobC = new JobC();
 // Check if the job ID is provided in the URL
 if (isset($_GET['id'])) {
