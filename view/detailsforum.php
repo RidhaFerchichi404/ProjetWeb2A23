@@ -1,35 +1,76 @@
 <?php
-include '../Controller/CommentaireC.php'; // Inclure le fichier contenant la classe CommentaireC
+include '../Controller/CommentaireC.php';
 include '../Model/commentaire.php';
-
 
 $error = null;
 $sub = null;
-$id_sujet=isset($_GET['id_sujet']) ? $_GET['id_sujet'] :null;
+$id_sujet = isset($_GET['id_sujet']) ? $_GET['id_sujet'] : null;
 
-$subC = new CommentaireC(); // Instanciation de la classe CommentaireC
+$subC = new CommentaireC();
 $recentComments = $subC->getCommentsBySubject($id_sujet);
 
-if ( isset($_POST['id_utilisateur']) && isset($_POST['text'])) {
-    if ( !empty($_POST['id_utilisateur']) && !empty($_POST['text'])) {
+if (isset($_POST['id_utilisateur']) && isset($_POST['text'])) {
+    if (!empty($_POST['id_utilisateur']) && !empty($_POST['text'])) {
+        // Filter the comment text using the API
+        $text = $_POST['text'];
+        $filteredText = filterProfanity($text); // Call the filterProfanity function
 
+        // Create the comment object
         $sub = new commentaire(
-            null, $_GET['id_sujet']
-            ,
+            null,
+            $id_sujet,
             $_POST['id_utilisateur'],
-            $_POST['text']
+            $filteredText
         );
-        
-        $subC->addCommentaire($sub); // Appel de la méthode addCommentaire
+
+        // Add the comment to the database
+        $subC->addCommentaire($sub);
 
         header('Location: detailsforum.php?id_sujet=' . $id_sujet);
-        exit(); // Assurez-vous de terminer l'exécution du script après la redirection
+        exit();
     } else {
         $error = "Missing information";
     }
 }
 
+
+// Function to filter profanity using API
+function filterProfanity($text)
+{
+    // Replace 'YOUR_API_KEY' with your actual API key
+    $apiKey = '4FuizYoEXAWCwggxHxWhPQ==Mhlaxhv2DTS5q2nN';
+    $url = 'https://api.api-ninjas.com/v1/profanityfilter?text=' . urlencode($text);
+    $headers = array(
+        'X-Api-Key: ' . $apiKey
+    );
+
+    // Initialize cURL session
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_HTTPHEADER => $headers,
+    ));
+
+    // Execute the cURL request
+    $response = curl_exec($curl);
+    curl_close($curl);
+
+    // Decode the JSON response
+    $result = json_decode($response, true);
+
+    if ($result && isset($result['censored'])) {
+        return $result['censored'];
+    } else {
+        return $text; // Return original text if filtering fails
+    }
+}
 ?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -127,30 +168,22 @@ if ( isset($_POST['id_utilisateur']) && isset($_POST['text'])) {
     <div class="container">
         <h1 class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">Communiquer avec nous</h1>
         <div class="row g-4">
-            <?php if (!empty($recentComments)) { ?>
-                
-                <div class="job-item col-lg-3 col-md-6 col-sm-12 wow fadeInUp" data-wow-delay="0.1s">
-                        
-                        <h5>Recent Comments:</h5>
-                        <ul>
-                            <?php foreach ($recentComments as $comment) : ?>
-                                <?php $id_sujet=$comment['id_commentaire'];
-                
-                ?>
-                                <li><?= htmlspecialchars($comment['text']); ?></li>
-                                <form action="update_comment.php?id_commentaire=<?=$id_sujet?>" method="post" style="display: inline;">
-                                 <input type="hidden" name="comment_id" value="<?= $comment ['id_sujet']; ?>">
-                                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+        <?php if (!empty($recentComments)) { ?>
+    <div class="job-item col-lg-3 col-md-6 col-sm-12 wow fadeInUp" data-wow-delay="0.1s">
+        <h5>Recent Comments:</h5>
+        <ul>
+            <?php foreach ($recentComments as $comment) : ?>
+                <?php $id_sujet = $comment['id_commentaire']; ?>
+                <li><?php echo filterProfanity($comment['text']); ?></li>
+                <form action="update_comment.php?id_commentaire=<?= $id_sujet ?>" method="post" style="display: inline;">
+                    <input type="hidden" name="comment_id" value="<?= $comment['id_sujet']; ?>">
+                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                </form>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php } ?>
 
-                                    </form>
-          
-                            <?php endforeach; ?>
-                        </ul>
-                    </a>
-                    
-                </div>
-            <?php } ?>
-        </div>
     </div>
 </div>
 
@@ -180,12 +213,12 @@ if ( isset($_POST['id_utilisateur']) && isset($_POST['text'])) {
                                     
        
 <!-- Replace the textarea with CKEditor -->
-<textarea class="form-control" id="text" name="text" rows="5" placeholder="Commenter"></textarea>
+<textarea class="form-control" id="editor" name="text" rows="5" placeholder="Commenter"></textarea>
 
 <!-- Initialize CKEditor on the textarea -->
 <script>
     ClassicEditor
-        .create(document.querySelector('#text'))
+        .create(document.querySelector('#editor'))
         .catch(error => {
             console.error(error);
         });
@@ -291,6 +324,38 @@ if ( isset($_POST['id_utilisateur']) && isset($_POST['text'])) {
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
     </div>
+    <?php
+// Function to filter bad words using PurgoMalum API
+function filterBadWords($text) {
+    // API endpoint URL
+    $url = 'https://www.purgomalum.com/service/containsprofanity?text=' . urlencode($text);
+
+    // Make a GET request to the API
+    $response = file_get_contents($url);
+
+    // Check if the response contains profanity
+    if ($response === 'true') {
+        return true; // Text contains profanity
+    } else {
+        return false; // Text does not contain profanity
+    }
+}
+
+// Handle form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Get the submitted comment text
+    $commentText = $_POST["text"];
+
+    // Filter the comment text for bad words
+    if (filterBadWords($commentText)) {
+        echo "Your comment contains profanity. Please revise.";
+    } else {
+        // Proceed with submitting the comment
+        echo "Your comment has been submitted successfully.";
+        // Add code here to save the comment to your database or perform other actions
+    }
+}
+?>
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
