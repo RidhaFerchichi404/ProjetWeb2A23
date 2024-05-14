@@ -44,3 +44,5 @@
 [2024-05-07T11:01:34.588921+02:00] adduser.INFO: IS GOING TO SEND MAIL FCT {"query_before":{"PDOStatement":{"queryString":"INSERT INTO user (name, phone, email, password, address, role, photo)\r\n            VALUES (:name, :phone, :email, :password, :address, :role, :photo)"}}} []
 [2024-05-07T11:59:47.682676+02:00] adduser.INFO: THE BEFORE [] []
 [2024-05-07T11:59:47.684151+02:00] adduser.INFO: IS GOING TO SEND MAIL FCT {"query_before":{"PDOStatement":{"queryString":"INSERT INTO user (name, phone, email, password, address, role, photo)\r\n            VALUES (:name, :phone, :email, :password, :address, :role, :photo)"}}} []
+[2024-05-07T12:20:23.748314+02:00] adduser.INFO: THE BEFORE [] []
+[2024-05-07T12:20:23.749879+02:00] adduser.INFO: IS GOING TO SEND MAIL FCT {"query_before":{"PDOStatement":{"queryString":"INSERT INTO user (name, phone, email, password, address, role, photo)\r\n            VALUES (:name, :phone, :email, :password, :address, :role, :photo)"}}} []
