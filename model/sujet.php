@@ -6,7 +6,6 @@ class sujet
     private ?string $titre = null;
     private ?string $contenu = null;
     private ?string $date_creation = null;
-    
 
     public function getid_sujet() {
         return $this->id_sujet;
@@ -51,10 +50,5 @@ class sujet
         $this->titre = $t;
         $this->contenu = $c;
         $this->date_creation = $d;
-        
     }
-
-   
-
-
 }
