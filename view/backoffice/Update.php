@@ -1,7 +1,7 @@
 <?php
 
-include '../Controller/EventC.php';
-include "../Model/Event.php";
+include '../../controller/EventC.php';
+include "../../model/Event.php";
 
 $error = "";
 $ev = null;
@@ -93,7 +93,7 @@ if (
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Events management</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="Index.php" class="dropdown-item">Add an Event</a>
+                            <a href="Events.php" class="dropdown-item">Add an Event</a>
                             <a href="List.php" class="dropdown-item">List of Events</a>
                         </div>
                     </div>

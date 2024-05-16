@@ -1,5 +1,5 @@
 <?php
-include "../Controller/EventC.php";
+include "../../controller/EventC.php";
     if (isset($_POST['idEvent'])) {
         $evC = new EventC();
         $evC->deleteEvent($_POST['idEvent']);

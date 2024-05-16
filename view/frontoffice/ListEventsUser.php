@@ -1,5 +1,5 @@
 <?php
-    include "../Controller/EventC.php";
+    include_once "../../controller/EventC.php";
     $evC = new EventC();
     $list = $evC->ListEvents();
     //print_r($list);

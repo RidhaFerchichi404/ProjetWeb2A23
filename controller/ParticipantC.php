@@ -1,6 +1,6 @@
 <?php
-include "../config.php";
-include "../Model/Participant.php";
+include_once "../../config.php";
+include_once "../../model/Participant.php";
 
 class ParticipantC{
         public function ListParticipants(){

@@ -1,6 +1,6 @@
 <?php
-include "../Controller/ParticipantC.php";
-include "../Model/Participant.php";
+include_once "../../controller/ParticipantC.php";
+include_once "../../model/Participant.php";
 $error = null;
 $pr = null;
 

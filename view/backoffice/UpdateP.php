@@ -1,6 +1,6 @@
 <?php
 
-include '../Controller/ParticipantC.php';
+include '../../controller/ParticipantC.php';
 
 $error = "";
 $Pr = null;
@@ -84,7 +84,7 @@ if (
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Events management</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="Index.php" class="dropdown-item">Add an Event</a>
+                            <a href="Events.php" class="dropdown-item">Add an Event</a>
                             <a href="AddParticipant.php" class="dropdown-item">Add a participant</a>
                             <a href="List.php" class="dropdown-item">List of Events</a>
                             <a href="ListP.php" class="dropdown-item">List of participants</a>

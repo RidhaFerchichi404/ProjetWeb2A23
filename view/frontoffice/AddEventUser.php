@@ -1,6 +1,6 @@
 <?php
-    include "../Controller/EventC.php";
-    include "../Model/Event.php";
+    include_once "../../controller/EventC.php";
+    include_once "../../model/Event.php";
     $error = null;
     $ev = null;
     if(isset($_POST["NameEv"])

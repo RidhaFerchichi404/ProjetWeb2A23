@@ -1,5 +1,5 @@
 <?php
-include "../Controller/ParticipantC.php";
+include "../../controller/ParticipantC.php";
     if (isset($_POST['idPart'])) {
         $prC = new ParticipantC();
         $prC->deleteParticipant($_POST['idPart']);
