@@ -1,5 +1,5 @@
 <?php
-    include "../../config.php";
+    include "../config.php";
     class JobC{
         public function ListJob(){
             $sql = "SELECT * FROM offres_emploi";
