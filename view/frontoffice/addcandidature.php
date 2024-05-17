@@ -41,7 +41,29 @@ require 'C:\xamppx\htdocs\TEST_MYCRUD1\config.php';
             echo "Error: " . $e->getMessage();
         }
     }
+    session_start();
 
+    // Vérifiez si l'adresse e-mail est stockée dans la session
+    if (isset($_SESSION['email'])) {
+        // Récupérez l'adresse e-mail de la session
+        $email = $_SESSION['email'];
+    
+        $pdo = new PDO('mysql:host=localhost;dbname=careerhub', 'root', '');
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+       
+    
+        // Requête préparée pour récupérer le nom et le téléphone de l'utilisateur en fonction de l'adresse e-mail
+        $query = "SELECT  email FROM user WHERE email = :email";
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->execute();
+    
+        // Récupération des données de l'utilisateur
+        if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $email = $row['email'];
+        } 
+    }
     if(isset($_POST['btn_img']) ) {
         // Get the id_offre from the URL parameters
         $id_offre = isset($_GET['id_offre']) ? $_GET['id_offre'] : null;
@@ -88,7 +110,7 @@ require 'C:\xamppx\htdocs\TEST_MYCRUD1\config.php';
     
                 // Set the email details
                 $mail->setFrom('webreverso2a28@gmail.com', 'CareerHub');
-                $mail->addAddress('aichasmaoui22@gmail.com');
+                $mail->addAddress( htmlspecialchars($email));
                 $mail->Subject = 'Candidature Recorded';
                 $mail->Body = 'Your candidature has been recorded successfully.';
     
@@ -121,7 +143,7 @@ require 'C:\xamppx\htdocs\TEST_MYCRUD1\config.php';
 
 <head>
     <meta charset="utf-8">
-    <title>JobEntry - Job Portal Website Template</title>
+    <title>CareerHub</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -151,7 +173,7 @@ require 'C:\xamppx\htdocs\TEST_MYCRUD1\config.php';
         .job-info-title {
             font-size: 35px;
             margin-bottom: 20px;
-            color: #4CAF50; /* Green text color */
+            color:blue; /* Green text color */
         }
         .job-info-card {
             max-width: 600px;
@@ -200,12 +222,11 @@ require 'C:\xamppx\htdocs\TEST_MYCRUD1\config.php';
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav ms-auto p-4 p-lg-0">
-                    <a href="index.html" class="nav-item nav-link">Home</a>
-                    <a href="about.html" class="nav-item nav-link">About</a>
+                    <a href="pageuser.php" class="nav-item nav-link">Home</a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">entreprises</a>
                         <div class="dropdown-menu rounded-0 m-0">
-                            <a href="secteuradd.html" class="dropdown-item active">Secteur add</a>
+                            <a href="secteuradd.php" class="dropdown-item active">Secteur add</a>
                             <a href="secteurlist.php" class="dropdown-item">Secteur list</a>
                             <a href="entrepriselist.php" class="dropdown-item">Entreprise list</a>
                             <a href="entrepriseadd.php" class="dropdown-item">Entreprise add</a>
@@ -218,14 +239,24 @@ require 'C:\xamppx\htdocs\TEST_MYCRUD1\config.php';
                         </div>
                     </div>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Forums</a>
                         <div class="dropdown-menu rounded-0 m-0">
-                            <a href="category.html" class="dropdown-item">Job Category</a>
-                            <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                            <a href="404.html" class="dropdown-item">404</a>
+                            <a href="listforum.php" class="dropdown-item active">Forums List</a>
                         </div>
                     </div>
-                    <a href="contact.html" class="nav-item nav-link">Contact</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Training</a>
+                        <div class="dropdown-menu rounded-0 m-0">
+                            <a href="trainingF.php" class="dropdown-item active">Training List</a>
+                        </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle " data-bs-toggle="dropdown">Events</a>
+                        <div class="dropdown-menu rounded-0 m-0">
+                            <a href="job-list.php" class="dropdown-item active">Event List</a>
+                        </div>
+                    </div>
+                    
                 </div>
                 <a href="addJob.php" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Post A Job<i class="fa fa-arrow-right ms-3"></i></a>
             </div>
@@ -238,11 +269,7 @@ require 'C:\xamppx\htdocs\TEST_MYCRUD1\config.php';
             <div class="container my-5 pt-5 pb-4">
                 <h1 class="display-3 text-white mb-3 animated slideInDown">Job List</h1>
                 <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb text-uppercase">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                        <li class="breadcrumb-item text-white active" aria-current="page">Job List</li>
-                    </ol>
+                    
                 </nav>
             </div>
         </div>
@@ -287,69 +314,45 @@ require 'C:\xamppx\htdocs\TEST_MYCRUD1\config.php';
         <!-- Content End -->
 
         <!-- Footer Start -->
-        <div class="container-fluid bg-dark text-white-50 footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
-            <div class="container py-5">
-                <div class="row g-5">
-                    <div class="col-lg-3 col-md-6">
-                        <h5 class="text-white mb-4">Company</h5>
-                        <a class="btn btn-link text-white-50" href="">About Us</a>
-                        <a class="btn btn-link text-white-50" href="">Contact Us</a>
-                        <a class="btn btn-link text-white-50" href="">Our Services</a>
-                        <a class="btn btn-link text-white-50" href="">Privacy Policy</a>
-                        <a class="btn btn-link text-white-50" href="">Terms & Condition</a>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <h5 class="text-white mb-4">Quick Links</h5>
-                        <a class="btn btn-link text-white-50" href="">About Us</a>
-                        <a class="btn btn-link text-white-50" href="">Contact Us</a>
-                        <a class="btn btn-link text-white-50" href="">Our Services</a>
-                        <a class="btn btn-link text-white-50" href="">Privacy Policy</a>
-                        <a class="btn btn-link text-white-50" href="">Terms & Condition</a>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <h5 class="text-white mb-4">Contact</h5>
-                        <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</p>
-                        <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
-                        <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
-                        <div class="d-flex pt-2">
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-youtube"></i></a>
-                            <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-linkedin-in"></i></a>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <h5 class="text-white mb-4">Newsletter</h5>
-                        <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
-                        <div class="position-relative mx-auto" style="max-width: 400px;">
-                            <input class="form-control bg-transparent w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                            <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
-                        </div>
-                    </div>
-                </div>
+
+<div class="container-fluid bg-dark text-white py-4">
+    <div class="container">
+        <div class="row">
+            
+            <div class="col-md-4">
+                <h5 class="text-white mb-3">Quick Links</h5>
+                <ul class="list-unstyled mb-0">
+                    <li><a class="text-white-50" href="#">About Us</a></li>
+                    <li><a class="text-white-50" href="#">Contact Us</a></li>
+                    <li><a class="text-white-50" href="#">Our Services</a></li>
+                    <li><a class="text-white-50" href="#">Privacy Policy</a></li>
+                    <li><a class="text-white-50" href="#">Terms & Condition</a></li>
+                </ul>
             </div>
-            <div class="container">
-                <div class="copyright">
-                    <div class="row">
-                        <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                            &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved. 
-							
-							<!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-							Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
-                        </div>
-                        <div class="col-md-6 text-center text-md-end">
-                            <div class="footer-menu">
-                                <a href="">Home</a>
-                                <a href="">Cookies</a>
-                                <a href="">Help</a>
-                                <a href="">FQAs</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="col-md-4">
+                <h5 class="text-white mb-3">Contact</h5>
+                <p class="text-white-50"><i class="fa fa-map-marker-alt me-2"></i>Pôle Technologique - El Ghazala, Ariana, Tunisia</p>
+                <p class="text-white-50"><i class="fa fa-phone-alt me-2"></i>+216 56 414 539</p>
+                <p class="text-white-50"><i class="fa fa-envelope me-2"></i>CareerHub@gmail.com</p>
+            </div>
+            <div class="col-md-4">
+                <h5 class="text-white mb-3">Languages</h5>
+                <div class="language-bar">
+   <ul>
+      <li><a href="#" class="active">Frensh</a></li>
+      <li><a href="#">Arabic</a></li>
+   </ul>
+</div>
             </div>
         </div>
-        <!-- Footer End -->
+    </div>
+    <hr class="bg-white my-3">
+    <div class="container text-center ">
+            &copy; <a class="border-bottom" href="#">2024</a>, All Rights Reserved.
+            Created By <a class="border-bottom" href="https://htmlcodex.com">CareerHub</a>
+            </div>
+</div>
+<!-- Footer End -->
 
         <!-- Back to Top -->
         <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>

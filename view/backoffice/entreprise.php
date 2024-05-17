@@ -8,13 +8,110 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
     $list=$secteurC->afficheentreprise($idsecteur);
     }
     $secteurs=$secteurC->listsecteur();
+
+
+    require __DIR__ . '/../../vendor/autoload.php';
+
+    use Monolog\Logger;
+    use Monolog\Handler\StreamHandler;
+    
+    // Initialize UserC instance
+    function getCurrentUser() 
+        {
+            $log = new Logger('getCurrentUser');
+            $log->pushHandler(new StreamHandler(__DIR__ . '/../logs/getCurrentUser.log', Logger::INFO));
+            session_start(); // Démarrer la session
+    
+            // Vérifier si l'utilisateur est connecté
+            if(isset($_SESSION['name'])) { 
+    
+                
+                // Si l'utilisateur est connecté, récupérer les informations de l'utilisateur à partir de la session
+                $name = $_SESSION['name'];
+                $log->info('IN SESSION', ['user name' => $name]);
+    
+                $sql = "SELECT * FROM user WHERE name = :name";
+                $db = config::getConnexion();
+                try {
+                    $query = $db->prepare($sql);
+                    $query->bindValue(':name', $name);
+                    $query->execute();
+                    $user =  $query->fetch();
+                    $log->info('IN SESSION', ['user' => $user]);
+                    return $user;
+                } catch (Exception $e) {
+                    $log->error('NO USER', ['message' =>$e->getMessage()]);
+                    die('Error:' . $e->getMessage());
+                }
+            } else {
+                $log->error('NO USER');
+                // Si l'utilisateur n'est pas connecté, retourner null ou un message d'erreur
+                return null;
+            }
+        }
+        $log = new Logger('tables');
+        $log->pushHandler(new StreamHandler(__DIR__ . '/../logs/tables.log', Logger::INFO));
+    
+    // Initialize variables
+    $logged = ""; // Default to empty string
+    // $list = null;
+    $userPhoto = "";
+    // Check if the user is logged in
+    if (isset($_COOKIE['name'])) {
+        // If user's name is stored in cookie, retrieve it
+        $logged = $_COOKIE['name'];
+        
+    } elseif (isset($_SESSION['name'])) {
+        // If user's name is stored in session, retrieve it and set cookie
+        $logged = $_SESSION['name'];
+        setcookie('name', $_SESSION['name'], time() + (86400 * 30), "/");
+    } else {
+        // If user is not logged in, redirect to login page
+        header("location: in.php");
+        exit; // Terminate script execution after redirection
+    }
+    
+    
+    // Get the current user's information
+    $currentUser = getCurrentUser();
+    $log->info('Current user log', ['currentUser' => $currentUser]);
+    
+    // Check if the current user exists
+    if ($currentUser) {
+        $log->info('Current user exists', ['currentUser' => $currentUser]);
+        // If the current user exists, get the photo path
+        $userPhoto = $currentUser['photo'];
+    }
+
+
+    // Vérifiez si l'adresse e-mail est stockée dans la session
+    if (isset($_SESSION['email'])) {
+        // Récupérez l'adresse e-mail de la session
+        $email = $_SESSION['email'];
+    
+        $pdo = new PDO('mysql:host=localhost;dbname=careerhub', 'root', '');
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+       
+    
+        // Requête préparée pour récupérer le nom et le téléphone de l'utilisateur en fonction de l'adresse e-mail
+        $query = "SELECT  email FROM user WHERE email = :email";
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->execute();
+    
+        // Récupération des données de l'utilisateur
+        if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $email = $row['email'];
+        } 
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
-    <title>DarkPan - Bootstrap 5 Admin Template</title>
+    <title>CareerHub</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -53,44 +150,37 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
         <!-- Spinner End -->
 
 
-        <!-- Sidebar Start -->
-        <div class="sidebar pe-4 pb-3">
+         <!-- Sidebar Start -->
+         <div class="sidebar pe-4 pb-3">
             <nav class="navbar bg-secondary navbar-dark">
-                <a href="index.html" class="navbar-brand mx-4 mb-3">
+                <a href="tables.php" class="navbar-brand mx-4 mb-3">
                     <h3 class="text-primary"><i class="fa fa-user-edit me-2"></i>CareerHub</h3>
                 </a>
-                <div class="d-flex align-items-center ms-4 mb-4">
-                    <div class="position-relative">
-                        <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                        <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
-                    </div>
-                    <div class="ms-3">
-                        <h6 class="mb-0">Jhon Doe</h6>
-                        <span>Admin</span>
-                    </div>
-                </div>
+                
                 <div class="navbar-nav w-100">
-                    <a href="index.html" class="nav-item nav-link"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                    <a href="tables.php" class="nav-item nav-link "><i class="fa fa-table me-2"></i>Tables</a>
+                    <a href="ListBack.php" class="nav-item nav-link "><i class="fa fa-chart-bar me-2"></i>Jobs</a>
+                    <a href="table.php" class="nav-item nav-link "><i class="fa fa-keyboard me-2"></i>Forums</a>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Elements</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Events</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="button.html" class="dropdown-item">Buttons</a>
-                            <a href="typography.html" class="dropdown-item">Typography</a>
-                            <a href="element.html" class="dropdown-item">Other Elements</a>
+                            <a href="ListP.php" class="dropdown-item">List of participants</a>
+                            <a href="Listridha.php" class="dropdown-item">List of events</a>
+                       
                         </div>
                     </div>
-                    <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a>
-                    <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forms</a>
-                    <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
-                    <a href="chart.html" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>
-                    <a href="ListBack.php" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Jobs</a>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Training</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="signin.html" class="dropdown-item">Sign In</a>
-                            <a href="signup.html" class="dropdown-item">Sign Up</a>
-                            <a href="404.html" class="dropdown-item">404 Error</a>
-                            <a href="Secteur_activite.html" class="dropdown-item active">Secteur d'activite</a>
+                            <a href="Training.php" class="dropdown-item">add training</a>
+                            <a href="listTraining.php" class="dropdown-item">training list</a>
+                            <a href="list.php" class="dropdown-item">list of participants</a>
+                        </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Entreprise</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href="Secteur_activite.php" class="dropdown-item">Secteur d'activite</a>
                             <a href="listsecteur.php" class="dropdown-item">list Secteur</a>
                             <a href="entreprise.php" class="dropdown-item">entreprise</a>
                             <a href="listentreprise.php" class="dropdown-item">list entreprise</a>
@@ -113,83 +203,31 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
                     <i class="fa fa-bars"></i>
                 </a>
                 <form class="d-none d-md-flex ms-4">
-                    <input class="form-control bg-dark border-0" type="search" placeholder="Search">
+                    <input class="form-control bg-dark border-0" id="myInput" onkeyup="myFunction()" placeholder="Search">
                 </form>
                 <div class="navbar-nav align-items-center ms-auto">
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="fa fa-envelope me-lg-2"></i>
-                            <span class="d-none d-lg-inline-flex">Message</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                            <a href="#" class="dropdown-item">
-                                <div class="d-flex align-items-center">
-                                    <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                                    <div class="ms-2">
-                                        <h6 class="fw-normal mb-0">Jhon send you a message</h6>
-                                        <small>15 minutes ago</small>
-                                    </div>
-                                </div>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item">
-                                <div class="d-flex align-items-center">
-                                    <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                                    <div class="ms-2">
-                                        <h6 class="fw-normal mb-0">Jhon send you a message</h6>
-                                        <small>15 minutes ago</small>
-                                    </div>
-                                </div>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item">
-                                <div class="d-flex align-items-center">
-                                    <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                                    <div class="ms-2">
-                                        <h6 class="fw-normal mb-0">Jhon send you a message</h6>
-                                        <small>15 minutes ago</small>
-                                    </div>
-                                </div>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item text-center">See all message</a>
-                        </div>
+                        
                     </div>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="fa fa-bell me-lg-2"></i>
-                            <span class="d-none d-lg-inline-flex">Notificatin</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                            <a href="#" class="dropdown-item">
-                                <h6 class="fw-normal mb-0">Profile updated</h6>
-                                <small>15 minutes ago</small>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item">
-                                <h6 class="fw-normal mb-0">New user added</h6>
-                                <small>15 minutes ago</small>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item">
-                                <h6 class="fw-normal mb-0">Password changed</h6>
-                                <small>15 minutes ago</small>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item text-center">See all notifications</a>
-                        </div>
+                        
                     </div>
+
+
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <img class="rounded-circle me-lg-2" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                            <span class="d-none d-lg-inline-flex">John Doe</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                            <a href="#" class="dropdown-item">My Profile</a>
-                            <a href="#" class="dropdown-item">Settings</a>
-                            <a href="#" class="dropdown-item">Log Out</a>
-                        </div>
-                    </div>
+    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+        <!-- Display user's photo dynamically -->
+        <img class="rounded-circle me-lg-2" src="<?php echo $userPhoto; ?>" alt="" style="width: 40px; height: 40px;">
+        <span class="d-none d-lg-inline-flex">
+            <?php echo $logged; ?>
+            
+        </span>
+    </a>
+    <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
+        <a href="profile_user.php" class="dropdown-item">My Profile</a>
+        <a href="../frontoffice/in.php" class="dropdown-item">Log Out</a>
+    </div>
+</div>
                 </div>
             </nav>
             <!-- Navbar End -->
@@ -199,7 +237,7 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
             <div class="container-fluid pt-4 px-4">
                 <div class="row vh-100 bg-secondary rounded align-items-center justify-content-center mx-0">
                     <div class="col-md-6 text-center">
-                        <h3>Ajout entreprise</h3>
+                        <h3>Add entreprise</h3>
                         <form action="addentreprise.php" method="post" id="formadd">
                             <div class="mb-3">
                                 <label for="nom" class="form-label">Name :</label>
@@ -208,7 +246,7 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email :</label>
-                                <input type="text" class="form-control" id="email" name="email" placeholder="Enter email here">
+                                <input type="text" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" readonly>
                                 <div id="emailError"></div>
                             </div>
                             <div class="mb-3">
@@ -222,7 +260,7 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
                                 <div id="locError"></div>
                             </div>
                                 <div class="mb-3">
-                                <label value="secteur">Sélectionnez un secteur</label>
+                                <label value="secteur">Select secteur</label>
                                 <select name="secteur" id="secteur">
                             </div>
                             <?php
@@ -232,7 +270,7 @@ if($_SERVER["REQUEST_METHOD"]=="POST")
                             ?>
                          </select>
                          <div>
-                         <button type="submit" class="btn btn-primary">Ajouter</button>
+                         <button type="submit" class="btn btn-primary">Add</button>
                          </div>
                         </form>
                         <script>

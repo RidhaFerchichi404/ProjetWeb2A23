@@ -1,4 +1,11 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+require 'C:\xamppx\htdocs\TEST_MYCRUD1\PHPMailer-master\src\Exception.php';
+require 'C:\xamppx\htdocs\TEST_MYCRUD1\PHPMailer-master\src\PHPMailer.php';
+require 'C:\xamppx\htdocs\TEST_MYCRUD1\PHPMailer-master\src\SMTP.php';
+require 'C:\xamppx\htdocs\TEST_MYCRUD1\config.php';
+
     // Include config.php only if it's not already included
     if (!class_exists('config')) {
         include "../../config.php";
@@ -34,27 +41,47 @@
             echo "Error: " . $e->getMessage();
         }
     }
+    session_start();
 
-    if(isset($_POST['btn_img'])) {
+    // Vérifiez si l'adresse e-mail est stockée dans la session
+    if (isset($_SESSION['email'])) {
+        // Récupérez l'adresse e-mail de la session
+        $email = $_SESSION['email'];
+    
+        $pdo = new PDO('mysql:host=localhost;dbname=careerhub', 'root', '');
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+       
+    
+        // Requête préparée pour récupérer le nom et le téléphone de l'utilisateur en fonction de l'adresse e-mail
+        $query = "SELECT  email FROM user WHERE email = :email";
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->execute();
+    
+        // Récupération des données de l'utilisateur
+        if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $email = $row['email'];
+        } 
+    }
+    if(isset($_POST['btn_img']) ) {
         // Get the id_offre from the URL parameters
         $id_offre = isset($_GET['id_offre']) ? $_GET['id_offre'] : null;
 
         // Check if id_offre is not null
         if ($id_offre !== null) {
             // Include the config file
-            require_once "../../config.php";
                 
             // Get PDO connection
             $pdo = config::getConnexion();
                 
             // Define SQL query to insert image
-            $sql = "INSERT INTO `candidature` (`cv`, `id_offre`) VALUES (:filename, :id_offre)";
+            $sql = "INSERT INTO `candidature` (`cv`, `id_offre`) VALUES (:filename, :id_offre )";
                 
             // Get file details
             $filename = $_FILES["choosefile"]["name"];
             $tempfile = $_FILES["choosefile"]["tmp_name"];
-            $folder = "../image/".$filename;
-                
+            $folder = "image/".$filename;
             // Check if file name is not empty
             if($filename == "") {
                 echo "<div class='alert alert-danger' role='alert'><h4 class='text-center'>Blank not Allowed</h4></div>";
@@ -64,13 +91,37 @@
                     $stmt = $pdo->prepare($sql);
                     $stmt->bindParam(':filename', $filename);
                     $stmt->bindParam(':id_offre', $id_offre); // Bind id_offre
-                    
                     // Execute the query
                     $stmt->execute();
                     
                     // Move the uploaded file to the folder
                     move_uploaded_file($tempfile, $folder);
-                    
+                    // Create a new PHPMailer instance
+                $mail = new PHPMailer();
+    
+                // Set the SMTP server details
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->Port = 587;
+                $mail->SMTPSecure = 'tls';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'aichasmaoui22@gmail.com';
+                $mail->Password = 'vmeh dryk xqsf vldf';
+    
+                // Set the email details
+                $mail->setFrom('webreverso2a28@gmail.com', 'CareerHub');
+                $mail->addAddress( htmlspecialchars($email));
+                $mail->Subject = 'Candidature Recorded';
+                $mail->Body = 'Your candidature has been recorded successfully.';
+    
+                // Send the email
+            if ($mail->send()) {
+              
+                header('Location:ListBack.php');
+            } else {
+                echo 'Delivery confirmation email failed to send';
+            }
+            
                     echo "<div class='alert alert-success' role='alert'><h4 class='text-center'>Image uploaded</h4></div>";
                 } catch(PDOException $e) {
                     echo "Error: " . $e->getMessage();
@@ -81,6 +132,10 @@
             echo "Error: No job ID specified.";
         }
     }
+            
+   
+    
+
 ?>
 
 <!DOCTYPE html>
@@ -119,7 +174,7 @@
         .job-info-title {
             font-size: 28px;
             margin-bottom: 20px;
-            color: red; /* Green text color */
+            color: blue; /* Green text color */
         }
         .job-info-card {
             max-width: 600px;
@@ -146,12 +201,12 @@
             margin-top: 30px;
         }
         .btn-submit {
-            background-color: red; /* Red background color */
-            border-color: #dc3545; /* Red border color */
+            background-color: blue; /* Red background color */
+            border-color: black; /* Red border color */
         }
         .btn-submit:hover {
-            background-color: red; /* Darker red background color on hover */
-            border-color: #bd2130; /* Darker red border color on hover */
+            background-color: blue; /* Darker red background color on hover */
+            border-color: black; /* Darker red border color on hover */
         }
     </style>
 </head>
@@ -170,41 +225,34 @@
         <!-- Sidebar Start -->
         <div class="sidebar pe-4 pb-3">
             <nav class="navbar bg-secondary navbar-dark">
-                <a href="index.html" class="navbar-brand mx-4 mb-3">
+                <a href="tables.php" class="navbar-brand mx-4 mb-3">
                     <h3 class="text-primary"><i class="fa fa-user-edit me-2"></i>CareerHub</h3>
                 </a>
-                <div class="d-flex align-items-center ms-4 mb-4">
-                    <div class="position-relative">
-                        <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                        <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
-                    </div>
-                    <div class="ms-3">
-                        <h6 class="mb-0">Jhon Doe</h6>
-                        <span>Admin</span>
-                    </div>
-                </div>
+                
                 <div class="navbar-nav w-100">
-                    <a href="index.html" class="nav-item nav-link active"><i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+                    <a href="tables.php" class="nav-item nav-link "><i class="fa fa-table me-2"></i>Tables</a>
+                    <a href="ListBack.php" class="nav-item nav-link active"><i class="fa fa-chart-bar me-2"></i>Jobs</a>
+                    <a href="table.php" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forums</a>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Elements</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Events</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="button.html" class="dropdown-item">Buttons</a>
-                            <a href="typography.html" class="dropdown-item">Typography</a>
-                            <a href="element.html" class="dropdown-item">Other Elements</a>
+                            <a href="ListP.php" class="dropdown-item">List of participants</a>
+                            <a href="Listridha.php" class="dropdown-item">List of events</a>
+                       
                         </div>
                     </div>
-                    <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a>
-                    <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forms</a>
-                    <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
-                    <a href="chart.html" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>
-                    <a href="ListBack.php" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Jobs</a>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="fa fa-laptop me-2"></i>Training</a>
                         <div class="dropdown-menu bg-transparent border-0">
-                            <a href="signin.html" class="dropdown-item">Sign In</a>
-                            <a href="signup.html" class="dropdown-item">Sign Up</a>
-                            <a href="404.html" class="dropdown-item">404 Error</a>
-                            <a href="Secteur_activite.html" class="dropdown-item">Secteur d'activite</a>
+                            <a href="Training.php" class="dropdown-item">add training</a>
+                            <a href="listTraining.php" class="dropdown-item">training list</a>
+                            <a href="list.php" class="dropdown-item">list of participants</a>
+                        </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Entreprise</a>
+                        <div class="dropdown-menu bg-transparent border-0">
+                            <a href="Secteur_activite.php" class="dropdown-item">Secteur d'activite</a>
                             <a href="listsecteur.php" class="dropdown-item">list Secteur</a>
                             <a href="entreprise.php" class="dropdown-item">entreprise</a>
                             <a href="listentreprise.php" class="dropdown-item">list entreprise</a>
@@ -214,7 +262,6 @@
             </nav>
         </div>
         <!-- Sidebar End -->
-
 
         <!-- Content Start -->
         <div class="content">
@@ -226,82 +273,19 @@
                 <a href="#" class="sidebar-toggler flex-shrink-0">
                     <i class="fa fa-bars"></i>
                 </a>
-                <form class="d-none d-md-flex ms-4">
-                    <input class="form-control bg-dark border-0" type="search" placeholder="Search">
-                </form>
+                
                 <div class="navbar-nav align-items-center ms-auto">
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="fa fa-envelope me-lg-2"></i>
-                            <span class="d-none d-lg-inline-flex">Message</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                            <a href="#" class="dropdown-item">
-                                <div class="d-flex align-items-center">
-                                    <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                                    <div class="ms-2">
-                                        <h6 class="fw-normal mb-0">Jhon send you a message</h6>
-                                        <small>15 minutes ago</small>
-                                    </div>
-                                </div>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item">
-                                <div class="d-flex align-items-center">
-                                    <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                                    <div class="ms-2">
-                                        <h6 class="fw-normal mb-0">Jhon send you a message</h6>
-                                        <small>15 minutes ago</small>
-                                    </div>
-                                </div>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item">
-                                <div class="d-flex align-items-center">
-                                    <img class="rounded-circle" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                                    <div class="ms-2">
-                                        <h6 class="fw-normal mb-0">Jhon send you a message</h6>
-                                        <small>15 minutes ago</small>
-                                    </div>
-                                </div>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item text-center">See all message</a>
-                        </div>
+                        
                     </div>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="fa fa-bell me-lg-2"></i>
-                            <span class="d-none d-lg-inline-flex">Notificatin</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                            <a href="#" class="dropdown-item">
-                                <h6 class="fw-normal mb-0">Profile updated</h6>
-                                <small>15 minutes ago</small>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item">
-                                <h6 class="fw-normal mb-0">New user added</h6>
-                                <small>15 minutes ago</small>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item">
-                                <h6 class="fw-normal mb-0">Password changed</h6>
-                                <small>15 minutes ago</small>
-                            </a>
-                            <hr class="dropdown-divider">
-                            <a href="#" class="dropdown-item text-center">See all notifications</a>
-                        </div>
+                        
                     </div>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <img class="rounded-circle me-lg-2" src="img/user.jpg" alt="" style="width: 40px; height: 40px;">
-                            <span class="d-none d-lg-inline-flex">John Doe</span>
-                        </a>
+                        <a href="#" class="nav-link dropdown-toggle" >
+                            </a>
                         <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                            <a href="#" class="dropdown-item">My Profile</a>
-                            <a href="#" class="dropdown-item">Settings</a>
-                            <a href="#" class="dropdown-item">Log Out</a>
+                            
                         </div>
                     </div>
                 </div>

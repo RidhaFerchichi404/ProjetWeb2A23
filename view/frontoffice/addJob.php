@@ -41,6 +41,32 @@
             $error = "Missing info"; 
         }
      }
+     session_start();
+
+     // Vérifiez si l'adresse e-mail est stockée dans la session
+     if (isset($_SESSION['email'])) {
+         // Récupérez l'adresse e-mail de la session
+         $email = $_SESSION['email'];
+     
+         $pdo = new PDO('mysql:host=localhost;dbname=careerhub', 'root', '');
+         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+     
+        
+     
+         // Requête préparée pour récupérer le nom et le téléphone de l'utilisateur en fonction de l'adresse e-mail
+         $query = "SELECT   nom , location FROM entreprise WHERE email = :email";
+         $stmt = $pdo->prepare($query);
+         $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+         $stmt->execute();
+     
+         // Récupération des données de l'utilisateur
+         if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+             
+         
+             $nom= $row['nom'];
+             $location= $row['location'];
+         } 
+     }
 ?>
 
 <!DOCTYPE html>
@@ -140,7 +166,7 @@
                 </tr>
                 <tr>
                     <td><label for="company_name">Company Name:</label></td>
-                    <td><input type="text" name="company_name" id="company_name" maxlength="50" required></td>
+                    <td><input type="text" class="form-control" id="company_name" name="company_name" value="<?php echo htmlspecialchars($nom); ?>" readonly></td>
                 </tr>
                 <tr>
                     <td><label for="company_description">Company Description:</label></td>
@@ -164,7 +190,7 @@
                 </tr>
                 <tr>
                     <td><label for="location">Location:</label></td>
-                    <td><input type="text" name="location" id="location" maxlength="50"></td>
+                    <td><input type="text" class="form-control" id="location" name="location" value="<?php echo htmlspecialchars($location); ?>" readonly></td>
                 </tr>
                 <tr>
                     <td><label for="deadline_date">deadline date:</label></td>
@@ -174,7 +200,7 @@
                     <td colspan="2" align="center">
                         <input type="submit" value="Save">
                         <input type="reset" value="Reset">
-                        <button colspan="2" align="center" class="btn btn-primary"><a href="index.html" >Back to list</a></button>
+                        <button colspan="2" align="center" class="btn btn-primary"><a href="pageuser.php" >Back to list</a></button>
 
                     </td>
                 </tr>
@@ -210,165 +236,4 @@
 </html>
 
 
-<!--<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Job Offer</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f9fa;
-            padding-top: 50px;
-            
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            
-        }
-        h2 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        label {
-            font-weight: bold;
-            background-image: url('img/about-3.jpg'); /* Add your background image URL here */
-            background-repeat: no-repeat;
-            background-size: cover;
-            padding: 10px;
-            border-radius: 5px;
-            display: inline-block;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-        .form-control {
-            border-radius: 5px;
-        }
-        .btn {
-            border-radius: 5px;
-            padding: 10px 20px;
-            font-weight: bold;
-        }
-    </style>
-
-    
-    <link href="img/favicon.ico" rel="icon">
-
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Inter:wght@700;800&display=swap" rel="stylesheet">
-    
-    
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-
-    <link href="lib/animate/animate.min.css" rel="stylesheet">
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-
-  
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-
-  
-    <link href="css/style.css" rel="stylesheet">
- 
- <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
-    <a href="index.html" class="navbar-brand d-flex align-items-center text-center py-0 px-4 px-lg-5">
-        <h1 class="m-0 text-primary">CareerHub</h1>
-    </a>
-    <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarCollapse">
-        <div class="navbar-nav ms-auto p-4 p-lg-0">
-            <a href="index.html" class="nav-item nav-link">Home</a>
-            <a href="about.html" class="nav-item nav-link">About</a>
-            <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Jobs</a>
-                <div class="dropdown-menu rounded-0 m-0">
-                    <a href="job-offers.html" class="dropdown-item active">Find a Job</a>
-                    <a href="post-job.html" class="dropdown-item">List a Job</a>
-                </div>
-            </div>
-            <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                <div class="dropdown-menu rounded-0 m-0">
-                    <a href="category.html" class="dropdown-item">Job Category</a>
-                    <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                    <a href="404.html" class="dropdown-item">404</a>
-                </div>
-            </div>
-            <a href="contact.html" class="nav-item nav-link">Contact</a>
-        </div>
-    </div>
-</nav>
-
-</head>
-<body>
-
-<div class="container" >
-    <h2>Post a Job Offer</h2>
-    <form action="" method="POST">
-        <div class="form-group">
-            <label for="job_title" style="background-image: url('label_background_job_title.png')">Job Title:</label>
-            <input type="text" class="form-control" id="job_title" name="job_title" placeholder="Enter the job title" required>
-        </div>
-
-        <div class="form-group">
-            <label for="company_name" style="background-image: url('label_background_company_name.png')">Company Name:</label>
-            <input type="text" class="form-control" id="company_name" name="company_name" placeholder="Enter the company name" required>
-        </div>
-
-        <div class="form-group">
-            <label for="company_description" style="background-image: url('label_background_company_description.png')">Company Description:</label>
-            <textarea class="form-control" id="company_description" name="company_description" rows="4" placeholder="Enter the company description" required></textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="company_website" style="background-image: url('label_background_company_website.png')">Company Website:</label>
-            <input type="url" class="form-control" id="company_website" name="company_website" placeholder="Enter the company website" required>
-        </div>
-
-        <div class="form-group">
-            <label for="job_description" style="background-image: url('label_background_job_description.png')">Job Description:</label>
-            <textarea class="form-control" id="job_description" name="job_description" rows="4" placeholder="Enter the job description" required></textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="job_requirements" style="background-image: url('label_background_job_requirements.png')">Job Requirements:</label>
-            <textarea class="form-control" id="job_requirements" name="job_requirements" rows="4" placeholder="Enter the job requirements" required></textarea>
-        </div>
-
-        <div class="form-group">
-            <label for="salary" style="background-image: url('label_background_salary.png')">Salary:</label>
-            <input type="number" class="form-control" id="salary" name="salary" placeholder="Enter the salary" required>
-        </div>
-
-        <div class="form-group">
-            <label for="location" style="background-image: url('label_background_location.png')">Location:</label>
-            <input type="text" class="form-control" id="location" name="location" placeholder="Enter the location" required>
-        </div>
-
-        <div class="text-center">
-            <button type="submit" class="btn btn-primary mr-2">Post Job Offer</button>
-            
-            <button type="button" class="btn btn-secondary" onclick="cancel()">Cancel</button>
-        </div>
-    </form>
-</div>
-
-<script>
-    function cancel() {
-        window.location.href = "job-offers.html"; // Redirect to the cancel page
-    }
-</script>
-
-</body>
-</html> -- >
 
