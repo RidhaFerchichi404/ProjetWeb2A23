@@ -12,7 +12,7 @@
         private ?string $deadline_date = null; 
         private ?int $view_counter = null;
         
-        public function __construct($a = null,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k) {
+        public function __construct($a = null,$b,$c,$d,$e,$f,$g,$h,$i,$j,$k=0) {
             $this->id = $a;
             $this->job_title = $b;
             $this->company_name = $c;
